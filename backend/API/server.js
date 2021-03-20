@@ -9,7 +9,7 @@ var jwt = require('jsonwebtoken');
 app.set('secretKey','test');
 mongoose.connection.on('error', console.error.bind(console, 'Error de conexion en MongoDB'));
 app.use(logger('dev'));
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/',function(req,res){
     res.json({"Developing":"Bulding API REST NodeJS"});
