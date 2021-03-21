@@ -25,6 +25,9 @@ const UserSchema = new Schema({
     },
     created_at:{
         type: Date
+    },
+    last_login:{
+        type: Date
     }
 });
 // Antes de almacenar la contraseña en la base de datos la encriptamos con Bcrypt, esto es posible gracias al middleware de mongoose

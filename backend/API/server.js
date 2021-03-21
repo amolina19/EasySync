@@ -15,7 +15,7 @@ app.get('/',function(req,res){
     res.json({"Developing":"Bulding API REST NodeJS"});
 });
 
-app.use('/users',users);
+app.use('/api/users',users);
 
 app.listen(3000, function(){
     console.log('Listening on http://localhost:3000');

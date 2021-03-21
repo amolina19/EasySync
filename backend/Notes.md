@@ -16,3 +16,5 @@ switched to db admin
 
 use admin;
 db.grantRolesToUser('admin', [{ role: 'root', db: 'admin' }])
+
+db.createUser({user:'easysync',pwd:passwordPrompt(),roles:[{role:'readWrite',db:'EasySync'}]})
