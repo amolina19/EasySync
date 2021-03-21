@@ -1,5 +1,7 @@
+const dotenv = require('dotenv');
+dotenv.config();
 const mongoose = require('mongoose');
-const mongoDB = 'mongodb://easysync:#sxFGpKj9@localhost:27017/EasySync';
+const mongoDB = process.env.DATABASE_CONN;
 mongoose.connect(mongoDB,{ useUnifiedTopology: true,useNewUrlParser: true });
 mongoose.Promise = global.Promise;
 module.exports = mongoose;

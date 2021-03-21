@@ -1,3 +1,5 @@
+const dotenv = require('dotenv');
+dotenv.config();
 const express = require('express');
 const subdomain = require('express-subdomain');
 const logger = require('morgan');
@@ -5,11 +7,11 @@ const bodyParser = require('body-parser');
 const users = require('./routes/users');
 const app = express();
 const mongoose = require('./config/database');
-const router = express.Router();
+//const router = express.Router();
 //const https = require('https');
 //const fs = require('fs');
 var jwt = require('jsonwebtoken');
-const PORT = 80;
+const PORT = process.env.PORT
 
 /*
 const keys = {
