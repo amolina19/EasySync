@@ -2,6 +2,8 @@
 API and Website Works different Servers. 
 The API works with the api subdomain like api.easysync.es on SSL Mode. The API do authentication, remove, delete Users and Files with roles and tokens.
 
+Read all API Uses on https://api.easysync.es/documentation
+
 # Routes POST
 
     api.easysync.es/users/register to create new user on Login.
