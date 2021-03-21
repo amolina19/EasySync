@@ -44,7 +44,7 @@ UserSchema.pre('save',function(next){
     next();
 });
 //Utilizar el plugin para encriptar los datos de este esquema.
-UserSchema.plugin(encrypt, { encryptionKey: encKey, signingKey: sigKey });
+//UserSchema.plugin(encrypt, { encryptionKey: encKey, signingKey: sigKey });
 
 // Exportamos el modelo para usarlo en otros ficheros
 module.exports = mongoose.model('User', UserSchema);

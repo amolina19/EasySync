@@ -31,8 +31,8 @@ module.exports = {
         }
     },
     authenticate: function(req, res, next){
-
         if(checkUri(req.headers.host)){
+            
             userModel.findOne({$or:[{email:req.body.email},{username:req.body.username}]}, function(err,userInfo){
                 if(userInfo===null){
                     res.json({status:"error", message: "User or Email not founded"});
