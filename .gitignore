@@ -34,4 +34,4 @@ bower_components
 .grunt
 .sonarlint
 .env
-key_private.pem
+*.pem
