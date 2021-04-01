@@ -3,7 +3,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 function checkUri(request){
-    if(request.includes('api')){
+    if(request.headers.host.includes('api')){
+        console.log(request.secure);
         return true;
     }
     return false;
@@ -12,7 +13,7 @@ function checkUri(request){
 module.exports = {
     create: function(req, res, next){
 
-        if(checkUri(req.headers.host)){
+        if(checkUri(req)){
             userModel.find({$and:[{username:req.body.username},{email:req.body.email}]}, function(err,result){
                 if(result.length === 0){
                     userModel.create({username: req.body.username, email: req.body.email, password: req.body.password,created_at: new Date()}, function(err){
@@ -31,7 +32,7 @@ module.exports = {
         }
     },
     authenticate: function(req, res, next){
-        if(checkUri(req.headers.host)){
+        if(checkUri(req)){
             
             userModel.findOne({$or:[{email:req.body.email},{username:req.body.username}]}, function(err,userInfo){
                 if(userInfo===null){
@@ -53,16 +54,35 @@ module.exports = {
     },
     delete: function(req,res,next){
         
-        if(checkUri(req.headers.host)){
-            userModel.deleteOne({_id:req.params.id},function(err){
-                if(err){
-                   res.json({status:"error",message:"Problem removing user"});
+        if(checkUri(req)){
+            userModel.findOne({_id:req.params.id},function(err,result){
+                if(result != null){
+                    userModel.deleteOne({_id:req.params.id},function(err){
+                        if(err){
+                           res.json({status:"error",message:"Problem removing user"});
+                        }else{
+                            res.json({status:"ok",message:"User removed"});
+                        }
+                    });
+                }
+            });
+            
+        }else{
+            res.json({status:"error",message:"Use api.easysync.es/URI"});
+        }
+    },
+    recover: function(req,res,next){
+        if(checkUri){
+            userModel.findOne({$or:[{email:req.body.email},{username:req.body.username}]}, function(err,user){
+                if(user !=null){
+
                 }else{
-                    res.json({status:"ok",message:"User removed"});
+                    res.json({status:"error",message:"User or email doesnt exists"});
                 }
             });
         }else{
             res.json({status:"error",message:"Use api.easysync.es/URI"});
         }
+        
     }
 }

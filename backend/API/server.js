@@ -5,10 +5,12 @@ const subdomain = require('express-subdomain');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const users = require('./routes/users');
+const files = require('./routes/files');
 const app = express();
 const mongoose = require('./config/database');
+var helmet = require('helmet');
+
 //const router = express.Router();
-//const https = require('https');
 //const fs = require('fs');
 var jwt = require('jsonwebtoken');
 const PORT = process.env.PORT
@@ -19,17 +21,14 @@ const keys = {
     cert: fs.readFileSync('/root/EasySync/EasySync/keys/server/certificade.pem')
 };
 */
-
+app.use(helmet());
 app.set('secretKey','test');
 mongoose.connection.on('error', console.error.bind(console, 'Error de conexion en MongoDB'));
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/users',users);
-
-app.listen(PORT,function(){
-    console.log("API Listening on api.easysync.es:"+PORT);
-})
+app.use('/files',files);
 
 app.get('/',function(req,res){
     if(req.headers.host.includes('api')){
@@ -39,5 +38,9 @@ app.get('/',function(req,res){
         res.redirect(307,'/home');
         //res.json({"Developing":"Main Page"});
     }
+});
+
+app.listen(PORT,function(){
+    console.log("API Listening on api.easysync.es:"+PORT);
 });
 

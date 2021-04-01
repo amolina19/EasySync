@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 // Cargamos el módulo de bcrypt
 const bcrypt = require('bcrypt');
 // Definimos el factor de costo, el cual controla cuánto tiempo se necesita para calcular un solo hash de BCrypt. Cuanto mayor sea el factor de costo, más rondas de hash se realizan. Cuanto más tiempo sea necesario, más difícil será romper el hash con fuerza bruta.
-var encrypt = require('mongoose-encryption');
+//var encrypt = require('mongoose-encryption');
 //Para encriptar el objeto en la base de datos
 const dotenv = require('dotenv');
 dotenv.config();
@@ -33,6 +33,14 @@ const UserSchema = new Schema({
     },
     last_login:{
         type: Date
+    },
+    resetPasswordToken:{
+        type: String,
+        required: false
+    },
+    resetPasswordExpires: {
+        type: Date,
+        required: false
     }
 });
 
