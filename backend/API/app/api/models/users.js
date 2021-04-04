@@ -28,6 +28,9 @@ const UserSchema = new Schema({
         trim: true,
         required: true
     },
+    activated:{
+        type: Boolean
+    },
     created_at:{
         type: Date
     },

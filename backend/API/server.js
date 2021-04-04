@@ -4,11 +4,15 @@ const express = require('express');
 const subdomain = require('express-subdomain');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
+
 const users = require('./routes/users');
 const files = require('./routes/files');
 const app = express();
+
 const mongoose = require('./config/database');
 var helmet = require('helmet');
+
+const email = require('./config/mail');
 
 //const router = express.Router();
 //const fs = require('fs');
@@ -42,5 +46,7 @@ app.get('/',function(req,res){
 
 app.listen(PORT,function(){
     console.log("API Listening on api.easysync.es:"+PORT);
+    email.testConnection();
+    email.sendmail();
 });
 
