@@ -3,7 +3,8 @@ const jwt = require('jsonwebtoken');
 
 
 function checkUri(request){
-    if(request.headers.host.includes('api')){
+    if(request.secure){
+        console.log(request.secure);
         return true;
     }
     return false;

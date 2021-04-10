@@ -32,7 +32,7 @@ module.exports = {
         let info = transporter.sendMail({
             from: process.env.EMAIL_DOMAIN+' '+process.env.EMAIL_HEADER, // sender address
             to: "alejandro.molina.daw@gmail.com", // list of receivers
-            subject: "testing", // Subject line
+            subject: "Server API opened on "+process.env.EMAIL_DOMAIN+":"+process.env.PORT, // Subject line
             text: "Hello world?", // plain text body
             html: "<b>Hello world?</b>", // html body
         });
