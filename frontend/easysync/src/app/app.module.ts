@@ -19,6 +19,7 @@ import { BoardUserComponent } from './board-user/board-user.component';
 import { authInterceptorProviders } from './_helpers/auth.intercerptor';
 
 //Materials
+
 import { FormsModule,ReactiveFormsModule } from '@angular/forms';
 import {A11yModule} from '@angular/cdk/a11y';
 import {ClipboardModule} from '@angular/cdk/clipboard';
@@ -64,6 +65,12 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatTreeModule} from '@angular/material/tree';
 import {OverlayModule} from '@angular/cdk/overlay';
 import { ApiComponent } from './api/api.component';
+import {MatFormFieldModule} from '@angular/material/form-field';
+
+import { FileService } from './_services/file.service';
+import { FileExplorerModule } from './file-explorer/file-explorer.module';
+import { DriveComponent } from './drive/drive.component';
+
 
 
 @NgModule({
@@ -75,9 +82,11 @@ import { ApiComponent } from './api/api.component';
     ProfileComponent,
     BoardAdminComponent,
     BoardUserComponent,
-    ApiComponent
+    ApiComponent,
+    DriveComponent,
   ],
   imports: [
+    MatFormFieldModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
@@ -128,7 +137,8 @@ import { ApiComponent } from './api/api.component';
     MatTreeModule,
     OverlayModule,
     PortalModule,
-    ScrollingModule
+    ScrollingModule,
+    FileExplorerModule
   ],exports: [
     A11yModule,
     ClipboardModule,
@@ -175,7 +185,7 @@ import { ApiComponent } from './api/api.component';
     PortalModule,
     ScrollingModule,
   ],
-  providers: [authInterceptorProviders],
+  providers: [authInterceptorProviders,FileService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

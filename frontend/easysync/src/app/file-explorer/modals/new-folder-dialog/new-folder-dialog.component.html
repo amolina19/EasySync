@@ -1,0 +1,12 @@
+<h1 mat-dialog-title>Crear nueva carpeta</h1>
+
+<mat-dialog-content>
+  <mat-form-field class="example-full-width">
+    <input matInput placeholder="Nombre carpeta" [(ngModel)]="folderName">
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-raised-button mat-dialog-close>Cancelar</button>
+  <button mat-raised-button [mat-dialog-close]="folderName" color="primary">Aceptar</button>
+</mat-dialog-actions>

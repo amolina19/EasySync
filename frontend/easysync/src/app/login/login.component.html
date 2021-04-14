@@ -1,10 +1,10 @@
 <div class="row mt-5">
   <div class="col-md-4"></div>
   <div class="col-md-4">
-    <div class="">
-      
+
+      <mat-card>
       <form
-        *ngIf="!isLoggedIn"
+        *ngIf="!auth.isLoggedIn"
         name="form"
         (ngSubmit)="f.form.valid && onSubmit()"
         #f="ngForm"
@@ -98,10 +98,10 @@
         </div>
       </form>
   
-      <div class="alert alert-success" *ngIf="isLoggedIn">
+      <div class="alert alert-success" *ngIf="auth.isLoggedIn">
         Has iniciado sesión corrcetamente.
       </div>
-    </div>
+    </mat-card>
   </div>
   <div class="col-md-4"></div>
 </div>

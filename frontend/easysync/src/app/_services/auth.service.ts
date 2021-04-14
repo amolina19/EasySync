@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { TokenStorageService } from '../_services/token-storage.service';
 import { Observable } from 'rxjs';
+import { TokenStorageService } from './token-storage.service';
+import { AppComponent } from '../app.component';
 
 const AUTH_API = 'https://easysync.es:2096/api/users/auth/';
 
@@ -14,13 +15,21 @@ const httpOptions = {
 })
 export class AuthService {
 
-  constructor(private http: HttpClient,private tokenService:TokenStorageService) { }
+  isLoggedIn = false;
+
+  constructor(private http: HttpClient,private injector:Injector,private tokenService:TokenStorageService) { }
 
   login(credentials: { useremail: string; password: any; email:any }): Observable<any>{
     let body = new URLSearchParams();
     body.set('useremail', credentials.useremail);
     body.set('password', credentials.password);
     return this.http.post(AUTH_API + 'login',body.toString(), httpOptions);
+  }
+
+  loginByToken(token:string){
+    let body = new URLSearchParams();
+    body.set('token',token);
+    return this.http.post(AUTH_API+ 'token',body.toString(),httpOptions);
   }
 
   register(user: { username: any; email: any; password: any; }): Observable<any>{
@@ -33,17 +42,12 @@ export class AuthService {
   }
 
   updateUserInfo(){
-    const userStorage = this.tokenService.getUser();
-    var userMap = new Map(Object.entries(userStorage));
-    
-    let username:any = userMap.get('username');
-    let password:any = userMap.get('password');
-    let email:any = userMap.get('email');
-    
-    let body = new URLSearchParams();
-    body.set('username', username);
-    body.set('password', password);
-    body.set('email', email);
-    return this.http.post(AUTH_API+'login',body.toString(),httpOptions);
+    this.loginByToken(this.injector.get(TokenStorageService).getToken()).subscribe( 
+      data =>{
+        var dataMap = new Map(Object.entries(data));
+        //this.tokenService.saveToken(dataMap.get('token'));
+        this.tokenService.saveUser(dataMap.get('user'));
+        this.isLoggedIn = true;
+    });;
   }
 }

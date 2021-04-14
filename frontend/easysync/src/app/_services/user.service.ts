@@ -36,10 +36,9 @@ export class UserService {
 
   //POST
 
-  setActivateAccount(userID:any): Observable<any>{
-    console.log(userID);
+  setActivateAccount(token:any): Observable<any>{
     let body = new URLSearchParams();
-    body.set('id', userID);
-    return this.http.post(API_USER+'activate/',body.toString(),httpOptions);
+    body.set('token', token);
+    return this.http.post(API_USER+'activate',body.toString(),httpOptions);
   }
 }

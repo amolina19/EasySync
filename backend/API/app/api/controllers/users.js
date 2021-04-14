@@ -19,7 +19,6 @@ module.exports = {
 
         if(checkUri(req)){
 
-
             userModel.find({$or:[{username:req.body.username},{email:req.body.email}]}, function(err,result){
                 if(result.length === 0){
                     userModel.create({username: req.body.username, email: req.body.email, password: req.body.password,activated:false,created_at: new Date()}, function(err){
@@ -67,6 +66,26 @@ module.exports = {
     delete: function(req,res,next){
         
         if(checkUri(req)){
+
+            let tokenStr = req.body.token;
+            if(!tokenStr){
+                return res.status(403).send({status:"error",message:"No token provided!"})
+            }
+
+            jwt.verify(tokenStr,req.app.get('secretKey'),(err, decoded) =>{
+                if(err){
+                    return res.status(401).send({status:"error",message:"Unathorized!"});
+                }
+                userModel.deleteOne({_id:decoded.id},function(err){
+                    if(!err){
+                        res.status(200).json({status:"ok",message:"User removed"});
+                    }else{
+                        res.status(400).json({status:"error",message:"Problem removing user, maybe not exists"}); 
+                    }
+                });
+            });
+
+            /*
             userModel.findOne({_id:req.params.id},function(err,result){
                 if(result != null){
                     userModel.deleteOne({_id:req.params.id},function(err){
@@ -83,6 +102,7 @@ module.exports = {
                     res.status(400).json({status:"error",message:"User not found"});
                 }
             });
+            */
             
         }else{
             res.status(301).json({status:"error",message:"Use https://easysync.es/api/ route"});
@@ -106,23 +126,41 @@ module.exports = {
     activate: function(req,res,next){
         if(checkUri){
 
-            if(req.body.id !== undefined){
-                userModel.updateOne({_id:req.body.id},{$set:{"activated":true}},function(err){});
-                res.status(201).json({status:"ok",message:"User account activated"});
-            }else{
-                userModel.findOne({$or:[{email:req.body.email},{username:req.body.username}]}, function(err,user){
-                    if(user !=null){
-                        
-                        //Code
-                        userModel.updateOne({email:user.email},{$set:{"activated":true}},function(err){});
+            let tokenStr = req.body.token;
+            if(!tokenStr){
+                return res.status(403).send({status:"error",message:"No token provided!"})
+            }
+
+            jwt.verify(tokenStr,req.app.get('secretKey'),(err, decoded) =>{
+                if(err){
+                    return res.status(401).send({status:"error",message:"Unathorized!"});
+                }
+                userModel.updateOne({_id:decoded.id},{$set:{"activated":true}},function(err){
+                    if(!err){
                         res.status(201).json({status:"ok",message:"User account activated"});
-                        console.log(user.username+" activated account on "+ new Date());
-                    }else{
-                        res.status(400).json({status:"error",message:"Cannot activate user account, User doesnt exists"});
                     }
                 });
+            });
+        }else{
+            res.status(301).json({status:"error",message:"Use https://easysync.es/api/ route"});
+        }
+    },token: function(req,res,next){
+        if(checkUri()){
+            let tokenStr = req.body.token;
+
+            if(!tokenStr){
+                return res.status(403).send({status:"error",message:"No token provided!"})
             }
-            
+    
+            jwt.verify(tokenStr,req.app.get('secretKey'),(err, decoded) =>{
+                if(err){
+                    return res.status(401).send({status:"error",message:"Unathorized!"});
+                }
+                userModel.findOne({_id:decoded.id},function(err,user){
+                    const token = jwt.sign({id:user._id},req.app.get('secretKey'), { expiresIn: "1h"});
+                    res.status(200).json({status:"ok",message:"El usuario ha sido autenticado", user:user,token:token});
+                });
+            });
         }else{
             res.status(301).json({status:"error",message:"Use https://easysync.es/api/ route"});
         }

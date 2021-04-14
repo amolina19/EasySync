@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Injector, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '../_services/auth.service';
 import { TokenStorageService } from '../_services/token-storage.service';
 
 
@@ -12,16 +13,17 @@ export class ProfileComponent implements OnInit {
 
   currentUser: any;
   currentToken: any;
+  panelOpenState:boolean;
 
-  constructor(private tokenStorage: TokenStorageService,private router:Router) { }
+  constructor(private router:Router,private authService:AuthService,private tokenService:TokenStorageService) { }
 
   ngOnInit(): void {
 
-    if(!this.tokenStorage.userExits()){
+    if(!this.tokenService.userExits()){
       this.router.navigate(['/login']);
     }
-    //this.currentUser = this.token.getUser();
-    //this.currentToken = this.token.getToken();
+    //this.authService.updateUserInfo();
+    this.currentUser = this.tokenService.getUser();
   }
 
 }

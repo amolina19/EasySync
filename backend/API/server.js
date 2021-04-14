@@ -27,7 +27,7 @@ const keys = {
 
 app.use(cors());
 app.use(helmet());
-app.set('secretKey','test');
+app.set('secretKey',process.env.SECRET_KEY);
 mongoose.connection.on('error', console.error.bind(console, 'Error de conexion en MongoDB'));
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({ extended: true }));

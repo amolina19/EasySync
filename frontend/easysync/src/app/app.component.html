@@ -4,29 +4,35 @@
   <nav class="navbar navbar-expand-sm navbar-light bg-light">
     
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <img width="40px" height="40px" src="../assets/img/logo.svg" alt="logo">
+      <mat-icon>menu</mat-icon>
     </button>
-    <img class="d-none d-sm-block" width="50px" height="50px" src="../assets/img/logo.svg" alt="logo">
-    <a href="#" class="navbar-brand d-none d-sm-block ml-4">EasySync</a>
+    <!--<img class="d-none d-sm-block" width="50px" height="50px" src="../assets/img/logo.svg" alt="logo">-->
+    <!--<a href="#" class="navbar-brand d-none d-sm-block ml-4">EasySync</a>-->
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       
       <ul class="navbar-nav mr-auto" routerLinkActive="active">
         <li class="nav-item">
-          <a href="/home" class="nav-link" routerLink="home"><button mat-button color="primary">Home</button></a>
+          <a href="/home" class="nav-link mr-4" routerLink="home"><button [disableRipple]="true" mat-icon-button color="primary" aria-label="home"><mat-icon>home</mat-icon><span class="ml-2">Home</span></button></a>
+        </li>
+        <li class="nav-item" *ngIf="auth.isLoggedIn">
+          <a href="/drive" class="nav-link mr-4" routerLink="drive"><button [disableRipple]="true" mat-icon-button color="primary" aria-label="mydrive"><mat-icon>backup</mat-icon><span class="ml-2">MyDrive</span></button></a>
         </li>
         <li class="nav-item">
-          <a href="/api" class="nav-link" routerLink="api"><button mat-button color="primary">API</button></a>
+          <a href="/api" class="nav-link ml-sm-0 ml-md-3" routerLink="api"><button [disableRipple]="true" mat-icon-button color="primary" aria-label="api"><mat-icon>graphic_eq</mat-icon><span class="ml-2">APIs</span></button></a>
         </li>
+        <!--
         <li class="nav-item" *ngIf="showAdminBoard">
           <a href="/admin" class="nav-link" routerLink="admin">Admin Board</a>
         </li>
+        
         <li class="nav-item">
-          <a href="/user" class="nav-link" *ngIf="isLoggedIn" routerLink="user">User</a>
+          <a href="/user" class="nav-link" *ngIf="isLoggedIn" routerLink="user">User Developing</a>
         </li>
+        -->
       </ul>
 
-      <ul class="navbar-nav ml-auto" *ngIf="!isLoggedIn">
+      <ul class="navbar-nav ml-auto" *ngIf="!auth.isLoggedIn">
         <li class="nav-item">
           <a href="/register" class="nav-link" routerLink="register"><button mat-stroked-button color="primary">Registrarse</button></a>
         </li>
@@ -35,18 +41,19 @@
         </li>
       </ul>
 
-      <ul class="navbar-nav ml-auto" *ngIf="isLoggedIn">
-        <li class="nav-item">
-          <a href="/profile" class="nav-link" routerLink="profile">{{ username }}</a>
+      <ul class="navbar-nav ml-auto" *ngIf="auth.isLoggedIn">
+        <li class="nav-item mr-3">
+          <a href="/profile" class="nav-link" routerLink="profile"><button mat-icon-button color="primary" aria-label="profile"><mat-icon>supervised_user_circle</mat-icon><span class="ml-1">{{username}}</span>
+          </button></a>
         </li>
         <li class="nav-item">
-          <button class="btn btn-outline-danger" (click)="logout()">Desconectar</button>
+          <a class="nav-link mr-5"><button  mat-icon-button color="warn" (click)="logout()"><mat-icon>exit_to_app</mat-icon><span class="ml-1">Desconectar</span></button></a>
         </li>
       </ul>
     </div>
   </nav>
 
-  <div *ngIf="isLoggedIn">
+  <div *ngIf="auth.isLoggedIn">
     <div class="alert alert-warning" role="alert" *ngIf="!isActivated">
       <div class="text-center">
         <div>Parece que aun no has activado tu cuenta, activar desde aquí
@@ -66,42 +73,9 @@
     </div>
   </div>
   
-
   <div class="container-fluid">
     <router-outlet></router-outlet>
   </div>
-
-  <!--
-  <div class="d-none">
-    <footer class="bg-dark text-center text-white fixed-bottom">
-      <div class="container p-4 pb-0">
-        <section class="">
-          <form action="">
-            <div class="row d-flex justify-content-center">
-              <div class="col-auto">
-                <p class="pt-2">
-                  <strong>Sign up for our newsletter</strong>
-                </p>
-              </div>
-              <div class="col-md-5 col-12">
-                <div class="form-outline form-white mb-4">
-                  <input type="email" id="form5Example2" class="form-control" placeholder="Email address" />
-                </div>
-              </div>
-              <div class="col-auto">
-  
-                <button type="submit" class="btn btn-outline-light mb-2">
-                  Subscribe
-                </button>
-              </div>
-  
-            </div>
-  
-          </form>
-        </section>
-      </div>
-    </footer>
-  </div>
-  -->
 </div>
+
 

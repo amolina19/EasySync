@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { TokenStorageService } from './_services/token-storage.service';
 import { UserService } from './_services/user.service';
 import { AuthService } from './_services/auth.service';
+import { FileService } from './_services/file.service';
 
 @Component({
   selector: 'app-root',
@@ -11,10 +12,7 @@ import { AuthService } from './_services/auth.service';
 export class AppComponent implements OnInit {
 
   title = 'easysync';
-
-  private roles: string[] = [];
-  isLoggedIn = false;
-  isActivated = false;
+  isActivated = true;
   activated: string = '';
   activateError: string= '';
   showAdminBoard = false;
@@ -22,12 +20,13 @@ export class AppComponent implements OnInit {
   user: any;
   progressBar = false;
 
-  constructor(private TokenStorageService: TokenStorageService, private userService:UserService,private authService:AuthService) {}
+  constructor(private TokenStorageService: TokenStorageService, private userService:UserService,public auth:AuthService, public fileService: FileService) {}
 
   ngOnInit(): void {
-    this.isLoggedIn = !!this.TokenStorageService.getToken();
 
-    if(this.isLoggedIn){
+    this.auth.isLoggedIn = !!this.TokenStorageService.getToken();
+
+    if(this.auth.isLoggedIn){
       this.user = this.TokenStorageService.getUser();
       //this.roles = this.user.roles;
       this.isActivated = this.user.activated;
@@ -35,31 +34,20 @@ export class AppComponent implements OnInit {
       this.username = this.user.username;
     }
   }
+  
 
   logout():void{
     this.TokenStorageService.signOut();
     window.location.reload();
+    this.auth.isLoggedIn = false;
   }
 
   activateAccount():void{
     if(this.TokenStorageService.userExits()){
-      console.log(Object.keys(this.user));
-      var userMap = new Map(Object.entries(this.user));
-      this.userService.setActivateAccount(userMap.get('_id')).subscribe(
+      this.userService.setActivateAccount(this.TokenStorageService.getToken()).subscribe(
         data =>{
           this.activated = data.message;
-          this.authService.updateUserInfo().subscribe(
-            data =>{
-              
-              var dataMap = new Map(Object.entries(data));
-              this.TokenStorageService.saveToken(dataMap.get('token'));
-              this.TokenStorageService.saveUser(dataMap.get('user'));
-              this.user = this.TokenStorageService.getUser();
-            }
-          )
-        },
-        err => {
-          this.activateError = err.error.message;
+          this.auth.updateUserInfo();
         }
        );
       //console.log(this.user);

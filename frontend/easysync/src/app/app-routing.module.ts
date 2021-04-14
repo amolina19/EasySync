@@ -8,6 +8,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { BoardUserComponent } from './board-user/board-user.component';
 import { BoardAdminComponent } from './board-admin/board-admin.component';
 import { ApiComponent } from './api/api.component';
+import { DriveComponent } from './drive/drive.component';
 
 
 const routes: Routes = [
@@ -19,6 +20,7 @@ const routes: Routes = [
   {path: 'user',      component:    BoardUserComponent},
   {path: 'admin',     component:    BoardAdminComponent},
   {path: 'api',       component:    ApiComponent},
+  {path: 'drive',     component:    DriveComponent},
   {path: '',redirectTo: 'home',pathMatch:'full'}
 ];
 

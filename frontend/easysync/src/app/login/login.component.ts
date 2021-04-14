@@ -12,20 +12,15 @@ import { AppComponent } from '../app.component';
   styleUrls: ['./login.component.css']
 })
 
-
-
-
-
 export class LoginComponent implements OnInit {
 
   form: any = {};
-  isLoggedIn = false;
   isLoginFailed = false;
   errorMessage = '';
   roles: string[] = [];
   hide = true;
 
-  constructor(private authService: AuthService, private tokenStorage: TokenStorageService, private router: Router,private appComponent:AppComponent) { }
+  constructor(private authService: AuthService, private tokenStorage: TokenStorageService, private router: Router,private appComponent:AppComponent,public auth:AuthService) { }
 
   
 
@@ -46,8 +41,9 @@ export class LoginComponent implements OnInit {
         this.tokenStorage.saveUser(dataMap.get('user'));
 
         this.isLoginFailed = false;
-        this.isLoggedIn = true;
+        this.auth.isLoggedIn = true;
         this.reloadPage();
+        
       },
       err =>{
         this.errorMessage = err.error.message;
