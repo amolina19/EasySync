@@ -31,13 +31,11 @@
             <mat-icon color="warn" class="file-or-folder-icon pointer" *ngIf="element.isFolder">folder</mat-icon>
             <mat-icon color="primary" class="file-or-folder-icon pointer" *ngIf="!element.isFolder">insert_drive_file</mat-icon>
             <span>{{element.name}}</span>
-            <span>{{element.size}}</span>
           </div>
         </div>
       </div>
     </div>
   </div>
-  
   
   <mat-menu #rootMenu="matMenu" [overlapTrigger]="false">
     <ng-template matMenuContent let-element="element">
@@ -57,6 +55,11 @@
       <button mat-menu-item>
         <mat-icon>share</mat-icon>
         <span>Compartir</span>
+      </button>
+
+      <button mat-menu-item (click)="openMoreInfoDialog(element)">
+        <mat-icon>info</mat-icon>
+        <span>Más información</span>
       </button>
     </ng-template>
   </mat-menu>

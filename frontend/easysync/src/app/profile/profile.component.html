@@ -27,8 +27,10 @@
           <mat-icon color="primary">supervised_user_circle</mat-icon> <div class="ml-2">Perfil</div>
           </mat-panel-title>
           </mat-expansion-panel-header>
-            <mat-card class="mt-2">Usuario:<b>{{currentUser.username}}</b></mat-card>
-            <mat-card class="mt-2">Email: <b>{{currentUser.email}}</b></mat-card>
+            <mat-card class="mt-2"><b>Usuario:      </b>{{currentUser.username}}</mat-card>
+            <mat-card class="mt-2"><b>Email:        </b> {{currentUser.email}}</mat-card>
+            <mat-card class="mt-2"><b>Fecha de creación:        </b> {{createdDateString}}</mat-card>
+            <mat-card class="mt-2"><b>Último inicio de sesión:        </b>{{lastLoginDateString}}</mat-card>
         </mat-expansion-panel>
       </div>
 

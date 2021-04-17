@@ -1,3 +1,4 @@
+
 const dotenv = require('dotenv');
 dotenv.config();
 const express = require('express');
@@ -5,10 +6,32 @@ const subdomain = require('express-subdomain');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
+var fileupload = require("express-fileupload");
 const users = require('./routes/users');
 const files = require('./routes/files');
 const app = express();
+
+
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+
+const swaggerOptions = {
+    swaggerDefinition: {
+      info: {
+        version: "1.0.0",
+        title: "EasySync API",
+        description: "User and Files API Information",
+        contact: {
+            email: "support@easysync.es"
+        },
+        servers: ["http://easysync.es:2096"]
+      }
+    },
+    apis: ["routes/*.js"]
+  };
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use("/api", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 const mongoose = require('./config/database');
 var helmet = require('helmet');
@@ -19,14 +42,18 @@ const email = require('./config/mail');
 const fs = require('fs');
 var jwt = require('jsonwebtoken');
 const PORT = process.env.PORT
+process.env.TZ = 'Europe/Madrid'
 
 const keys = {
-    key: fs.readFileSync('/etc/letsencrypt/live/easysync.es/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/easysync.es/fullchain.pem')
+    key: fs.readFileSync(process.env.KEYS_KEY),
+    cert: fs.readFileSync(process.env.KEYS_CERT)
 };
 
 app.use(cors());
 app.use(helmet());
+app.use(fileupload({
+    limits: { fileSize: 2000 * 1024 * 1024 },
+  }));
 app.set('secretKey',process.env.SECRET_KEY);
 mongoose.connection.on('error', console.error.bind(console, 'Error de conexion en MongoDB'));
 app.use(logger('dev'));

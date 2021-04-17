@@ -13,6 +13,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { RenameDialogComponent } from './modals/rename-dialog/rename-dialog.component';
 import { FileExplorerComponent } from './file-explorer.component';
+import { MoreInfoComponent } from './modals/more-info/more-info.component';
+import { ShareComponent } from './modals/share/share.component';
+import { MatCardModule } from '@angular/material/card';
+import { MatList, MatListItem, MatListModule } from '@angular/material/list';
 
 @NgModule({
   imports: [
@@ -21,6 +25,8 @@ import { FileExplorerComponent } from './file-explorer.component';
     FlexLayoutModule,
     MatIconModule,
     MatGridListModule,
+    MatListModule,
+    MatCardModule,
     MatMenuModule,
     BrowserAnimationsModule,
     MatDialogModule,
@@ -28,7 +34,7 @@ import { FileExplorerComponent } from './file-explorer.component';
     FormsModule,
     MatButtonModule
   ],
-  declarations: [FileExplorerComponent, NewFolderDialogComponent, RenameDialogComponent],
+  declarations: [FileExplorerComponent, NewFolderDialogComponent, RenameDialogComponent, MoreInfoComponent, ShareComponent],
   exports: [FileExplorerComponent],
   entryComponents: [NewFolderDialogComponent, RenameDialogComponent]
 })

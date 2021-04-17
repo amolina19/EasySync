@@ -37,6 +37,9 @@ const UserSchema = new Schema({
     last_login:{
         type: Date
     },
+    storage_limit:{
+        type:Number
+    },
     resetPasswordToken:{
         type: String,
         required: false

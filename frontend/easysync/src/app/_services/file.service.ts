@@ -32,6 +32,10 @@ export class FileService implements IFileService {
     this.map.delete(id);
   }
 
+  clear(){
+    this.map.clear();
+  }
+
   update(id: string, update: Partial<FileElement>) {
     let element = this.map.get(id);
     element = Object.assign(element, update);

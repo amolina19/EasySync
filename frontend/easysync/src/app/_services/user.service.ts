@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient,HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { TokenStorageService } from './token-storage.service';
 
 const API_URL = 'https://api.easysync.es/test/';
 const API_USER = 'https://easysync.es:2096/api/users/';
+const API_FILES = 'https://easysync.es:2096/api/files/';
 
 const httpOptions = {
   headers: new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded','Access-Control-Allow-Origin':'*',})
@@ -14,7 +16,7 @@ const httpOptions = {
 })
 export class UserService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,private tokenStorageService:TokenStorageService) { }
 
   /*
   getPublicContent(): Observable<any> {
@@ -41,4 +43,31 @@ export class UserService {
     body.set('token', token);
     return this.http.post(API_USER+'activate',body.toString(),httpOptions);
   }
+
+  getFilesUser(): Observable<any>{
+    let token = this.tokenStorageService.getToken();
+    //console.log(token);
+    let request = API_FILES+'userfiles?token='+token;
+    //console.log(request);
+    return this.http.get(request);
+  }
+
+  dateToString(date:Date):string{
+
+    let fixDate = new Date(date);
+    console.log(fixDate);
+    /*
+    let dateSec = fixDate.getSeconds();
+    let dateMin = fixDate.getMinutes();
+    let dateHour = fixDate.getHours();
+
+    let dateDay = fixDate.getDay();
+    let dateMonth = fixDate.getMonth();
+    let dateYear = fixDate.getFullYear();
+    */
+    /*return "El "+fixDate.get" "+dateDay+"/"+dateMonth+"/"+dateYear+"  a las  "+dateHour+":"+dateMin+":"+dateSec+" PM";*/
+    return fixDate.toString();
+  }
+
+
 }

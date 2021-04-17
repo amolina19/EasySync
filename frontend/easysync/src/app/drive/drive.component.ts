@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { FileElement } from '../file-explorer/model/file-element';
 import { AuthService } from '../_services/auth.service';
 import { FileService } from '../_services/file.service';
+import { UserService } from '../_services/user.service';
 
 @Component({
   selector: 'app-drive',
@@ -18,23 +19,46 @@ export class DriveComponent implements OnInit {
   currentPath: string;
   canNavigateUp: boolean;
   breakpoint:number;
+  files:any;
 
-  constructor(public fileService:FileService,private authService:AuthService,private router:Router) { }
+  constructor(public fileService:FileService,private authService:AuthService,private router:Router,public userService:UserService) { }
 
+  
   ngOnInit(): void {
     if(this.authService.isLoggedIn === false){
       this.router.navigate(['/login']);
     }
+
+    /*
     const folderA = this.fileService.add({ name: 'Folder A',size:"102223 bytes", isFolder: true, parent: 'root' });
     this.fileService.add({ name: 'Folder B',size:"102223 bytes", isFolder: true, parent: 'root' });
     this.fileService.add({ name: 'Folder C',size:"102223 bytes", isFolder: true, parent: folderA.id });
     this.fileService.add({ name: 'File A', size:"102223 bytes",isFolder: false, parent: 'root' });
     this.fileService.add({ name: 'File B', size:"102223 bytes",isFolder: false, parent: 'root' });
-    this.updateFileElementQuery();
+    */
+   
+    this.userService.getFilesUser().subscribe(
+  
+      data =>{
+        this.fileService.clear();
+        this.files = data;
+        //console.log(this.files);
+        this.files.forEach(element => {
+          //console.log(element);
+          this.fileService.add({id:element.id,name:element.name,size:element.size,isFolder:false,parent:'root',created_at:element.created_at,modified_at:element.modified_at,owner_id:element.owner_id,shared:element.shared});
+        });
+        this.updateFileElementQuery();
+      }, err =>{
+
+      }
+    )
+    
+    
   }
 
+
   addFolder(folder: { name: string }) {
-    this.fileService.add({ isFolder: true, name: folder.name,size:"102223 bytes", parent: this.currentRoot ? this.currentRoot.id : 'root' });
+    //this.fileService.add({ isFolder: true, name: folder.name,size:"102223 bytes", parent: this.currentRoot ? this.currentRoot.id : 'root' });
     this.updateFileElementQuery();
   }
   

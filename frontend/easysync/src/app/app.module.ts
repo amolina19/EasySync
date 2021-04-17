@@ -83,7 +83,7 @@ import { DriveComponent } from './drive/drive.component';
     BoardAdminComponent,
     BoardUserComponent,
     ApiComponent,
-    DriveComponent,
+    DriveComponent
   ],
   imports: [
     MatFormFieldModule,

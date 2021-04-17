@@ -4,6 +4,7 @@ import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { NewFolderDialogComponent } from './modals/new-folder-dialog/new-folder-dialog.component';
 import { RenameDialogComponent } from './modals/rename-dialog/rename-dialog.component';
+import { MoreInfoComponent } from './modals/more-info/more-info.component';
 
 @Component({
   selector: 'file-explorer',
@@ -63,6 +64,11 @@ export class FileExplorerComponent {
         this.elementRenamed.emit(element);
       }
     });
+  }
+
+  openMoreInfoDialog(element:FileElement){
+    //console.log(element);
+    let dialogRef = this.dialog.open(MoreInfoComponent,{data:{element}});
   }
 
   openMenu(event: MouseEvent, viewChild: MatMenuTrigger) {

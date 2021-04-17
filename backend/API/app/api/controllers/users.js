@@ -28,7 +28,7 @@ module.exports = {
                             res.status(201).json({status:"ok",message:"User created"})
                             let writeToFile = result.username+" created on "+ new Date();
                             console.log(writeToFile);
-                            fs.writeFileSync('/root/EasySync/EasySync/backend/API/logs/register.log',writeToFile,"UTF-8",{'flag': 'a+'});
+                            //fs.writeFileSync('/root/EasySync/EasySync/backend/API/logs/register.log',writeToFile,"UTF-8",{'flag': 'a+'});
                         }
                     });
                 }else{
@@ -42,7 +42,7 @@ module.exports = {
     login: function(req, res, next){
         if(checkUri(req)){
             
-            userModel.findOne({$or:[{email:req.body.useremail},{username:req.body.useremail}]}, function(err,userInfo){
+            userModel.findOne({$or:[{username:req.body.useremail},{email:req.body.useremail}]}, function(err,userInfo){
                 if(userInfo===null){
                     res.status(400).json({status:"error", message: "User or Email not founded"});
                 }else{
@@ -109,7 +109,7 @@ module.exports = {
         }
     },
     recover: function(req,res,next){
-        if(checkUri){
+        if(checkUri(req)){
             userModel.findOne({$or:[{email:req.body.email},{username:req.body.username}]}, function(err,user){
                 if(user !=null){
                     email.sendmailrecoverpassword(user);
@@ -145,7 +145,7 @@ module.exports = {
             res.status(301).json({status:"error",message:"Use https://easysync.es/api/ route"});
         }
     },token: function(req,res,next){
-        if(checkUri()){
+        if(checkUri(req)){
             let tokenStr = req.body.token;
 
             if(!tokenStr){
@@ -158,6 +158,7 @@ module.exports = {
                 }
                 userModel.findOne({_id:decoded.id},function(err,user){
                     const token = jwt.sign({id:user._id},req.app.get('secretKey'), { expiresIn: "1h"});
+                    userModel.updateOne({email:user.email},{$set:{"last_login":new Date()}},function(err){});
                     res.status(200).json({status:"ok",message:"El usuario ha sido autenticado", user:user,token:token});
                 });
             });

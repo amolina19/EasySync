@@ -1,7 +1,11 @@
 export class FileElement {
-    id?: string;
+    id: string;
+    name: string;
     size: string;
     isFolder: boolean;
-    name: string;
     parent: string;
+    created_at:Date;
+    modified_at:Date;
+    owner_id:string;
+    shared:boolean;
   }

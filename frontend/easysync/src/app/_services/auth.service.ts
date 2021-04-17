@@ -2,7 +2,6 @@ import { Injectable, Injector } from '@angular/core';
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Observable } from 'rxjs';
 import { TokenStorageService } from './token-storage.service';
-import { AppComponent } from '../app.component';
 
 const AUTH_API = 'https://easysync.es:2096/api/users/auth/';
 
