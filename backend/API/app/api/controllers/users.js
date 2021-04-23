@@ -1,18 +1,40 @@
 const userModel = require('../models/users');
+const sessionModel = require('../models/session');
+const logsModel = require('../models/logs');
+const request = require('request');
+
+
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const email = require('../../../config/mail');
+const easyCrypt = require('../utils/crypto');
 
 const fs = require('fs');
 
 function checkUri(request){
     
     if(request.secure){
-        //console.log(request.secure);
         return true;
     }
     return false;
 }
+
+function getIPInfo(ip){
+
+    let array = ip.split(':');
+    let remoteIP = array[array.length - 1];
+    let requestTo = 'https://ipapi.co/'+remoteIP+'/json';
+    //Pending to REQUESTED.
+    request(requestTo, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            console.log(body)
+        }
+        else {
+            console.log("Error "+response.statusCode)
+        }
+    })
+}
+
 
 module.exports = {
     register: function(req, res, next){
@@ -32,34 +54,56 @@ module.exports = {
                         }
                     });
                 }else{
-                    res.status(400).json({status:"error", message: "User or Email exists"});
+                    res.status(400).json({status:"Error", message: "User or Email exists"});
                 }
             });
         }else{
-            res.status(301).json({status:"error",message:"Use https://easysync.es/api/ route"});
+            res.status(301).json({status:"Error",message:"Use https://easysync.es/api/ route"});
         }
     },
     login: function(req, res, next){
         if(checkUri(req)){
             
-            userModel.findOne({$or:[{username:req.body.useremail},{email:req.body.useremail}]}, function(err,userInfo){
-                if(userInfo===null){
-                    res.status(400).json({status:"error", message: "User or Email not founded"});
+            userModel.findOne({$or:[{username:req.body.useremail},{email:req.body.useremail}]}, function(err,user){
+                if(user===null){
+                    res.status(400).json({status:"Error", message: "User or Email not founded"});
                 }else{
-                    if(bcrypt.compareSync(req.body.password, userInfo.password)){
-                        const token = jwt.sign({id:userInfo._id},req.app.get('secretKey'), { expiresIn: "1h"});
-                        userModel.updateOne({email:userInfo.email},{$set:{"last_login":new Date()}},function(err){});
-                        res.status(200).json({status:"ok",message:"El usuario ha sido autenticado", user:userInfo,token:token});
-                        let writeToFile = userInfo.username+" Login on "+ new Date();
-                        console.log(writeToFile);
-                        fs.writeFileSync('/root/EasySync/EasySync/backend/API/logs/login.log',writeToFile,"UTF-8",{'flag': 'a+'});
+                    if(bcrypt.compareSync(req.body.password, user.password)){
+                        if(!user.activated){
+                            res.status(400).json({status:"Error", message: "Account not activated"});
+                        }else{
+                            let derivedKey = easyCrypt.easysync.getPBKDF2Hex(user.password);
+                            if(user.last_login === undefined){
+                                //GENERATING AES KEY FOR FIRST TIME WITH PBKDF2 derivedKey, CREATING PUBLIC AND PRIVATE KEY TO SEND TO USER
+                                
+                               
+                                
+
+                            }else{
+                                //DECRYPTING PRIVATE KEY TO SEND TO USER USING PBKDF2 derivedKey
+                            }
+
+                            console.log(derivedKey);
+
+                            const token = jwt.sign({id:user._id},req.app.get('secretKey'), { expiresIn: "24h"});
+                            userModel.updateOne({email:user.email},{$set:{"last_login":new Date()}},function(err){});
+
+                            let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+                            getIPInfo(ip);
+
+                            //sessionModel.create({},function(err){});
+                            res.status(200).json({status:"ok",message:"El usuario ha sido autenticado", user:user,token:token});
+                            let writeToFile = user.username+" Login on "+ new Date();
+                            console.log(writeToFile);
+                            fs.writeFileSync('/root/EasySync/EasySync/backend/API/logs/login.log',writeToFile,"UTF-8",{'flag': 'a+'});
+                        }
                     }else{
-                        res.status(400).json({status:"error", message: "Invalid email/user or password"});
+                        res.status(400).json({status:"Error", message: "Invalid email/user or password"});
                     }
                 }
             });
         }else{
-            res.status(301).json({status:"error",message:"Use https://easysync.es/api/ route"});
+            res.status(301).json({status:"Error",message:"Use https://easysync.es/api/ route"});
         }
         
     },
@@ -69,18 +113,18 @@ module.exports = {
 
             let tokenStr = req.body.token;
             if(!tokenStr){
-                return res.status(403).send({status:"error",message:"No token provided!"})
+                return res.status(403).send({status:"Error",message:"No token provided!"})
             }
 
             jwt.verify(tokenStr,req.app.get('secretKey'),(err, decoded) =>{
                 if(err){
-                    return res.status(401).send({status:"error",message:"Unathorized!"});
+                    return res.status(401).send({status:"Error",message:"Unathorized!"});
                 }
                 userModel.deleteOne({_id:decoded.id},function(err){
                     if(!err){
                         res.status(200).json({status:"ok",message:"User removed"});
                     }else{
-                        res.status(400).json({status:"error",message:"Problem removing user, maybe not exists"}); 
+                        res.status(400).json({status:"Error",message:"Problem removing user, maybe not exists"}); 
                     }
                 });
             });
@@ -105,7 +149,7 @@ module.exports = {
             */
             
         }else{
-            res.status(301).json({status:"error",message:"Use https://easysync.es/api/ route"});
+            res.status(301).json({status:"Error",message:"Use https://easysync.es/api/ route"});
         }
     },
     recover: function(req,res,next){
@@ -116,11 +160,11 @@ module.exports = {
                     //Code
                     res.status(201).json({status:"ok",message:"Email to recover password sended"});
                 }else{
-                    res.status(400).json({status:"error",message:"User or email doesnt exists"});
+                    res.status(400).json({status:"Error",message:"User or email doesnt exists"});
                 }
             });
         }else{
-            res.status(301).json({status:"error",message:"Use https://easysync.es/api/ route"});
+            res.status(301).json({status:"Error",message:"Use https://easysync.es/api/ route"});
         }
     },
     activate: function(req,res,next){
@@ -128,12 +172,12 @@ module.exports = {
 
             let tokenStr = req.body.token;
             if(!tokenStr){
-                return res.status(403).send({status:"error",message:"No token provided!"})
+                return res.status(403).send({status:"Error",message:"No token provided!"})
             }
 
             jwt.verify(tokenStr,req.app.get('secretKey'),(err, decoded) =>{
                 if(err){
-                    return res.status(401).send({status:"error",message:"Unathorized!"});
+                    return res.status(401).send({status:"Error",message:"Unathorized!"});
                 }
                 userModel.updateOne({_id:decoded.id},{$set:{"activated":true}},function(err){
                     if(!err){
@@ -142,28 +186,32 @@ module.exports = {
                 });
             });
         }else{
-            res.status(301).json({status:"error",message:"Use https://easysync.es/api/ route"});
+            res.status(301).json({status:"Error",message:"Use https://easysync.es/api/ route"});
         }
     },token: function(req,res,next){
         if(checkUri(req)){
             let tokenStr = req.body.token;
 
             if(!tokenStr){
-                return res.status(403).send({status:"error",message:"No token provided!"})
+                res.status(403).send({status:"Error",message:"No token provided!"})
             }
     
             jwt.verify(tokenStr,req.app.get('secretKey'),(err, decoded) =>{
                 if(err){
-                    return res.status(401).send({status:"error",message:"Unathorized!"});
+                    return res.status(401).send({status:"Error",message:"Unathorized!"});
                 }
                 userModel.findOne({_id:decoded.id},function(err,user){
-                    const token = jwt.sign({id:user._id},req.app.get('secretKey'), { expiresIn: "1h"});
-                    userModel.updateOne({email:user.email},{$set:{"last_login":new Date()}},function(err){});
-                    res.status(200).json({status:"ok",message:"El usuario ha sido autenticado", user:user,token:token});
+                    if(!user.activated){
+                        res.status(400).json({status:"Error", message: "Account not activated"});
+                    }else{
+                        const token = jwt.sign({id:user._id},req.app.get('secretKey'), { expiresIn: "24h"});
+                        userModel.updateOne({email:user.email},{$set:{"last_login":new Date()}},function(err){});
+                        res.status(200).json({status:"ok",message:"El usuario ha sido autenticado", user:user,token:token});
+                    }
                 });
             });
         }else{
-            res.status(301).json({status:"error",message:"Use https://easysync.es/api/ route"});
+            res.status(301).json({status:"Error",message:"Use https://easysync.es/api/ route"});
         }
     }
 }

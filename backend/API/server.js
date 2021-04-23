@@ -31,7 +31,7 @@ const swaggerOptions = {
   };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use("/api", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use("/api/documentation", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 const mongoose = require('./config/database');
 var helmet = require('helmet');
