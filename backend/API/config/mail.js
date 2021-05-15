@@ -1,5 +1,6 @@
 const nodemailer = require("nodemailer");
 const dotenv = require('dotenv');
+const jwt = require('jsonwebtoken');
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
@@ -47,25 +48,41 @@ module.exports = {
             html: "<b>Hello world?</b>", // html body
         });
     },
-    sendmailactivateacc: function(user){
+    sendmailactivateacc: function(user,token){
+
+        
+        let link = "https://"+process.env.EMAIL_DOMAIN.toLowerCase()+":2096/api/users/activate?token="+token;
+        let email = "<b>Here is the link to activate your account "+user.username+"</b>, <a href="+link+">"+link+"</a>";
 
         let info = transporter.sendMail({
             from: process.env.EMAIL_DOMAIN+' '+process.env.EMAIL_HEADER, // sender address
             to: user.email, // list of receivers
-            subject: "Activate your email account "+user.username, // Subject line
-            text: "Hello world?", // plain text body
-            html: "<b>Hello world?</b>", // html body
+            subject: "Activate your email account "+user.username, // Subject line, // plain text body
+            html: email, // html body
         });
     },
-    sendmailrecoverpassword: function(user){
+    sendmailrecoverpassword: function(user,token){
+
+        let link = "https://"+process.env.EMAIL_DOMAIN.toLowerCase()+":2096/api/users/recover?token="+token;
+        let email = "<b>Here is the link to recover your password"+user.username+"</b>, <a href="+link+">"+link+"</a>";
         
         let info = transporter.sendMail({
             from: process.env.EMAIL_DOMAIN+' '+process.env.EMAIL_HEADER, // sender address
             to: user.email, // list of receivers
             subject: "Recover your password "+user.username, // Subject line
-            text: "Hello world?", // plain text body
-            html: "<b>Hello world?</b>", // html body
+            html: email, // html body
         });
         
+    },
+    sendT2ACode: function(user,code){
+        //let link = "https://"+process.env.EMAIL_DOMAIN.toLowerCase()+":2096/api/users/activate?token="+token;
+        let email = "Here is your authentication code "+user.username+", <b>"+code+"</b>";
+
+        let info = transporter.sendMail({
+            from: process.env.EMAIL_DOMAIN+' '+process.env.EMAIL_HEADER, // sender address
+            to: user.email, // list of receivers
+            subject: "Your authentication code "+user.username, // Subject line, // plain text body
+            html: email, // html body
+        });
     }
 }

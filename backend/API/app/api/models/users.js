@@ -12,6 +12,18 @@ const saltRounds = 10;
 //Definimos los esquemas
 const Schema = mongoose.Schema;
 // Creamos el objeto del esquema con sus correspondientes campos
+
+const typeUser = {
+    user: 0,
+    admin: 1
+}
+
+const user_plan = {
+    free : 2147483648,
+    plus : 10737418240,
+    enterprise: 53687091200
+}
+
 const UserSchema = new Schema({
     username :{
         type: String,
@@ -40,13 +52,14 @@ const UserSchema = new Schema({
     storage_limit:{
         type:Number
     },
-    resetPasswordToken:{
-        type: String,
-        required: false
+    type_user:{
+        type:Number
     },
-    resetPasswordExpires: {
-        type: Date,
-        required: false
+    t2a:{
+        type:Boolean
+    },
+    t2a_code:{
+        type:String
     }
 });
 
@@ -55,6 +68,9 @@ var sigKey = process.env.SOME_64BYTE_BASE64_STRING;
 // Antes de almacenar la contraseña en la base de datos la encriptamos con Bcrypt, esto es posible gracias al middleware de mongoose
 UserSchema.pre('save',function(next){
     this.password = bcrypt.hashSync(this.password, saltRounds);
+    this.storage_limit = user_plan.free;
+    this.type_user = typeUser.user;
+    this.t2a = false;
     next();
 });
 //Utilizar el plugin para encriptar los datos de este esquema.

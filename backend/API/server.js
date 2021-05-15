@@ -6,42 +6,18 @@ const subdomain = require('express-subdomain');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-var fileupload = require("express-fileupload");
 const users = require('./routes/users');
 const files = require('./routes/files');
 const app = express();
-
-
-const swaggerJsDoc = require('swagger-jsdoc');
-const swaggerUi = require('swagger-ui-express');
-
-const swaggerOptions = {
-    swaggerDefinition: {
-      info: {
-        version: "1.0.0",
-        title: "EasySync API",
-        description: "User and Files API Information",
-        contact: {
-            email: "support@easysync.es"
-        },
-        servers: ["http://easysync.es:2096"]
-      }
-    },
-    apis: ["routes/*.js"]
-  };
-
-const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use("/api", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
 const mongoose = require('./config/database');
-var helmet = require('helmet');
 const https = require('https');
 const email = require('./config/mail');
-
-//const router = express.Router();
 const fs = require('fs');
-var jwt = require('jsonwebtoken');
 const PORT = process.env.PORT
+//const router = express.Router();
+var helmet = require('helmet');
+var fileupload = require("express-fileupload");
+//var jwt = require('jsonwebtoken');
 process.env.TZ = 'Europe/Madrid'
 
 const keys = {
@@ -88,7 +64,7 @@ var server = https.createServer(keys, app);
 
 server.listen(PORT,function(){
     console.log("API Listening on api.easysync.es:"+PORT);
-    email.testConnection();
-    email.sendmail();
+    //email.testConnection();
+    //email.sendmail();
 });
 
