@@ -4,7 +4,7 @@ import { UserService } from './_services/user.service';
 import { AuthService } from './_services/auth.service';
 import { FileService } from './_services/file.service';
 
-var pbkdf2 = require('pbkdf2');
+//var pbkdf2 = require('pbkdf2');
 
 @Component({
   selector: 'app-root',
