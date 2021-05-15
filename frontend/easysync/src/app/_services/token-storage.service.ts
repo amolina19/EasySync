@@ -3,6 +3,10 @@ import { AuthService } from './auth.service';
 
 const TOKEN_KEY = 'auth-token';
 const USER_KEY = 'auth-user';
+const DEVICE = 'device';
+const PBKDF2_KEY = 'pbkdf2key';
+
+//var pbkdf2 = require('pbkdf2');
 
 @Injectable({
   providedIn: 'root'
@@ -12,22 +16,27 @@ export class TokenStorageService {
   constructor(private injector:Injector) { }
 
   signOut():void {
-    window.localStorage.clear();
+    window.localStorage.removeItem(TOKEN_KEY);
+    window.localStorage.removeItem(USER_KEY);
+    window.localStorage.removeItem(PBKDF2_KEY);
   }
 
+  
   public saveToken(token: any):void{
     //window.localStorage.removeItem(TOKEN_KEY);
     //window.localStorage.setItem(TOKEN_KEY,token);
-    const ttl = 1000 * 3600; //1H
+    /*const ttl = 1000 * 3600; //1H
     const now = new Date();
     const item = {
       value: token,
       expiry: now.getTime() + ttl
     }
-    localStorage.setItem(TOKEN_KEY,JSON.stringify(item));
+    */
+    localStorage.setItem(TOKEN_KEY,token);
   }
 
-  public getToken(): string {
+  
+  public getTokenByRequest(): string {
     //return localStorage.getItem(TOKEN_KEY) || '';
 
     const itemStr = localStorage.getItem(TOKEN_KEY);
@@ -52,6 +61,10 @@ export class TokenStorageService {
 
   }
 
+  public getToken(): string {
+    return localStorage.getItem(TOKEN_KEY);
+  }
+
   public saveUser(user: any):void{
     window.localStorage.removeItem(USER_KEY);
     window.localStorage.setItem(USER_KEY,JSON.stringify(user));
@@ -66,6 +79,15 @@ export class TokenStorageService {
       return false;
     }
     return true;
+  }
+
+  public getPBKDF2Key():string{
+    return window.localStorage.getItem(PBKDF2_KEY);
+  }
+
+  public setPBKDF2Key(key):void{
+    window.localStorage.removeItem(PBKDF2_KEY);
+    window.localStorage.setItem(PBKDF2_KEY,key);
   }
 
 }

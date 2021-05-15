@@ -10,6 +10,9 @@ router.post('/recover',userController.recover);
 router.post('/activate',userController.activate);
 router.post('/auth/t2a/login',userController.T2A_Login);
 router.post('/update_t2a',userController.update_T2A);
+router.post('update_email',userController.update_email);
+router.post('delete',userController.eliminate_account);
+router.post('/admin/delete',userController.delete);
 
 router.delete('/delete/:id',userController.delete);
 

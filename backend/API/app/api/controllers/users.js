@@ -11,7 +11,6 @@ const easyCrypt = require('../utils/crypto');
 
 //const sessionModel = require('../models/session');
 //const logsModel = require('../models/logs');
-const request = require('request');
 const fs = require('fs');
 
 const typeToken = {
@@ -105,11 +104,16 @@ module.exports = {
                             if(user.t2a){
                                 let code = generateRandomeCode(8);
                                 email.sendT2ACode(user,code);
-                                const token = jwt.sign({id:user._id,typeToken:typeToken.t2a_authentication},req.app.get('secretKey'), { expiresIn: "24h"});
+                                const token = jwt.sign({id:user._id,typeToken:typeToken.t2a_authentication,typeUser:user.type_user},req.app.get('secretKey'), { expiresIn: "24h"});
                                 userModel.updateOne({_id:user._id},{$set:{"t2a_code":code}},function(err){});
                                 res.status(200).json({status:"ok",token:token,message:"Need authentication code, sended to user email"});
                             }else{
-                                //let derivedKey = easyCrypt.easysync.getPBKDF2Hex(user.password);
+
+                                if(user.last_login === null){
+                                    let derivedKey = easyCrypt.easysync.getPBKDF2Hex(user.password);
+                                    user.pbkdf2 = derivedKey;
+                                }
+                                
     
                                 const token = jwt.sign({id:user._id,typeToken:typeToken.authentication},req.app.get('secretKey'), { expiresIn: "7d"});
                                 userModel.updateOne({email:user.email},{$set:{"last_login":new Date()}},function(err){});
@@ -130,7 +134,7 @@ module.exports = {
             res.status(301).json({status:"Error",message:process.env.USE_ROUTE});
         }
     },
-    delete: function(req,res,next){
+    delete: function(req,res){
         
         if(checkUri(req)){
 
@@ -143,13 +147,19 @@ module.exports = {
                 if(err){
                     return res.status(401).send({status:"Error",message:process.env.UNATHORIZED});
                 }
-                userModel.deleteOne({_id:decoded.id},function(err){
-                    if(!err){
-                        res.status(200).json({status:"ok",message:"User removed"});
-                    }else{
-                        res.status(400).json({status:"Error",message:"Problem removing user, maybe not exists"}); 
-                    }
-                });
+
+                if(decoded.typeToken === typeToken.authentication && decoded.typeUser === typeUser.admin){
+                    userModel.deleteOne({_id:decoded.id},function(err){
+                        if(!err){
+                            res.status(200).json({status:"ok",message:"User removed"});
+                        }else{
+                            res.status(400).json({status:"Error",message:"Problem removing user, maybe not exists"}); 
+                        }
+                    });
+                }else{
+                    res.status(400).json({status:"Error",message:"Problem removing user, maybe not exists or not have user persmision"}); 
+                }
+                
             });
         }else{
             res.status(301).json({status:"Error",message:process.env.USE_ROUTE});
@@ -267,7 +277,7 @@ module.exports = {
                                 }
 
                                 if(user.t2a_code === req.body.code){
-                                    const token = jwt.sign({id:user._id,typeToken:typeToken.authentication},req.app.get('secretKey'), { expiresIn: "7d"});
+                                    const token = jwt.sign({id:user._id,typeToken:typeToken.authentication,typeUser:user.type_user},req.app.get('secretKey'), { expiresIn: "7d"});
                                     userModel.updateOne({email:user.email},{$set:{"t2a_code":null}},function(err,userLoged){
                                         if(!err){
                                             userModel.findOne({_id:user.id}, function(err,userLoged){
@@ -310,5 +320,53 @@ module.exports = {
         }else{
             res.status(301).json({status:"Error",message:process.env.USE_ROUTE});
         }
-    },
+    },update_email: function(req,res){
+        if(checkUri(req)){
+
+            if(req.body.token !== undefined && req.body.email !== undefined && req.body.email !== null){
+                jwt.verify(req.body.token,req.app.get('secretKey'),(err, decoded) =>{
+                    if(err){
+                        return res.status(401).send({status:"Error",message:process.env.UNATHORIZED});
+                    }else{
+                        if(decoded.typeToken === typeToken.authentication){
+                            
+                            userModel.updateOne({_id:decoded.id},{$set:{"email":req.body.email}},function(err){
+                                if(!err){
+                                    res.status(200).json({status:"ok",message:"User email updated!."});
+                                }
+                            });
+                        }
+                    }
+                });
+            }else{
+                res.status(401).json({status:"Error",message:"Token expired or value is null or not expected."});
+            }
+        }else{
+            res.status(301).json({status:"Error",message:process.env.USE_ROUTE});
+        }
+    },eliminate_account: function(req,res){
+        if(checkUri(req)){
+
+            if(req.body.token !== undefined){
+                jwt.verify(req.body.token,req.app.get('secretKey'),(err, decoded) =>{
+                    if(err){
+                        return res.status(401).send({status:"Error",message:process.env.UNATHORIZED});
+                    }else{
+                        if(decoded.typeToken === typeToken.authentication){
+                            
+                            userModel.deleteOne({_id:decoded.id},function(err){
+                                if(!err){
+                                    res.status(200).json({status:"ok",message:"User account eliminated."});
+                                }
+                            });
+                        }
+                    }
+                });
+            }else{
+                res.status(401).json({status:"Error",message:"Token expired or value is null or not expected."});
+            }
+        }else{
+            res.status(301).json({status:"Error",message:process.env.USE_ROUTE});
+        }
+    }
 }

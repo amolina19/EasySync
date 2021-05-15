@@ -54,23 +54,6 @@
   </nav>
 
   <div *ngIf="auth.isLoggedIn">
-    <div class="alert alert-warning" role="alert" *ngIf="!isActivated">
-      <div class="text-center">
-        <div>Parece que aun no has activado tu cuenta, activar desde aquí
-          <button class="btn btn-outline-danger ml-2" (click)="activateAccount()">Activar</button>
-          <button class="btn btn-outline-info ml-2" (click)="moreInfo()">Mas información</button>
-          <div>{{activateError}}</div>
-        </div><div></div>
-      </div>
-    </div>
-    <div class="alert alert-success" role="alert" *ngIf="!isActivated">
-      <div class="text-center">
-        <div>Se ha enviado un correo a <b>{{ user.email }}</b> para que actives tu cuenta</div>
-        <div>Si no has recibido ningun correo, vuelve a enviarlo desde aquí</div>
-        <button class="btn btn-outline-success ml-2" (click)="activateAccount()">Enviar</button>
-        <div>{{activated}}</div>
-      </div>
-    </div>
   </div>
   
   <div class="container-fluid">
