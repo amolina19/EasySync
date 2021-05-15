@@ -1,7 +1,13 @@
 const userModel = require('../models/users');
+const sessionModel = require('../models/session');
+const logsModel = require('../models/logs');
+const request = require('request');
+
+
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const email = require('../../../config/mail');
+const easyCrypt = require('../utils/crypto');
 
 //const sessionModel = require('../models/session');
 //const logsModel = require('../models/logs');
@@ -78,7 +84,7 @@ module.exports = {
                         }
                     });
                 }else{
-                    res.status(400).json({status:"error", message: "User or Email exists"});
+                    res.status(400).json({status:"Error", message: "User or Email exists"});
                 }
             });
         }else{
@@ -159,7 +165,7 @@ module.exports = {
                     email.sendmailrecoverpassword(user,token);
                     res.status(201).json({status:"ok",message:"Email to recover password sended in the user email"});
                 }else{
-                    res.status(400).json({status:"error",message:"User or email doesnt exists"});
+                    res.status(400).json({status:"Error",message:"User or email doesnt exists"});
                 }
             });
             
