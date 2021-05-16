@@ -1,3 +1,4 @@
+<mat-progress-bar mode="query" *ngIf="progressBar"></mat-progress-bar>
 <div class="container">
   <div class="mt-3">
     <mat-expansion-panel (closed)="panelOpenState = false"
@@ -64,6 +65,68 @@
           <mat-icon class="orange">vpn_key</mat-icon> <div class="ml-2">Cambiar contraseña</div>
           </mat-panel-title>
           </mat-expansion-panel-header>
+
+          <div class="row justify-content-center">
+            <form
+            name="form"
+            (ngSubmit)="f.form.valid && onSubmitNewPassword()"
+            #f="ngForm"
+            novalidate>
+
+            <div class="form-group">
+              <mat-form-field class="full-width" >
+                <mat-label>Nueva Contraseña</mat-label>
+                <input matInput [type]="hide ? 'password' : 'text'"
+                name="password"
+                [(ngModel)]="form.password"
+                required
+                (keyup.enter)="hide=true;"
+                minlength="6"
+                #password="ngModel"
+                matInput>
+                <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                  <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+              </mat-form-field>
+              <div
+                class="alert alert-danger"
+                role="alert"
+                *ngIf="f.submitted && password.invalid"
+              >
+              Se requiere de una contraseña!
+              </div>
+            </div>
+
+            <div class="form-group">
+              <mat-form-field class="full-width" >
+                <mat-label>Repite Contraseña</mat-label>
+                <input matInput [type]="hide ? 'password' : 'text'"
+                name="newpassword"
+                [(ngModel)]="form.newpassword"
+                required
+                (keyup.enter)="hide=true;"
+                minlength="6"
+                #newpassword="ngModel"
+                matInput>
+                <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                  <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+              </mat-form-field>
+              <div
+                class="alert alert-danger"
+                role="alert"
+                *ngIf="f.submitted && newpassword.invalid"
+              >
+              Se requiere de una contraseña!
+              </div>
+            </div>
+
+            </form>
+          </div>
+
+          <div class="row justify-content-center form-group">
+            <button mat-raised-button color="primary" (click)="onSubmitNewPassword();">Guardar cambios</button>
+          </div>
           </mat-expansion-panel>
       </div>
 
@@ -75,6 +138,47 @@
           <mat-icon color="primary">alternate_email</mat-icon> <div class="ml-2">Cambiar correo electronico</div>
           </mat-panel-title>
           </mat-expansion-panel-header>
+          <p class="text-break">Introduce tu nuevo correo debajo, una vez cambiado todos los codigos ya sean de Autenticación o Recuperacion de contraseña llegaran al nuevo correo introducido.</p>
+
+          <div class="row justify-content-center">
+
+            <form
+              name="form"
+              (ngSubmit)="f.form.valid && onSubmitNewEmail()"
+              #f="ngForm"
+              novalidate
+            >
+
+              <div class="form-group">
+                <mat-form-field class="full-width">
+                  <mat-label>Nuevo email</mat-label>
+                  <input type="email" matInput [formControl]="emailFormControl" placeholder="Ex. jhon@gmail.com" [(ngModel)]="form.email" name="email">
+                  <mat-error *ngIf="emailFormControl.hasError('email') && !emailFormControl.hasError('required')">
+                    Por favor introduce un email válido
+                  </mat-error>
+                  <mat-error *ngIf="emailFormControl.hasError('required')">
+                    Este campo es <strong>requerido</strong>
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field class="full-width">
+                  <mat-label>Reintroduce nuevo email</mat-label>
+                  <input type="email" matInput [formControl]="emailFormControl" placeholder="Ex. jhon@gmail.com" [(ngModel)]="form.newemail" name="newemail">
+                  <mat-error *ngIf="emailFormControl.hasError('email') && !emailFormControl.hasError('required')">
+                    Por favor Reeintroduce un email válido
+                  </mat-error>
+                  <mat-error *ngIf="emailFormControl.hasError('required')">
+                    Este campo es <strong>requerido</strong>
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </form>
+          </div>
+          <div class="row justify-content-center form-group">
+            <button mat-raised-button color="primary" (click)="onSubmitNewEmail();">Guardar cambios</button>
+          </div>
           </mat-expansion-panel>
       </div>
 
@@ -86,6 +190,22 @@
           <mat-icon class="green">cloud_done</mat-icon> <div class="ml-2">Clave de recuperación</div>
           </mat-panel-title>
           </mat-expansion-panel-header>
+          <mat-expansion-panel (opened)="panelOpenState = true"
+          (closed)="panelOpenState = false">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+            Clave de encriptación
+            </mat-panel-title>
+            <mat-panel-description>
+            {{panelOpenState ? 'Dejar de Mostrar' : 'Mostrar'}}
+            </mat-panel-description>
+            </mat-expansion-panel-header>
+            <p class="text-break">{{key}}</p>
+            </mat-expansion-panel>
+            <div class="row mt-3">
+                <button class="ml-3 mr-3" mat-raised-button color="primary" (click)="copiedSuccesfull();" [cdkCopyToClipboard]="key">Copiar clave</button>
+                <button mat-raised-button color="warn" (click)="downloadKey();">Descargar clave</button>
+            </div>
           </mat-expansion-panel>
       </div>
 
@@ -97,6 +217,10 @@
           <mat-icon class="green">phonelink</mat-icon> <div class="ml-2">Autenticación en 2 factores</div>
           </mat-panel-title>
           </mat-expansion-panel-header>
+            <div class="row"><p class="text-break ml-3 mr-3">Activa o desactiva la Autenticación en 2 factores, puedes activarlo o desactivarlo cuando quieras. Una vez activado los nuevos inicios de sesión requieren de un código que se te enviará por correo electrónico.</p></div>
+            <div class="row">
+              <div class="ml-5"></div><mat-slide-toggle [(ngModel)]="T2A_OPCION" (change)="toggle($event)">{{T2A_MENSAJE}}</mat-slide-toggle>
+            </div>
           </mat-expansion-panel>
       </div>
 

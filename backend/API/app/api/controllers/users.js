@@ -108,13 +108,6 @@ module.exports = {
                                 userModel.updateOne({_id:user._id},{$set:{"t2a_code":code}},function(err){});
                                 res.status(200).json({status:"ok",token:token,message:"Need authentication code, sended to user email"});
                             }else{
-
-                                if(user.last_login === null){
-                                    let derivedKey = easyCrypt.easysync.getPBKDF2Hex(user.password);
-                                    user.pbkdf2 = derivedKey;
-                                }
-                                
-    
                                 const token = jwt.sign({id:user._id,typeToken:typeToken.authentication},req.app.get('secretKey'), { expiresIn: "7d"});
                                 userModel.updateOne({email:user.email},{$set:{"last_login":new Date()}},function(err){});
     
@@ -122,7 +115,8 @@ module.exports = {
                                 getIPInfo(ip);
     
                                 //sessionModel.create({},function(err){});
-                                res.status(200).json({status:"ok",message:"User authenticated", user:user,token:token});
+                                let derivedKey = easyCrypt.easysync.getPBKDF2Hex(user.password);
+                                res.status(200).json({status:"ok",message:"User authenticated", user:user,token:token,pbkdf2:derivedKey});
                                 console.log(user.username+" Login on "+ new Date());
                                 //fs.writeFileSync('/root/EasySync/EasySync/backend/API/logs/login.log',writeToFile,"UTF-8",{'flag': 'a+'});
                             }
@@ -221,12 +215,16 @@ module.exports = {
                     return res.status(401).send({status:"error",message:process.env.UNATHORIZED});
                 }
                 userModel.findOne({_id:decoded.id},function(err,user){
-                    if(!user.activated){
-                        res.status(400).json({status:"Error", message: "Account not activated"});
-                    }else{
-                        const token = jwt.sign({id:user._id},req.app.get('secretKey'), { expiresIn: "7d"});
-                        userModel.updateOne({email:user.email},{$set:{"last_login":new Date()}},function(err){});
-                        res.status(200).json({status:"ok",message:"El usuario ha sido autenticado", user:user,token:token});
+
+                    if(user !== null){
+                        if(!user.activated){
+                            res.status(400).json({status:"Error", message: "Account not activated"});
+                        }else{
+                            const token = jwt.sign({id:user._id,typeToken:typeToken.authentication,typeUser:user.type_user},req.app.get('secretKey'), { expiresIn: "7d"});
+                            userModel.updateOne({email:user.email},{$set:{"last_login":new Date()}},function(err){});
+                            let derivedKey = easyCrypt.easysync.getPBKDF2Hex(user.password);
+                            res.status(200).json({status:"ok",message:"El usuario ha sido autenticado", user:user,token:token,pbkdf2:derivedKey});
+                        }
                     }
                 });
             });
@@ -281,7 +279,8 @@ module.exports = {
                                     userModel.updateOne({email:user.email},{$set:{"t2a_code":null}},function(err,userLoged){
                                         if(!err){
                                             userModel.findOne({_id:user.id}, function(err,userLoged){
-                                                res.status(200).json({status:"ok",message:"User authenticated", user:userLoged,token:token});
+                                                let derivedKey = easyCrypt.easysync.getPBKDF2Hex(req.body.password);
+                                                res.status(200).json({status:"ok",message:"User authenticated", user:userLoged,token:token,pbkdf2:derivedKey});
                                             });
                                         }
                                     });
@@ -298,24 +297,34 @@ module.exports = {
         }
     },update_T2A: function(req,res){
         if(checkUri(req)){
-
-            if(req.body.token !== undefined && req.body.t2a_value !== undefined && req.body.t2a_value !== null){
+            if(req.body.token !== null && req.body.t2avalue !== null && req.body.t2avalue !== null){
                 jwt.verify(req.body.token,req.app.get('secretKey'),(err, decoded) =>{
                     if(err){
                         return res.status(401).send({status:"Error",message:process.env.UNATHORIZED});
                     }else{
                         if(decoded.typeToken === typeToken.authentication){
-                            
-                            userModel.updateOne({_id:decoded.id},{$set:{"t2a":req.body.t2a_value}},function(err,userLoged){
+                            let value = null;
+                            let message = "";
+                            if(req.body.t2avalue === 'true'){
+                                value = true;
+                                message = "Authenticacion en 2 factores activado.";
+                            }else if(req.body.t2avalue === 'false'){
+                                value = false;
+                                message = "Authenticacion en 2 factores desactivado.";
+                            }
+
+                            userModel.updateOne({_id:decoded.id},{$set:{"t2a":value}},function(err,userLoged){
                                 if(!err){
-                                    res.status(200).json({status:"ok",message:"T2A updated!."});
+                                    res.status(200).json({status:"ok",message:message});
                                 }
                             });
+                        }else{
+                            es.status(401).json({status:"Error",message:"Error de autenticación."});
                         }
                     }
                 });
             }else{
-                res.status(401).json({status:"Error",message:"Token expired or value is null or not expected."});
+                res.status(401).json({status:"Error",message:"El valor T2A no se pudo actualizar correctamente."});
             }
         }else{
             res.status(301).json({status:"Error",message:process.env.USE_ROUTE});
@@ -323,7 +332,7 @@ module.exports = {
     },update_email: function(req,res){
         if(checkUri(req)){
 
-            if(req.body.token !== undefined && req.body.email !== undefined && req.body.email !== null){
+            if(req.body.token !== null && req.body.email !== null){
                 jwt.verify(req.body.token,req.app.get('secretKey'),(err, decoded) =>{
                     if(err){
                         return res.status(401).send({status:"Error",message:process.env.UNATHORIZED});
@@ -332,7 +341,9 @@ module.exports = {
                             
                             userModel.updateOne({_id:decoded.id},{$set:{"email":req.body.email}},function(err){
                                 if(!err){
-                                    res.status(200).json({status:"ok",message:"User email updated!."});
+                                    res.status(200).json({status:"ok",message:"Email actualizado.!"});
+                                }else{
+                                    res.status(400).json({status:"ok",message:"Problema al actualizar el email.!"});
                                 }
                             });
                         }
@@ -347,7 +358,7 @@ module.exports = {
     },eliminate_account: function(req,res){
         if(checkUri(req)){
 
-            if(req.body.token !== undefined){
+            if(req.body.token !== null){
                 jwt.verify(req.body.token,req.app.get('secretKey'),(err, decoded) =>{
                     if(err){
                         return res.status(401).send({status:"Error",message:process.env.UNATHORIZED});
@@ -357,6 +368,36 @@ module.exports = {
                             userModel.deleteOne({_id:decoded.id},function(err){
                                 if(!err){
                                     res.status(200).json({status:"ok",message:"User account eliminated."});
+                                }
+                            });
+                        }
+                    }
+                });
+            }else{
+                res.status(401).json({status:"Error",message:"Token expired or value is null or not expected."});
+            }
+        }else{
+            res.status(301).json({status:"Error",message:process.env.USE_ROUTE});
+        }
+    },change_password: function(req,res){
+
+        console.log(req.body);
+        if(checkUri(req)){
+
+            if(req.body.token !== null){
+                jwt.verify(req.body.token,req.app.get('secretKey'),(err, decoded) =>{
+                    if(err){
+                        return res.status(401).send({status:"Error",message:process.env.UNATHORIZED});
+                    }else{
+                        console.log(decoded);
+                        if(decoded.typeToken === typeToken.authentication){
+                            
+                            let password = bcrypt.hashSync(req.body.password, 10);
+                            userModel.updateOne({_id:decoded.id},{$set:{"password":password}},function(err){
+                                if(!err){
+                                    res.status(201).json({status:"ok",message:"Contraseña de usuario actualizada!."});
+                                }else{
+                                    res.status(401).json({status:"Error",message:"Problema ocurrido cuando se actualizaba la contraseña."});
                                 }
                             });
                         }

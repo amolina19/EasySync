@@ -1,8 +1,11 @@
 import { Component, Injector, OnInit } from '@angular/core';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { Router } from '@angular/router';
 import { AuthService } from '../_services/auth.service';
 import { TokenStorageService } from '../_services/token-storage.service';
 import { UserService } from '../_services/user.service';
+import {MatSnackBar,MatSnackBarHorizontalPosition,MatSnackBarVerticalPosition,} from '@angular/material/snack-bar';
+import { FormControl, Validators } from '@angular/forms';
 
 
 @Component({
@@ -12,14 +15,62 @@ import { UserService } from '../_services/user.service';
 })
 export class ProfileComponent implements OnInit {
 
+  emailFormControl = new FormControl('', [
+    Validators.required,
+    Validators.email,
+  ]);
+
+  progressBar = false;
   currentUser: any;
   currentToken: any;
   panelOpenState:boolean;
   createdDateString:string;
   lastLoginDateString:string;
+  key:string;
+  T2A_OPCION:boolean;
+  T2A_MENSAJE:string;
+  T2A_MENSAJE_API:string;
+  hide:boolean = true;
+  form: any = {};
+
+  horizontalPosition: MatSnackBarHorizontalPosition = 'end';
+  verticalPosition: MatSnackBarVerticalPosition = 'bottom';
+
+  public toggle(event: MatSlideToggleChange) {
+    //console.log('toggle', event.checked);
+    
+    if(event.checked){
+      this.T2A_OPCION = true;
+      this.T2A_MENSAJE = "Activado";
+    }else{
+      this.T2A_OPCION = false;
+      this.T2A_MENSAJE = "Desactivado";
+    }
+
+    this.progressBar = true;
+
+    this.authService.updatet2a(event.checked).subscribe( 
+      data =>{
+        this.snackBar.open(data.message, 'Cerrar', {
+          horizontalPosition: this.horizontalPosition,
+          verticalPosition: this.verticalPosition,
+          duration: 5 * 1000,
+        });
+        this.progressBar = false;
+      },err =>{
+        this.snackBar.open(err.message, 'Cerrar', {
+          horizontalPosition: this.horizontalPosition,
+          verticalPosition: this.verticalPosition,
+          duration: 5 * 1000
+        });
+        this.progressBar = false;
+    });
+
+    
+  }
   
 
-  constructor(private router:Router,private authService:AuthService,private tokenService:TokenStorageService,private userService:UserService) { }
+  constructor(private router:Router,private authService:AuthService,private tokenService:TokenStorageService,private userService:UserService,private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
 
@@ -32,9 +83,100 @@ export class ProfileComponent implements OnInit {
     this.currentUser = this.tokenService.getUser();
     this.createdDateString = this.userService.dateToString(this.currentUser.created_at);
     this.lastLoginDateString = this.userService.dateToString(this.currentUser.last_login);
+    this.key = this.tokenService.getPBKDF2Key();
 
-    console.log(this.createdDateString);
-    console.log(this.lastLoginDateString);
+    if(this.currentUser.t2a){
+      this.T2A_OPCION = true;
+      this.T2A_MENSAJE = "Activado";
+    }else{
+      this.T2A_OPCION = false;
+      this.T2A_MENSAJE = "Desactivado";
+    }
+  }
+
+  onSubmitNewEmail():void{
+    this.progressBar = true;
+    if(this.form.email === this.form.newemail){
+      this.authService.update_email(this.form.password).subscribe(
+        data =>{
+          this.progressBar = false;
+          this.snackBar.open(data.message, 'Cerrar', {
+            horizontalPosition: this.horizontalPosition,
+            verticalPosition: this.verticalPosition,
+            duration: 5 * 1000
+          });
+        },err =>{
+          this.snackBar.open(err.message, 'Cerrar', {
+            horizontalPosition: this.horizontalPosition,
+            verticalPosition: this.verticalPosition,
+            duration: 5 * 1000
+          });
+          this.progressBar = false;
+        }
+      );
+    }else{
+      this.snackBar.open("Los email tienen que ser iguales!.", 'Cerrar', {
+        horizontalPosition: this.horizontalPosition,
+        verticalPosition: this.verticalPosition,
+        duration: 5 * 1000
+      });
+    }
+  }
+
+  
+  copiedSuccesfull():void{
+    this.snackBar.open("Clave copiada correctamente!.", 'Cerrar', {
+      horizontalPosition: this.horizontalPosition,
+      verticalPosition: this.verticalPosition,
+      duration: 5 * 1000
+    });
+  }
+
+  
+  downloadKey():void{
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(this.key));
+    element.setAttribute('download', "Easysync_"+new Date().getTime()+"_key");
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+  }
+  
+
+
+
+  onSubmitNewPassword():void{
+
+    this.progressBar = true;
+    if(this.form.password === this.form.newpassword){
+      this.authService.change_password(this.form.password).subscribe(
+        data =>{
+          this.progressBar = false;
+          this.snackBar.open(data.message, 'Cerrar', {
+            horizontalPosition: this.horizontalPosition,
+            verticalPosition: this.verticalPosition,
+            duration: 5 * 1000
+          });
+        },err =>{
+          this.snackBar.open(err.message, 'Cerrar', {
+            horizontalPosition: this.horizontalPosition,
+            verticalPosition: this.verticalPosition,
+            duration: 5 * 1000
+          });
+          this.progressBar = false;
+        }
+      );
+    }else{
+      this.snackBar.open("Las contraseñas tienen que ser iguales!.", 'Cerrar', {
+        horizontalPosition: this.horizontalPosition,
+        verticalPosition: this.verticalPosition,
+        duration: 5 * 1000
+      });
+    }
   }
 
 }

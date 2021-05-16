@@ -17,6 +17,7 @@
           <input matInput type="text"
           name="useremail"
           [(ngModel)]="form.useremail"
+          (keyup.enter)="onSubmit()"
           required
           minlength="0"
           maxlength="128"
@@ -31,41 +32,13 @@
           </div>
       </div>
 
-      <!--
-        <div class="form-group">
-          <label for="username">Usuario</label>
-          <input
-            type="text"
-            class="form-control"
-            name="username"
-            [(ngModel)]="form.username"
-            required
-            #username="ngModel"
-          />
-          -->
-
-        <!--
-        <div class="form-group">
-          <label for="password">Contraseña</label>
-          <input
-            type="password"
-            class="form-control"
-            name="password"
-            [(ngModel)]="form.password"
-            required
-            minlength="6"
-            #password="ngModel"
-          />
-          
-        </div>
-        -->
-
         <div class="form-group">
           <mat-form-field class="full-width" >
             <mat-label>Contraseña</mat-label>
             <input matInput [type]="hide ? 'password' : 'text'"
             name="password"
             [(ngModel)]="form.password"
+            (keyup.enter)="onSubmit();hide=true;"
             required
             minlength="6"
             #password="ngModel"

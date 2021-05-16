@@ -4,7 +4,6 @@ import { UserService } from './_services/user.service';
 import { AuthService } from './_services/auth.service';
 import { FileService } from './_services/file.service';
 
-//var pbkdf2 = require('pbkdf2');
 
 @Component({
   selector: 'app-root',
@@ -33,10 +32,6 @@ export class AppComponent implements OnInit {
           this.auth.isLoggedIn = true;
           let user = dataMap.get('user');
           this.username = user.username;
-
-          if(this.TokenStorageService.getPBKDF2Key() === null){
-            //this.TokenStorageService.setPBKDF2Key(pbkdf2.pbkdf2Sync(user.password,32,1000,"SHA-512"));
-          }
         },err => {
           this.progressBar = false;
           this.TokenStorageService.signOut();

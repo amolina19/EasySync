@@ -19,6 +19,7 @@ export class LoginComponent implements OnInit {
   errorMessage = '';
   roles: string[] = [];
   hide = true;
+  user:any;
 
   constructor(private authService: AuthService, private tokenStorage: TokenStorageService, private router: Router,private appComponent:AppComponent,public auth:AuthService) { }
 
@@ -35,7 +36,7 @@ export class LoginComponent implements OnInit {
     this.appComponent.progressBar = true;
     this.authService.login(this.form).subscribe(
       data => {
-
+        console.log(data);
         var dataMap = new Map(Object.entries(data));
         this.tokenStorage.saveToken(dataMap.get('token'));
         this.tokenStorage.saveUser(dataMap.get('user'));
@@ -43,6 +44,9 @@ export class LoginComponent implements OnInit {
         this.isLoginFailed = false;
         this.auth.isLoggedIn = true;
         this.reloadPage();
+
+        this.tokenStorage.setPBKDF2Key(dataMap.get('pbkdf2'));
+        
         
       },
       err =>{

@@ -4,9 +4,15 @@ import { Observable } from 'rxjs';
 import { TokenStorageService } from './token-storage.service';
 
 const AUTH_API = 'https://easysync.es:2096/api/users/auth/';
+const USERS_API = 'https://easysync.es:2096/api/users/';
 
 const httpOptions = {
-  headers: new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded','Access-Control-Allow-Origin':'*',})
+  headers: new HttpHeaders({
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Access-Control-Allow-Origin':'*',
+    'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Origin, Content-Type, X-Auth-Token,content-type'
+  })
 };
 
 @Injectable({
@@ -40,13 +46,35 @@ export class AuthService {
     return this.http.post(AUTH_API+'register',body.toString(),httpOptions);
   }
 
+  change_password(password:string): Observable<any>{
+    let body = new URLSearchParams();
+    body.set('password', password);
+    body.set('token',this.tokenService.getToken());
+    return this.http.post(AUTH_API+'change_password',body.toString(),httpOptions);
+  }
+
+  update_email(email:string): Observable<any>{
+    let body = new URLSearchParams();
+    body.set('email', email);
+    body.set('token',this.tokenService.getToken());
+    return this.http.post(AUTH_API+'update_email',body.toString(),httpOptions);
+  }
+
+  updatet2a(t2avalue:boolean): Observable<any>{
+    let body = new URLSearchParams();
+    body.set('token', this.tokenService.getToken());
+    body.set('t2avalue', t2avalue.toString());
+    return this.http.post(USERS_API+'updatet2a',body.toString(),httpOptions);
+  }
+
   updateUserInfo(){
     this.loginByToken(this.injector.get(TokenStorageService).getToken()).subscribe( 
       data =>{
         var dataMap = new Map(Object.entries(data));
         //this.tokenService.saveToken(dataMap.get('token'));
         this.tokenService.saveUser(dataMap.get('user'));
-        this.isLoggedIn = true;
-    });;
+    });
   }
+
+  
 }
