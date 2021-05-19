@@ -3,6 +3,7 @@ import { TokenStorageService } from './_services/token-storage.service';
 import { UserService } from './_services/user.service';
 import { AuthService } from './_services/auth.service';
 import { FileService } from './_services/file.service';
+import * as CryptoJS from 'crypto-js';
 
 
 @Component({
@@ -16,6 +17,9 @@ export class AppComponent implements OnInit {
   username: string = '';
   user: any;
   progressBar = false;
+  private keySize = 256;
+  private iterations = 100;
+  private salt = "xVhbJrXM7pQXK4wWcCPqU6YTCbFPe6xt";
 
   constructor(private TokenStorageService: TokenStorageService, private userService:UserService,public auth:AuthService, public fileService: FileService) {}
 
@@ -32,6 +36,10 @@ export class AppComponent implements OnInit {
           this.auth.isLoggedIn = true;
           let user = dataMap.get('user');
           this.username = user.username;
+
+          if(this.auth.password != null){
+            this.TokenStorageService.setPBKDF2Key(this.getPBKDF2Key(this.auth.password));
+          }
         },err => {
           this.progressBar = false;
           this.TokenStorageService.signOut();
@@ -47,5 +55,52 @@ export class AppComponent implements OnInit {
     this.TokenStorageService.signOut();
     window.location.reload();
     this.auth.isLoggedIn = false;
+  }
+
+  getPBKDF2Key(password:string):string{
+    let keySize = 512;
+    var key = CryptoJS.PBKDF2(password, this.salt, {
+      keySize: keySize / 32,
+      iterations: this.iterations*10
+    });
+
+    return key;
+  }
+
+  encryptAES(text:string,passorpkfd2key:string):string{
+    let salt = CryptoJS.lib.WordArray.random(128/8);
+    let key = CryptoJS.PBKDF2(passorpkfd2key, salt, {
+        keySize: this.keySize/32,
+        iterations: this.iterations
+    });
+  
+    var iv = CryptoJS.lib.WordArray.random(128/8);
+    
+    let encrypted = CryptoJS.AES.encrypt(text, key, { 
+      iv: iv, 
+      padding: CryptoJS.pad.Pkcs7,
+      mode: CryptoJS.mode.CBC
+    });
+    
+    let transitmessage = salt.toString()+ iv.toString() + encrypted.toString();
+    return transitmessage;
+  }
+
+  decryptAES(transitmessage, pass):string {
+    let salt = CryptoJS.enc.Hex.parse(transitmessage.substr(0, 32));
+    let iv = CryptoJS.enc.Hex.parse(transitmessage.substr(32, 32))
+    let encrypted = transitmessage.substring(64);
+    
+    let key = CryptoJS.PBKDF2(pass, salt, {
+        keySize: this.keySize/32,
+        iterations: this.iterations
+    });
+  
+    let decrypted = CryptoJS.AES.decrypt(encrypted, key, { 
+      iv: iv, 
+      padding: CryptoJS.pad.Pkcs7,
+      mode: CryptoJS.mode.CBC
+    });
+    return decrypted;
   }
 }

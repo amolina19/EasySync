@@ -45,9 +45,11 @@ export class LoginComponent implements OnInit {
         this.auth.isLoggedIn = true;
         this.reloadPage();
 
+        /*
         this.tokenStorage.setPBKDF2Key(dataMap.get('pbkdf2'));
-        
-        
+        */
+
+        this.auth.password = this.form.password;
       },
       err =>{
         this.errorMessage = err.error.message;

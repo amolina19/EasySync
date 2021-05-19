@@ -1,9 +1,13 @@
 import { Injectable, Injector } from '@angular/core';
 import { AuthService } from './auth.service';
 
+
+//LOCALSTORAGE
 const TOKEN_KEY = 'auth-token';
 const USER_KEY = 'auth-user';
 const DEVICE = 'device';
+
+//SESSION STORAGE
 const PBKDF2_KEY = 'pbkdf2key';
 
 //var pbkdf2 = require('pbkdf2');
@@ -82,12 +86,12 @@ export class TokenStorageService {
   }
 
   public getPBKDF2Key():string{
-    return window.localStorage.getItem(PBKDF2_KEY);
+    return window.sessionStorage.getItem(PBKDF2_KEY);
   }
 
   public setPBKDF2Key(key):void{
-    window.localStorage.removeItem(PBKDF2_KEY);
-    window.localStorage.setItem(PBKDF2_KEY,key);
+    window.sessionStorage.removeItem(PBKDF2_KEY);
+    window.sessionStorage.setItem(PBKDF2_KEY,key);
   }
 
 }

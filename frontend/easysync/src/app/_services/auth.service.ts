@@ -21,6 +21,7 @@ const httpOptions = {
 export class AuthService {
 
   isLoggedIn = false;
+  password:string;
 
   constructor(private http: HttpClient,private injector:Injector,private tokenService:TokenStorageService) { }
 
