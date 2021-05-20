@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 const TOKEN_KEY = 'auth-token';
 const USER_KEY = 'auth-user';
 const DEVICE = 'device';
+const UUID = 'device-uuid';
 
 //SESSION STORAGE
 const PBKDF2_KEY = 'pbkdf2key';
@@ -92,6 +93,24 @@ export class TokenStorageService {
   public setPBKDF2Key(key):void{
     window.sessionStorage.removeItem(PBKDF2_KEY);
     window.sessionStorage.setItem(PBKDF2_KEY,key);
+  }
+
+  public getDevice(): any {
+    return localStorage.getItem(DEVICE);
+  }
+
+  public setDevice(device:any): void{
+    window.localStorage.removeItem(DEVICE);
+    window.localStorage.setItem(DEVICE,JSON.stringify(device));
+  }
+
+  public getDeviceUUID(): any {
+    return localStorage.getItem(UUID);
+  }
+
+  public setDeviceUUID(uuid:string):void{
+    window.localStorage.removeItem(UUID)
+    window.localStorage.setItem(UUID,uuid);
   }
 
 }

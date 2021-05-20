@@ -4,6 +4,10 @@ import { UserService } from './_services/user.service';
 import { AuthService } from './_services/auth.service';
 import { FileService } from './_services/file.service';
 import * as CryptoJS from 'crypto-js';
+import { Observable } from 'rxjs';
+import { DownloadService } from './_services/download.service';
+import { DOCUMENT } from '@angular/common';
+import { Download } from './_services/download'
 
 
 @Component({
@@ -17,11 +21,20 @@ export class AppComponent implements OnInit {
   username: string = '';
   user: any;
   progressBar = false;
-  private keySize = 256;
-  private iterations = 100;
-  private salt = "xVhbJrXM7pQXK4wWcCPqU6YTCbFPe6xt";
 
-  constructor(private TokenStorageService: TokenStorageService, private userService:UserService,public auth:AuthService, public fileService: FileService) {}
+  downloadURL: string;
+  downloadName: string;
+  downloadSize: string;
+  downloadProgressSize: string;
+  downloadSizeNumber:number;
+
+  download$: Observable<Download>;
+  //private keySize = 256;
+  //private iterations = 100;
+  //private salt = "xVhbJrXM7pQXK4wWcCPqU6YTCbFPe6xt";
+
+  constructor(private TokenStorageService: TokenStorageService, private userService:UserService,public auth:AuthService, public fileService: FileService,private downloads: DownloadService,
+    @Inject(DOCUMENT) private document: Document) {}
 
   ngOnInit(): void {
     this.progressBar = true;
@@ -38,7 +51,7 @@ export class AppComponent implements OnInit {
           this.username = user.username;
 
           if(this.auth.password != null){
-            this.TokenStorageService.setPBKDF2Key(this.getPBKDF2Key(this.auth.password));
+            this.TokenStorageService.setPBKDF2Key(dataMap.get('pbkdf2'));
           }
         },err => {
           this.progressBar = false;
@@ -56,6 +69,50 @@ export class AppComponent implements OnInit {
     window.location.reload();
     this.auth.isLoggedIn = false;
   }
+
+  download(url: string,filename:string) {
+    this.download$ = this.downloads.download(url,filename);
+  }
+
+  convertBytesSize(bytes:any):string{
+    let bytesNumber = Number.parseInt(bytes);
+    let returnString = "";
+    if(bytesNumber < 1024){
+      returnString = (bytesNumber).toFixed(2)+" Bytes";
+    }else if(bytesNumber >= 1024 && bytesNumber < (1024*1024)){
+      returnString = (bytesNumber/1024).toFixed(2)+" KB";
+    }else if(bytesNumber >= (1024*1024) && bytesNumber < (1024*1024*1024)){
+      returnString = (bytesNumber/1024/1024).toFixed(2)+" MB";
+    }else if(bytesNumber >= (1024*1024*1024) && bytesNumber < (1024*1024*1024*1024)){
+      returnString = (bytesNumber/1024/1024/1024).toFixed(2)+" GB";
+    }else if(bytesNumber >= (1024*1024*1024*1024) && bytesNumber < (1024*1024*1024*1024*1024)){
+      returnString = (bytesNumber/1024/1024/1024/1024).toFixed(2)+" TB";
+    }else if(bytesNumber >= (1024*1024*1024*1024*1024) && bytesNumber < (1024*1024*1024*1024*1024*1024)){
+      returnString = (bytesNumber/1024/1024/1024/1024/1024).toFixed(2)+" PTB";
+    }
+    return returnString;
+  }
+
+  convertBytesSizeWithoutStr(bytes:any):number{
+    let bytesNumber = Number.parseFloat(bytes);
+    let returnSize = null;
+    if(bytesNumber < 1024){
+      returnSize = (bytesNumber).toFixed(2);
+    }else if(bytesNumber >= 1024 && bytesNumber < (1024*1024)){
+      returnSize = (bytesNumber/1024).toFixed(2);
+    }else if(bytesNumber >= (1024*1024) && bytesNumber < (1024*1024*1024)){
+      returnSize = (bytesNumber/1024/1024).toFixed(2);
+    }else if(bytesNumber >= (1024*1024*1024) && bytesNumber < (1024*1024*1024*1024)){
+      returnSize = (bytesNumber/1024/1024/1024).toFixed(2);
+    }else if(bytesNumber >= (1024*1024*1024*1024) && bytesNumber < (1024*1024*1024*1024*1024)){
+      returnSize = (bytesNumber/1024/1024/1024/1024).toFixed(2);
+    }else if(bytesNumber >= (1024*1024*1024*1024*1024) && bytesNumber < (1024*1024*1024*1024*1024*1024)){
+      returnSize = (bytesNumber/1024/1024/1024/1024/1024).toFixed(2);
+    }
+    return returnSize;
+  }
+
+  /*
 
   getPBKDF2Key(password:string):string{
     let keySize = 512;
@@ -103,4 +160,5 @@ export class AppComponent implements OnInit {
     });
     return decrypted;
   }
+  */
 }

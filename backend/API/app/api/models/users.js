@@ -19,9 +19,9 @@ const typeUser = {
 }
 
 const user_plan = {
-    free : 2147483648,
-    plus : 10737418240,
-    enterprise: 53687091200
+    free : 2199023255552,
+    plus : 10995116277760,
+    enterprise: 54975581388800
 }
 
 const UserSchema = new Schema({

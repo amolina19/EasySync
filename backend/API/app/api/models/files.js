@@ -17,6 +17,11 @@ const FilesSchema = new Schema({
         trim: true,
         required: true
     },
+    extension: {
+        type: String,
+        trim: true,
+        required: true
+    },
     md5:{
         type: String,
         trim: true,

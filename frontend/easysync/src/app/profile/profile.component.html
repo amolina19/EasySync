@@ -10,13 +10,27 @@
       </mat-expansion-panel-header>
 
       <div class="mt-2">
-        <mat-expansion-panel (opened)="panelOpenState = false"
+        <mat-expansion-panel (opened)="panelOpenState = false;getProgressBarStorage()"
         (closed)="panelOpenState = true">
           <mat-expansion-panel-header>
           <mat-panel-title>
           <mat-icon class="orange">data_usage</mat-icon> <div class="ml-2">Uso General</div>
           </mat-panel-title>
           </mat-expansion-panel-header>
+
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+                  <p>Espacio usado: <b>{{userStorageUsed}}</b></p>
+                </div>
+                <div class="col-md-4">
+                  <p>Plan: <b>{{userStorageTotal}}</b></p>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+              <div class="col-md-10">
+                <mat-progress-bar mode="determinate" value="{{progressBarStorage}}"></mat-progress-bar>
+              </div>
+            </div>
           </mat-expansion-panel>
       </div>
 

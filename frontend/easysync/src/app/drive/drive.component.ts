@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { FileElement } from '../file-explorer/model/file-element';
@@ -21,13 +22,18 @@ export class DriveComponent implements OnInit {
   breakpoint:number;
   files:any;
 
-  constructor(public fileService:FileService,private authService:AuthService,private router:Router,public userService:UserService) { }
+  horizontalPosition: MatSnackBarHorizontalPosition = 'end';
+  verticalPosition: MatSnackBarVerticalPosition = 'bottom';
+
+  constructor(public fileService:FileService,private authService:AuthService,private router:Router,public userService:UserService,private snackBar:MatSnackBar) { }
 
   
   ngOnInit(): void {
     if(this.authService.isLoggedIn === false){
       this.router.navigate(['/login']);
     }
+
+    this.updateFiles();
 
     /*
     const folderA = this.fileService.add({ name: 'Folder A',size:"102223 bytes", isFolder: true, parent: 'root' });
@@ -36,7 +42,10 @@ export class DriveComponent implements OnInit {
     this.fileService.add({ name: 'File A', size:"102223 bytes",isFolder: false, parent: 'root' });
     this.fileService.add({ name: 'File B', size:"102223 bytes",isFolder: false, parent: 'root' });
     */
-   
+    
+  }
+
+  updateFiles():void{
     this.userService.getFilesUser().subscribe(
   
       data =>{
@@ -44,16 +53,19 @@ export class DriveComponent implements OnInit {
         this.files = data;
         //console.log(this.files);
         this.files.forEach(element => {
-          //console.log(element);
-          this.fileService.add({id:element.id,name:element.name,size:element.size,isFolder:false,parent:'root',created_at:element.created_at,modified_at:element.modified_at,owner_id:element.owner_id,shared:element.shared});
+          this.fileService.add({id:element._id,name:element.name,size:element.size,isFolder:false,parent:'root',created_at:element.created_at,modified_at:element.modified_at,owner_id:element.owner_id,shared:element.shared,md5:element.md5,url:element.url,mimetype:element.mimetype});
         });
         this.updateFileElementQuery();
       }, err =>{
 
+        this.snackBar.open(err.message, 'Cerrar', {
+          horizontalPosition: this.horizontalPosition,
+          verticalPosition: this.verticalPosition,
+          duration: 5 * 1000
+        });
+
       }
     )
-    
-    
   }
 
 

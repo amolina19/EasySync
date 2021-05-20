@@ -69,7 +69,8 @@
           "options": {
             "browserTarget": "easysync:build",
             "sslKey": "/etc/letsencrypt/live/easysync.es/privkey.pem",
-            "sslCert": "/etc/letsencrypt/live/easysync.es/fullchain.pem"
+            "sslCert": "/etc/letsencrypt/live/easysync.es/fullchain.pem",
+            "sourceMap": false
           },
           "configurations": {
             "production": {

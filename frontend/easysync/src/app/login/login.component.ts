@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../_services/auth.service';
 import { TokenStorageService } from '../_services/token-storage.service';
+import { v4 as uuidv4 } from 'uuid';
 
 
 import {Router} from "@angular/router"
 import { AppComponent } from '../app.component';
+import { DeviceDetectorService } from 'ngx-device-detector';
 
 @Component({
   selector: 'app-login',
@@ -21,7 +23,7 @@ export class LoginComponent implements OnInit {
   hide = true;
   user:any;
 
-  constructor(private authService: AuthService, private tokenStorage: TokenStorageService, private router: Router,private appComponent:AppComponent,public auth:AuthService) { }
+  constructor(private authService: AuthService, private tokenStorage: TokenStorageService, private router: Router,private appComponent:AppComponent,public auth:AuthService,private deviceService: DeviceDetectorService) { }
 
   
 
@@ -30,6 +32,13 @@ export class LoginComponent implements OnInit {
     if(this.tokenStorage.userExits()){
       this.router.navigate(['/home']);
     }
+
+    if(this.tokenStorage.getDeviceUUID() === null){
+      let uuid = uuidv4();
+      this.tokenStorage.setDeviceUUID(uuid);
+      this.tokenStorage.setDevice(this.deviceService.getDeviceInfo());
+    }
+    
   }
 
   onSubmit(){

@@ -6,6 +6,7 @@ import { TokenStorageService } from '../_services/token-storage.service';
 import { UserService } from '../_services/user.service';
 import {MatSnackBar,MatSnackBarHorizontalPosition,MatSnackBarVerticalPosition,} from '@angular/material/snack-bar';
 import { FormControl, Validators } from '@angular/forms';
+import { AppComponent } from '../app.component';
 
 
 @Component({
@@ -32,6 +33,10 @@ export class ProfileComponent implements OnInit {
   T2A_MENSAJE_API:string;
   hide:boolean = true;
   form: any = {};
+
+  progressBarStorage:number;
+  userStorageTotal:string;
+  userStorageUsed:string;
 
   horizontalPosition: MatSnackBarHorizontalPosition = 'end';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
@@ -70,7 +75,7 @@ export class ProfileComponent implements OnInit {
   }
   
 
-  constructor(private router:Router,private authService:AuthService,private tokenService:TokenStorageService,private userService:UserService,private snackBar: MatSnackBar) { }
+  constructor(private router:Router,private authService:AuthService,private tokenService:TokenStorageService,private userService:UserService,private snackBar: MatSnackBar,private appComponent:AppComponent) { }
 
   ngOnInit(): void {
 
@@ -177,6 +182,16 @@ export class ProfileComponent implements OnInit {
         duration: 5 * 1000
       });
     }
+  }
+
+  getProgressBarStorage():void{
+    this.userService.getUserStorageSize().subscribe(
+      data =>{
+        let user = this.tokenService.getUser();
+        this.progressBarStorage = (Number.parseInt(data.result) * 100)/ Number.parseInt(user.storage_limit);
+        this.userStorageTotal = this.appComponent.convertBytesSize(Number(user.storage_limit));
+        this.userStorageUsed = this.appComponent.convertBytesSize(Number.parseInt(data.result));
+      });
   }
 
 }

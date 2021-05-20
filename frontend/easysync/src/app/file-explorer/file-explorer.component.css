@@ -28,3 +28,10 @@
 .spacer {
   flex: 1 1 auto;
 }
+
+.element{
+  max-width: 180px;
+  min-width: 180px;
+  max-height: 100px;
+  min-height: 100px;
+}

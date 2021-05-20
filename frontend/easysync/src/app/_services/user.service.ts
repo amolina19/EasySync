@@ -3,18 +3,25 @@ import { HttpClient,HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { TokenStorageService } from './token-storage.service';
 
-const API_URL = 'https://api.easysync.es/test/';
-const API_USER = 'https://easysync.es:2096/api/users/';
-const API_FILES = 'https://easysync.es:2096/api/files/';
+
 
 const httpOptions = {
-  headers: new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded','Access-Control-Allow-Origin':'*',})
+  headers: new HttpHeaders({
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Access-Control-Allow-Origin':'*',
+    'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Origin, Content-Type, X-Auth-Token,content-type'
+  })
 };
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
+
+  API_URL = 'https://api.easysync.es/test/';
+  API_USER = 'https://easysync.es:2096/api/users/';
+  API_FILES = 'https://easysync.es:2096/api/files/';
 
   constructor(private http: HttpClient,private tokenStorageService:TokenStorageService) { }
 
@@ -38,16 +45,10 @@ export class UserService {
 
   //POST
 
-  setActivateAccount(token:any): Observable<any>{
-    let body = new URLSearchParams();
-    body.set('token', token);
-    return this.http.post(API_USER+'activate',body.toString(),httpOptions);
-  }
-
   getFilesUser(): Observable<any>{
     let token = this.tokenStorageService.getToken();
     //console.log(token);
-    let request = API_FILES+'userfiles?token='+token;
+    let request = this.API_FILES+'userfiles?token='+token;
     //console.log(request);
     return this.http.get(request);
   }
@@ -69,5 +70,38 @@ export class UserService {
     return fixDate.toString();
   }
 
+  getUserStorageSize(): Observable<any>{
+    let token = this.tokenStorageService.getToken();
+    //console.log(token);
+    let request = this.API_FILES+'storagesize?token='+token;
+    //console.log(request);
+    return this.http.get(request);
+  }
+
+  removeFile(fileid:any,):Observable<any>{
+    let token = this.tokenStorageService.getToken();
+    let body = new URLSearchParams();
+    body.set('token',token);
+    body.set('fileid',fileid);
+    return this.http.post(this.API_FILES + 'storage/delete',body.toString(), httpOptions);
+  }
+
+  renameFile(fileid:any,newname:any):Observable<any>{
+    let token = this.tokenStorageService.getToken();
+    let body = new URLSearchParams();
+    body.set('token',token);
+    body.set('fileid',fileid);
+    body.set('newname',newname);
+    return this.http.post(this.API_FILES + 'storage/rename',body.toString(), httpOptions);
+  }
+
+    /*
+  downloadByUrl(url:any):Observable<any>{
+    //let token = this.tokenStorageService.getToken();
+    //let body = new URLSearchParams();
+    //body.set('token',token);
+    //body.set('url',url);
+    return this.http.get(this.API_FILES + 'storage/download?url='+url,{ responseType: 'blob',reportProgress: true, observe: 'events', });
+  }*/
 
 }

@@ -1,6 +1,15 @@
+
+
 button:focus, 
 button:active:focus, 
 button.active:focus {
     outline: none !important;
     outline-style: none !important;
+}
+
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
 }

@@ -76,6 +76,5 @@ export class AuthService {
         this.tokenService.saveUser(dataMap.get('user'));
     });
   }
-
   
 }

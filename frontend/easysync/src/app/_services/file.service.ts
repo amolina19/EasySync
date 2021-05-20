@@ -23,7 +23,7 @@ export class FileService implements IFileService {
   constructor() {}
 
   add(fileElement: FileElement) {
-    fileElement.id = v4();
+    //fileElement.id = v4();
     this.map.set(fileElement.id, this.clone(fileElement));
     return fileElement;
   }

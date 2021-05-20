@@ -45,12 +45,17 @@ module.exports = {
     upload: function(req,res,next){
         //res.send({status:"developing"});
         //res.send(req.files.file);
+
+        
         let file = {
             name : req.files.file.name,
             size : req.files.file.size,
             mimetype : req.files.file.mimetype,
-            md5 : req.files.file.md5
+            md5 : req.files.file.md5 
         }
+
+        let extension = file.name.substring(file.name.lastIndexOf('.')+1, file.name.length);
+        file.extension = extension;
 
         jwt.verify(req.body.token,process.env.SECRET_KEY,(err,decoded) =>{
             if(err){
@@ -69,7 +74,7 @@ module.exports = {
                                 if(totalSize > user.storage_limit){
                                     res.status(400).json({status:"Error", message: "Limite de almacenamiento alcanzado"});
                                 }else{
-                                    filesModel.create({name:file.name,size:file.size,mimetype:file.mimetype,md5:file.md5,created_at:new Date(),modified_at:new Date(),owner_id:decoded.id,shared:false},function(err,result){
+                                    filesModel.create({name:file.name,size:file.size,mimetype:file.mimetype,md5:file.md5,created_at:new Date(),modified_at:new Date(),owner_id:decoded.id,shared:false,extension:file.extension},function(err,result){
                                         if(err){
                                             console.log(err);
                                             res.status(400).json({status:"Error", message: "Error al guardiar los cambios",err:err});
@@ -120,7 +125,7 @@ module.exports = {
                     if(file === null){
                         res.status(400).send({status:"Error",message:"¡Archivo no encontrado!."});
                     }else{
-                        res.download(STORAGE+file.owner_id+"/"+file._id,file.name);
+                        res.download(STORAGE+file.owner_id+"/"+file._id,file.name+"."+file.extension);
                     }
                     //res.status(200).send(file);
                 }
@@ -140,9 +145,9 @@ module.exports = {
                         filesModel.find({owner_id:decoded.id},function(err,files){
                             if(err){
                                 console.log(err);
-                                res.status(400).send(err);
+                                res.status(400).send({status:"Error",message:"No se ha podido recuperar los archivos en este momento"});
                             }else{
-                                console.log(files);
+                                //console.log(files);
                                 res.status(200).send(files);
                             }
                         });
@@ -163,10 +168,64 @@ module.exports = {
                     }else{
                         if(fs.existsSync(STORAGE+decoded.id)){
                             getUserSize(decoded.id).then(function(userSize){
-                                res.status(200).send({status:"Ok", message:userSize.toString()});
+                                res.status(200).send({status:"Ok", result:userSize.toString()});
                             }).catch(function(err){
                                 res.status(400).send({status:"Error", err});
                             });
+                        }
+                    }
+                });
+            }
+        }
+    },renameFile: function(req,res){
+        console.log(req.body);
+        if(checkUri(req)){
+            if(!req.body.token){
+                res.status(400).send({status:"error",message:"No token provided!"});
+            }else{
+                jwt.verify(req.body.token,process.env.SECRET_KEY,(err,decoded) => {
+                    if(err){
+                        res.status(400).send(err);
+                    }else{
+                        if(fs.existsSync(STORAGE+decoded.id) && req.body.fileid !== null){
+                            filesModel.updateOne({_id:req.body.fileid},{$set:{name:req.body.newname,modified_at:new Date()}},function(err,result){
+                                if(!err){
+                                    res.status(200).send({status:"OK", message:"Se ha cambiado el nombre correctamente"});
+                                }
+                            });
+                        }else{
+                            res.status(400).send({status:"Error", message:"Hubo un error o no existe el archivo."});
+                        }
+                    }
+                });
+            }
+        }
+    },removeFile: function(req,res){
+        if(checkUri(req)){
+            if(!req.body.token){
+                res.status(400).send({status:"error",message:"No token provided!"});
+            }else{
+                jwt.verify(req.body.token,process.env.SECRET_KEY,(err,decoded) => {
+
+                    if(err){
+                        res.status(400).send(err);
+                    }else{
+                        if(fs.existsSync(STORAGE+decoded.id) && req.body.fileid !== null){
+
+                            filesModel.findOne({_id:req.body.fileid},function(err1,result1){
+                                filesModel.deleteOne({_id:req.body.fileid},function(err2,result2){
+
+                                    console.log(result1);
+                                    console.log(STORAGE+result1.owner_id+"/"+req.body.fileid);
+                                    if(!err){
+                                        fs.rmSync(STORAGE+result1.owner_id+"/"+req.body.fileid);
+                                        res.status(200).send({status:"OK", message:"Se ha elimnado el archivo correctamente"});
+                                    }
+                                });
+                            });
+                            
+                        }else{
+                            res.status(400).send({status:"Error", message:"Hubo un error o no existe el archivo."});
                         }
                     }
                 });

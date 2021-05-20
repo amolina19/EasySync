@@ -17,6 +17,8 @@ import { MoreInfoComponent } from './modals/more-info/more-info.component';
 import { ShareComponent } from './modals/share/share.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatList, MatListItem, MatListModule } from '@angular/material/list';
+import { DeleteDialogComponent } from './modals/delete-dialog/delete-dialog.component';
+import { DownloadComponent } from './modals/download/download.component';
 
 @NgModule({
   imports: [
@@ -34,7 +36,7 @@ import { MatList, MatListItem, MatListModule } from '@angular/material/list';
     FormsModule,
     MatButtonModule
   ],
-  declarations: [FileExplorerComponent, NewFolderDialogComponent, RenameDialogComponent, MoreInfoComponent, ShareComponent],
+  declarations: [FileExplorerComponent, NewFolderDialogComponent, RenameDialogComponent, MoreInfoComponent, ShareComponent, DeleteDialogComponent, DownloadComponent],
   exports: [FileExplorerComponent],
   entryComponents: [NewFolderDialogComponent, RenameDialogComponent]
 })

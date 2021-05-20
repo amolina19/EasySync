@@ -70,6 +70,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import { FileService } from './_services/file.service';
 import { FileExplorerModule } from './file-explorer/file-explorer.module';
 import { DriveComponent } from './drive/drive.component';
+import { getSaver, SAVER } from './_services/saver.provider';
 
 
 
@@ -185,7 +186,7 @@ import { DriveComponent } from './drive/drive.component';
     PortalModule,
     ScrollingModule,
   ],
-  providers: [authInterceptorProviders,FileService],
+  providers: [authInterceptorProviders,FileService,{provide: SAVER, useFactory: getSaver}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

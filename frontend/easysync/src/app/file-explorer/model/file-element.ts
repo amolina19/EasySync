@@ -8,4 +8,7 @@ export class FileElement {
     modified_at:Date;
     owner_id:string;
     shared:boolean;
+    md5:string;
+    url:string;
+    mimetype:string;
   }
