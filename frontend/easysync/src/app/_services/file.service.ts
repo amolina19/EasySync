@@ -22,6 +22,7 @@ export interface IFileService {
 @Injectable()
 export class FileService implements IFileService {
   private map = new Map<string, FileElement>();
+  private mapChild = new Map<string,string>();
 
   constructor() {}
 
@@ -169,5 +170,42 @@ export class FileService implements IFileService {
 
     this.map.clear();
     this.map = newMap;
+  }
+
+  hasChilds(idElement:any){
+    this.mapChild.set(idElement,idElement);
+    this.map.forEach((value,key)=>{
+      if(value.parent === idElement){
+
+        if(!this.mapChild.has(key)){
+          this.mapChild.set(key,value.parent);
+        }
+        
+        this.hasChilds(key);
+      }
+    });
+
+    return this.mapChild;
+  }
+
+  getChildMap():any{
+    return this.mapChild;
+  }
+
+  getMap():any{
+    return this.map;
+  }
+
+  getSizeOfFolder():any{
+
+    let valueReturn = 0;
+    this.mapChild.forEach((value,key)=>{
+      let item = this.map.get(key);
+      if(item.size){
+        console.log(item.size);
+        valueReturn = parseInt(valueReturn+"") + parseInt(item.size);
+      }
+    });
+    return valueReturn;
   }
 }

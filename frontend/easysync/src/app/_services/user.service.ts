@@ -104,6 +104,15 @@ export class UserService {
     return this.http.post(this.API_FILES + 'storage/createfolder',body.toString(), httpOptions);
   }
 
+  moveFolder(elementid:any,parent:any):Observable<any>{
+    let token = this.tokenStorageService.getToken();
+    let body = new URLSearchParams();
+    body.set('token',token);
+    body.set('elementid',elementid);
+    body.set('parent',parent);
+    return this.http.post(this.API_FILES + 'storage/move',body.toString(), httpOptions);
+  }
+
     /*
   downloadByUrl(url:any):Observable<any>{
     //let token = this.tokenStorageService.getToken();
