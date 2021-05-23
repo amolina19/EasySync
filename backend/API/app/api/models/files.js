@@ -52,6 +52,10 @@ const FilesSchema = new Schema({
     parent:{
         type:String,
         required:false
+    },
+    isFolder:{
+        type:Boolean,
+        required:true
     }
 });
 

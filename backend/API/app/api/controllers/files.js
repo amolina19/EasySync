@@ -67,7 +67,7 @@ module.exports = {
                     userModel.findOne({_id:decoded.id},function(err,user){
                         if(user !== null){
                             if(!user.activated){
-                                res.status(400).json({status:"Error", message: "Account not activated"});
+                                res.status(400).json({status:"Error", message: "Cuenta no activada"});
                             }else{
                                 getUserSize(user._id,file.size).then(function(size){
                                     let totalSize = (size + file.size);
@@ -229,31 +229,65 @@ module.exports = {
             }
         }
     },createFolder(req,res){
-        jwt.verify(req.body.token,process.env.SECRET_KEY,(err,decoded) =>{
-            if(err){
-                res.status(400).send({status:"error",message:"Token no authorizado"});
-            }else{
-                if(!userStorageExists(decoded.id)){
-                    createUserStorage(decoded.id);
-                }
-                userModel.findOne({_id:decoded.id},function(err,user){
-                    if(user !== null){
-                        if(!user.activated){
-                            res.status(400).json({status:"Error", message: "Cuenta no activada"});
-                        }else{
-                            filesModel.create({name:req.body.foldername,created_at:new Date(),modified_at:new Date(),owner_id:decoded.id,shared:false,parent:req.body.parent},function(err,result){
-                                if(err){
-                                    console.log(err);
-                                    res.status(400).json({status:"Error", message: "Error al crear la carpeta",err:err});
-                                }else{
-                                    res.status(200).json({status:"Ok", message: req.body.foldername.name+" se ha creado correctamente."});
-                                }
-                            });
-                            
-                        }
+        if(checkUri(req)){
+            jwt.verify(req.body.token,process.env.SECRET_KEY,(err,decoded) =>{
+                if(err){
+                    res.status(400).send({status:"error",message:"Token no authorizado"});
+                }else{
+                    if(!userStorageExists(decoded.id)){
+                        createUserStorage(decoded.id);
                     }
-                });
-            }
-        });
+                    userModel.findOne({_id:decoded.id},function(err,user){
+                        if(user !== null){
+                            if(!user.activated){
+                                res.status(400).json({status:"Error", message: "Cuenta no activada"});
+                            }else{
+                                filesModel.create({name:req.body.foldername,created_at:new Date(),modified_at:new Date(),owner_id:decoded.id,shared:false,parent:req.body.parent,isFolder:true},function(err,result){
+                                    if(err){
+                                        console.log(err);
+                                        res.status(400).json({status:"Error", message: "Error al crear la carpeta",err:err});
+                                    }else{
+                                        console.log(result);
+                                        res.status(200).json({status:"Ok", message:"La carpeta "+req.body.foldername+" se ha creado correctamente."});
+                                    }
+                                });
+                                
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        
+    },move: function(req,res){
+        if(checkUri(req)){
+            jwt.verify(req.body.token,process.env.SECRET_KEY,(err,decoded) =>{
+                if(err){
+                    res.status(400).send({status:"error",message:"Token no authorizado"});
+                }else{
+                    if(!userStorageExists(decoded.id)){
+                        createUserStorage(decoded.id);
+                    }
+                    userModel.findOne({_id:decoded.id},function(err,user){
+                        if(user !== null){
+                            if(!user.activated){
+                                res.status(400).json({status:"Error", message: "Cuenta no activada"});
+                            }else{
+                                filesModel.updateOne({_id:req.body.elementid},{$set:{parent:req.body.parent}},function(err,result){
+                                    if(err){
+                                        console.log(err);
+                                        res.status(400).json({status:"Error", message: "Error al mover el elemento de lugar.",err:err});
+                                    }else{
+                                        console.log(result);
+                                        res.status(200).json({status:"Ok", message:"El elemento se movió correctamente."});
+                                    }
+                                });
+                                
+                            }
+                        }
+                    });
+                }
+            });
+        }
     }
 }
