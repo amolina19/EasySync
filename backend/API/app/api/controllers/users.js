@@ -3,6 +3,8 @@ const sessionModel = require('../models/session');
 const logsModel = require('../models/logs');
 const request = require('request');
 
+const STORAGE = process.env.STORAGE_PATH;
+
 
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -23,6 +25,17 @@ const typeToken = {
 const typeUser = {
     user: 0,
     admin: 1
+}
+
+function userStorageExists(userid){
+    if(fs.existsSync(STORAGE+userid)){
+        return true;
+    }
+    return false;
+}
+
+function createUserStorage(userid){
+    fs.mkdirSync(STORAGE+userid);
 }
 
 function generateRandomeCode(length){
@@ -59,7 +72,7 @@ function getIPInfo(ip){
     
         let array = ip.split(':');
         let remoteIP = array[array.length - 1];
-        let requestTo = 'https://ipapi.co/'+remoteIP+'/json';
+        let requestTo = 'https://ipapi.co/'+remoteIP+'/json/?key='+process.env.IPAPI_KEY;
         //Pending to REQUESTED.
         request(requestTo, function (error, response, body) {
             if (!error && response.statusCode == 200) {
@@ -112,6 +125,11 @@ module.exports = {
                         if(!user.activated){
                             res.status(400).json({status:"Error", message: "Account not activated"});
                         }else{
+
+                            if(!userStorageExists(user._id)){
+                                createUserStorage(user._id);
+                            }
+
                             if(user.t2a){
                                 let code = generateRandomeCode(8);
                                 email.sendT2ACode(user,code);
@@ -119,16 +137,21 @@ module.exports = {
                                 userModel.updateOne({_id:user._id},{$set:{"t2a_code":code}},function(err){});
                                 res.status(200).json({status:"ok",token:token,message:"Need authentication code, sended to user email"});
                             }else{
+                                
                                 const token = jwt.sign({id:user._id,typeToken:typeToken.authentication},req.app.get('secretKey'), { expiresIn: "7d"});
                                 userModel.updateOne({email:user.email},{$set:{"last_login":new Date()}},function(err){});
     
                                 let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
-                                getIPInfo(ip);
+                                console.log(ip);
+
+                                
     
                                 //sessionModel.create({},function(err){});
                                 let derivedKey = easyCrypt.easysync.getPBKDF2Hex(user.password);
-                                res.status(200).json({status:"ok",message:"User authenticated", user:user,token:token,pbkdf2:derivedKey});
                                 console.log(user.username+" Login on "+ new Date());
+                                getIPInfo(ip);
+                                res.status(200).json({status:"ok",message:"User authenticated", user:user,token:token,pbkdf2:derivedKey});
+                                
                                 //fs.writeFileSync('/root/EasySync/EasySync/backend/API/logs/login.log',writeToFile,"UTF-8",{'flag': 'a+'});
                             }
                         }
