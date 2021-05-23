@@ -52,36 +52,36 @@ module.exports = {
 
         
         let link = "https://"+process.env.EMAIL_DOMAIN.toLowerCase()+":2096/api/users/activate?token="+token;
-        let email = "<b>Here is the link to activate your account "+user.username+"</b>, <a href="+link+">"+link+"</a>";
+        let email = "<b>Aquí tienes tu link de activación "+user.username+"</b>, <a href="+link+">"+link+"</a>";
 
         let info = transporter.sendMail({
             from: process.env.EMAIL_DOMAIN+' '+process.env.EMAIL_HEADER, // sender address
             to: user.email, // list of receivers
-            subject: "Activate your email account "+user.username, // Subject line, // plain text body
+            subject: "Activa tu cuenta "+user.username, // Subject line, // plain text body
             html: email, // html body
         });
     },
     sendmailrecoverpassword: function(user,token){
 
         let link = "https://"+process.env.EMAIL_DOMAIN.toLowerCase()+":2096/api/users/recover?token="+token;
-        let email = "<b>Here is the link to recover your password"+user.username+"</b>, <a href="+link+">"+link+"</a>";
+        let email = "<b>Aquí tienes el link para recuperar tu contraseña"+user.username+"</b>, <a href="+link+">"+link+"</a>";
         
         let info = transporter.sendMail({
             from: process.env.EMAIL_DOMAIN+' '+process.env.EMAIL_HEADER, // sender address
             to: user.email, // list of receivers
-            subject: "Recover your password "+user.username, // Subject line
+            subject: "Recupera tu contraseña "+user.username, // Subject line
             html: email, // html body
         });
         
     },
     sendT2ACode: function(user,code){
         //let link = "https://"+process.env.EMAIL_DOMAIN.toLowerCase()+":2096/api/users/activate?token="+token;
-        let email = "Here is your authentication code "+user.username+", <b>"+code+"</b>";
+        let email = "Aqúi tiens tu código de autenticación "+user.username+", <b>"+code+"</b>";
 
         let info = transporter.sendMail({
             from: process.env.EMAIL_DOMAIN+' '+process.env.EMAIL_HEADER, // sender address
             to: user.email, // list of receivers
-            subject: "Your authentication code "+user.username, // Subject line, // plain text body
+            subject: "Tú código de autenticación "+user.username, // Subject line, // plain text body
             html: email, // html body
         });
     }

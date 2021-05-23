@@ -17,14 +17,8 @@
           <mat-icon class="orange">data_usage</mat-icon> <div class="ml-2">Uso General</div>
           </mat-panel-title>
           </mat-expansion-panel-header>
-
             <div class="row justify-content-center">
-                <div class="col-md-4">
-                  <p>Espacio usado: <b>{{userStorageUsed}}</b></p>
-                </div>
-                <div class="col-md-4">
-                  <p>Plan: <b>{{userStorageTotal}}</b></p>
-                </div>
+              <div class="mb-3"><b>{{userStorageUsed}}</b> de <b>{{userStorageTotal}}</b> ({{progressBarStorage}} %) de espacio utilizado.</div>
             </div>
             <div class="row justify-content-center">
               <div class="col-md-10">

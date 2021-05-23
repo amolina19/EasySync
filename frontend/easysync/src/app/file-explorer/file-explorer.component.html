@@ -3,7 +3,13 @@
     <mat-icon *ngIf="canNavigateUp" class="pointer" (click)="navigateUp()">arrow_back</mat-icon>
     <span style="margin-left: 8px" class="">{{path || 'Tus Archivos'}}</span>
     <span class="spacer"></span>
-    <mat-icon class="pointer" (click)="openNewFolderDialog()">create_new_folder</mat-icon>
+    <mat-icon class="pointer" (click)="openNewFolderDialog()" matTooltip="Crear una nueva carpeta"
+    aria-label="Button that displays a tooltip when focused or hovered over">create_new_folder</mat-icon>
+    <mat-icon class="pointer ml-3" (click)="shortByName()" matTooltip="Ordernar los elementos por nombre"
+    aria-label="Button that displays a tooltip when focused or hovered over">sort_by_alpha</mat-icon>
+    <mat-icon class="pointer ml-3" (click)="shortByDate()" matTooltip="Ordenar los elementos por fecha de última creacion o modificación"
+    aria-label="Button that displays a tooltip when focused or hovered over">date_range</mat-icon>
+    <mat-icon class="pointer ml-3 mr-3" (click)="shortBySize()">format_list_bulleted</mat-icon>
   </mat-toolbar>
   <!--
   <div class="container" fxFlex fxLayout="row" fxLayoutAlign="space-between stretch">
@@ -29,9 +35,18 @@
         <div *ngFor="let element of fileElements" class="file-or-folder" >
           <span [matMenuTriggerFor]="rootMenu" [matMenuTriggerData]="{element: element}" #menuTrigger="matMenuTrigger"></span>
           <div fxLayout="column" fxLayoutAlign="space-between center" (click)="navigate(element)" (contextmenu)="openMenu($event, menuTrigger)" class="element justify-content-center">
-            <mat-icon color="warn" class="file-or-folder-icon pointer" *ngIf="element.isFolder">folder</mat-icon>
-            <mat-icon color="primary" class="file-or-folder-icon pointer" *ngIf="!element.isFolder">insert_drive_file</mat-icon>
-            <span class="break-word text-center">{{element.name}}</span>
+            
+
+
+            <div class="row element-icon">
+              <mat-icon color="warn" class="file-or-folder-icon pointer" *ngIf="element.isFolder">folder</mat-icon>
+              <mat-icon color="primary" class="file-or-folder-icon pointer" *ngIf="!element.isFolder">insert_drive_file</mat-icon>
+            </div>
+
+            <div class="row">
+              <span class="break-word text-center pr-4 pl-4">{{element.name}}</span>
+            </div>
+            
           </div>
         </div>
       </div>
@@ -45,7 +60,7 @@
         <span>Mover a</span>
       </button>
 
-      <button mat-menu-item (click)=" downloadDialog(element)">
+      <button *ngIf="!element.isFolder" mat-menu-item (click)=" downloadDialog(element)">
         <mat-icon>cloud_download</mat-icon>
         <span>Descargar</span>
       </button>

@@ -14,6 +14,9 @@ export interface IFileService {
   update(id: string, update: Partial<FileElement>);
   queryInFolder(folderId: string): Observable<FileElement[]>;
   get(id: string): FileElement;
+  shortByName(ascName:boolean);
+  shortByDate(ascDate:boolean);
+  shortBySize(ascSize:boolean);
 }
 
 @Injectable()
@@ -64,5 +67,107 @@ export class FileService implements IFileService {
 
   clone(element: FileElement) {
     return JSON.parse(JSON.stringify(element));
+  }
+
+  shortByName(ascName:boolean){
+    let newMap = new Map([...this.map].sort(([k, v], [k2, v2])=> {
+
+      if(ascName){
+        if (v.name > v2.name) {
+          return 1;
+        }
+        if (v.name < v2.name) {
+          return -1;
+        }
+        return 0;
+      }else{
+        if (v.name < v2.name) {
+          return 1;
+        }
+        if (v.name > v2.name) {
+          return -1;
+        }
+        return 0;
+      }
+    }));
+
+    this.map.clear();
+    this.map = newMap;
+  }
+
+  shortByDate(ascDate:boolean){
+    let newMap = new Map([...this.map].sort(([k, v], [k2, v2])=> {
+
+      if(v.modified_at === null || v2.modified_at === null){
+
+        if(ascDate){
+          if (v.created_at > v2.created_at) {
+            return 1;
+          }
+          if (v.created_at < v2.created_at) {
+            return -1;
+          }
+          return 0;
+        }else{
+          if (v.created_at < v2.created_at) {
+            return 1;
+          }
+          if (v.created_at > v2.created_at) {
+            return -1;
+          }
+          return 0;
+        }
+         
+      }else{
+
+        if(ascDate){
+          if (v.modified_at > v2.modified_at) {
+            return 1;
+          }
+          if (v.modified_at < v2.modified_at) {
+            return -1;
+          }
+          return 0; 
+        }else{
+          if (v.modified_at < v2.modified_at) {
+            return 1;
+          }
+          if (v.modified_at > v2.modified_at) {
+            return -1;
+          }
+          return 0; 
+        }    
+      } 
+    }));
+
+    this.map.clear();
+    this.map = newMap;
+  }
+
+  shortBySize(ascSize:boolean){
+    
+    let newMap = new Map([...this.map].sort(([k, v], [k2, v2])=> {
+
+      if(ascSize){
+        if (v.size > v2.size) {
+          return 1;
+        }
+        if (v.size < v2.size) {
+          return -1;
+        }
+        return 0; 
+      }else{
+        if (v.size < v2.size) {
+          return 1;
+        }
+        if (v.size > v2.size) {
+          return -1;
+        }
+        return 0; 
+      }
+    }));
+
+    this.map.clear();
+    this.map = newMap;
   }
 }

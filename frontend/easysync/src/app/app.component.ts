@@ -7,7 +7,8 @@ import * as CryptoJS from 'crypto-js';
 import { Observable } from 'rxjs';
 import { DownloadService } from './_services/download.service';
 import { DOCUMENT } from '@angular/common';
-import { Download } from './_services/download'
+import { Download } from './_services/download';
+
 
 
 @Component({
@@ -37,6 +38,7 @@ export class AppComponent implements OnInit {
     @Inject(DOCUMENT) private document: Document) {}
 
   ngOnInit(): void {
+
     this.progressBar = true;
 
     if(this.TokenStorageService.getToken() !=null){

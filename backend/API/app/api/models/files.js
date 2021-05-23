@@ -10,28 +10,30 @@ const FilesSchema = new Schema({
     size :{
         type: Number,
         trim: true,
-        required: true
+        required: false
     },
     mimetype :{
         type: String,
         trim: true,
-        required: true
+        required: false
     },
     extension: {
         type: String,
         trim: true,
-        required: true
+        required: false
     },
     md5:{
         type: String,
         trim: true,
-        required: true
+        required: false
     },
     created_at:{
-        type: Date
+        type: Date,
+        required: false
     },
     modified_at:{
         type: Date,
+        required: false
     },
     owner_id:{
         type: String,
@@ -40,10 +42,16 @@ const FilesSchema = new Schema({
     },
     shared:{
         type: Boolean,
+        required: false
     },
     url:{
         type: String,
-        trim: true
+        trim: true,
+        required: false
+    },
+    parent:{
+        type:String,
+        required:false
     }
 });
 

@@ -95,6 +95,15 @@ export class UserService {
     return this.http.post(this.API_FILES + 'storage/rename',body.toString(), httpOptions);
   }
 
+  addFolder(foldername:any,parent:any):Observable<any>{
+    let token = this.tokenStorageService.getToken();
+    let body = new URLSearchParams();
+    body.set('token',token);
+    body.set('foldername',foldername);
+    body.set('parent',parent);
+    return this.http.post(this.API_FILES + 'storage/createfolder',body.toString(), httpOptions);
+  }
+
     /*
   downloadByUrl(url:any):Observable<any>{
     //let token = this.tokenStorageService.getToken();

@@ -11,4 +11,5 @@ export class FileElement {
     md5:string;
     url:string;
     mimetype:string;
+    extension:string;
   }

@@ -21,6 +21,10 @@ export class FileExplorerComponent {
 
   horizontalPosition: MatSnackBarHorizontalPosition = 'end';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
+
+  ascDate: boolean = false;
+  ascName: boolean = true;
+  ascSize: boolean = false;
   
   constructor(public dialog: MatDialog,private userService:UserService,private snackBar:MatSnackBar,private driveComponent:DriveComponent,private appComponent:AppComponent) {}
 
@@ -136,5 +140,23 @@ export class FileExplorerComponent {
   openMenu(event: MouseEvent, viewChild: MatMenuTrigger) {
     event.preventDefault();
     viewChild.openMenu();
+  }
+
+  shortByDate():void{
+    this.ascDate = !this.ascDate;
+    this.driveComponent.fileService.shortByDate(this.ascDate);
+    this.driveComponent.updateFileElementQuery();
+  }
+
+  shortByName():void{
+    this.ascName = !this.ascName;
+    this.driveComponent.fileService.shortByName(this.ascName);
+    this.driveComponent.updateFileElementQuery();
+  }
+
+  shortBySize():void{
+    this.ascSize = !this.ascSize;
+    this.driveComponent.fileService.shortBySize(this.ascSize);
+    this.driveComponent.updateFileElementQuery();
   }
 }

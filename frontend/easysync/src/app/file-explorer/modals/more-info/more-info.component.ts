@@ -1,6 +1,7 @@
 import { Inject } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import dateFormat from 'dateformat';
 
 
 @Component({
@@ -10,10 +11,58 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 })
 export class MoreInfoComponent {
 
-  created:Date;
-  modified_at:Date;
+  createdString:String;
+  modified_atString:String;
   constructor(public dialogRef: MatDialogRef<MoreInfoComponent>,@Inject(MAT_DIALOG_DATA) public data: any) {
 
+    dateFormat.i18n = {
+      dayNames: [
+        "Dom",
+        "Lun",
+        "Mar",
+        "Mie",
+        "Jue",
+        "Vie",
+        "Sab",
+        "Domingo",
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sabado",
+      ],
+      monthNames: [
+        "Ene",
+        "Feb",
+        "Mar",
+        "Abr",
+        "May",
+        "Jun",
+        "Jul",
+        "Ago",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dic",
+        "Enero",
+        "Febrero",
+        "Marzo",
+        "Abril",
+        "Mayo",
+        "Junio",
+        "Julio",
+        "Agosto",
+        "Septiembre",
+        "Octubre",
+        "Noviembre",
+        "Diciembre",
+      ],
+      timeNames: ["a", "p", "am", "pm", "A", "P", "AM", "PM"],
+    };
+
+    this.createdString = dateFormat(new Date(data.element.created_at),'dddd dd mmm, yyyy HH:MM:ss');
+    this.modified_atString = dateFormat(new Date(data.element.modified_at),'dddd dd mmmm yyyy HH:MM:ss');
 
     if(data.element.size < 1024){
       data.element.size = Number(data.element.size/1024).toFixed(2)+" Bytes";

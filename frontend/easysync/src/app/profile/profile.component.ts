@@ -7,6 +7,7 @@ import { UserService } from '../_services/user.service';
 import {MatSnackBar,MatSnackBarHorizontalPosition,MatSnackBarVerticalPosition,} from '@angular/material/snack-bar';
 import { FormControl, Validators } from '@angular/forms';
 import { AppComponent } from '../app.component';
+import dateFormat from 'dateformat';
 
 
 @Component({
@@ -15,6 +16,7 @@ import { AppComponent } from '../app.component';
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
+
 
   emailFormControl = new FormControl('', [
     Validators.required,
@@ -79,6 +81,51 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
 
+    dateFormat.i18n = {
+      dayNames: [
+        "Dom",
+        "Lun",
+        "Mar",
+        "Mie",
+        "Jue",
+        "Vie",
+        "Sab",
+        "Domingo",
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sabado",
+      ],
+      monthNames: [
+        "Ene",
+        "Feb",
+        "Mar",
+        "Abr",
+        "May",
+        "Jun",
+        "Jul",
+        "Ago",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dic",
+        "Enero",
+        "Febrero",
+        "Marzo",
+        "Abril",
+        "Mayo",
+        "Junio",
+        "Julio",
+        "Agosto",
+        "Septiembre",
+        "Octubre",
+        "Noviembre",
+        "Diciembre",
+      ],
+      timeNames: ["a", "p", "am", "pm", "A", "P", "AM", "PM"],
+    };
 
     if(!this.tokenService.userExits()){
       this.router.navigate(['/login']);
@@ -86,8 +133,8 @@ export class ProfileComponent implements OnInit {
      
     //this.authService.updateUserInfo();
     this.currentUser = this.tokenService.getUser();
-    this.createdDateString = this.userService.dateToString(this.currentUser.created_at);
-    this.lastLoginDateString = this.userService.dateToString(this.currentUser.last_login);
+    this.createdDateString = dateFormat(new Date(this.currentUser.created_at),'dddd dd mmmm yyyy HH:MM:ss');
+    this.lastLoginDateString = dateFormat(new Date(this.currentUser.last_login),'dddd dd mmmm yyyy HH:MM:ss');
     this.key = this.tokenService.getPBKDF2Key();
 
     if(this.currentUser.t2a){
@@ -189,6 +236,7 @@ export class ProfileComponent implements OnInit {
       data =>{
         let user = this.tokenService.getUser();
         this.progressBarStorage = (Number.parseInt(data.result) * 100)/ Number.parseInt(user.storage_limit);
+        this.progressBarStorage = Number.parseInt(this.progressBarStorage+"");
         this.userStorageTotal = this.appComponent.convertBytesSize(Number(user.storage_limit));
         this.userStorageUsed = this.appComponent.convertBytesSize(Number.parseInt(data.result));
       });

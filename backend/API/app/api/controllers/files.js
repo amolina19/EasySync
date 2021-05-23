@@ -46,70 +46,67 @@ module.exports = {
         //res.send({status:"developing"});
         //res.send(req.files.file);
 
-        
-        let file = {
-            name : req.files.file.name,
-            size : req.files.file.size,
-            mimetype : req.files.file.mimetype,
-            md5 : req.files.file.md5 
-        }
-
-        let extension = file.name.substring(file.name.lastIndexOf('.')+1, file.name.length);
-        file.extension = extension;
-
-        jwt.verify(req.body.token,process.env.SECRET_KEY,(err,decoded) =>{
-            if(err){
-                res.status(400).send({status:"error",message:"Unathorized Token"});
-            }else{
-                if(!userStorageExists(decoded.id)){
-                    createUserStorage(decoded.id);
-                }
-                userModel.findOne({_id:decoded.id},function(err,user){
-                    if(user !== null){
-                        if(!user.activated){
-                            res.status(400).json({status:"Error", message: "Account not activated"});
-                        }else{
-                            getUserSize(user._id,file.size).then(function(size){
-                                let totalSize = (size + file.size);
-                                if(totalSize > user.storage_limit){
-                                    res.status(400).json({status:"Error", message: "Limite de almacenamiento alcanzado"});
-                                }else{
-                                    filesModel.create({name:file.name,size:file.size,mimetype:file.mimetype,md5:file.md5,created_at:new Date(),modified_at:new Date(),owner_id:decoded.id,shared:false,extension:file.extension},function(err,result){
-                                        if(err){
-                                            console.log(err);
-                                            res.status(400).json({status:"Error", message: "Error al guardiar los cambios",err:err});
-                                        }else{
-                                            let urlUnique = true;
-                                            do{
-                                                let url = generateURL();
-                                                console.log(url);
-                                                filesModel.findOne({url:url}, function(errURL,resultURL){
-                                                    console.log(resultURL);
-                                                    if(resultURL === null){
-                                                        urlUnique = false;
-                                                        filesModel.updateOne({_id:result._id},{$set:{url:url}},function(err){
-                                                            if(!err){
-                                                                req.files.file.mv(STORAGE+decoded.id+"/"+result._id);
-                                                                res.status(200).json({status:"Ok", message: file.name+" se ha subido correctamente"});
-                                                            }
-                                                        });
-                                                    }
-                                                });
-
-                                            }while(urlUnique === false);
-                                        }
-                                    });
-                                }
-                            }).catch(function(err){
-                                res.status(400).send({status:"Error", message:"Error ocurrido al obtener el tamaño limite del usuario"});
-                            });
-                            
-                        }
-                    }
-                });
-                //getUserSize(decoded.id,file.size);
+        if(checkUri(req)){
+            let file = {
+                name : req.files.file.name,
+                size : req.files.file.size,
+                mimetype : req.files.file.mimetype,
+                md5 : req.files.file.md5 
             }
-        });
+    
+            let extension = file.name.substring(file.name.lastIndexOf('.')+1, file.name.length);
+            file.extension = extension;
+    
+            jwt.verify(req.body.token,process.env.SECRET_KEY,(err,decoded) =>{
+                if(err){
+                    res.status(400).send({status:"error",message:"Unathorized Token"});
+                }else{
+                    if(!userStorageExists(decoded.id)){
+                        createUserStorage(decoded.id);
+                    }
+                    userModel.findOne({_id:decoded.id},function(err,user){
+                        if(user !== null){
+                            if(!user.activated){
+                                res.status(400).json({status:"Error", message: "Account not activated"});
+                            }else{
+                                getUserSize(user._id,file.size).then(function(size){
+                                    let totalSize = (size + file.size);
+                                    if(totalSize > user.storage_limit){
+                                        res.status(400).json({status:"Error", message: "Limite de almacenamiento alcanzado"});
+                                    }else{
+                                        filesModel.create({name:file.name,size:file.size,mimetype:file.mimetype,md5:file.md5,created_at:new Date(),modified_at:new Date(),owner_id:decoded.id,shared:false,extension:file.extension},function(err,result){
+                                            if(err){
+                                                console.log(err);
+                                                res.status(400).json({status:"Error", message: "Error al guardiar los cambios",err:err});
+                                            }else{
+                                                let urlUnique = true;
+                                                do{
+                                                    let url = generateURL();
+                                                    filesModel.findOne({url:url}, function(errURL,resultURL){
+                                                        if(resultURL === null){
+                                                            urlUnique = false;
+                                                            filesModel.updateOne({_id:result._id},{$set:{url:url}},function(err){
+                                                                if(!err){
+                                                                    req.files.file.mv(STORAGE+decoded.id+"/"+result._id);
+                                                                    res.status(200).json({status:"Ok", message: file.name+" se ha subido correctamente"});
+                                                                }
+                                                            });
+                                                        }
+                                                    });
+    
+                                                }while(urlUnique === false);
+                                            }
+                                        });
+                                    }
+                                }).catch(function(err){
+                                    res.status(400).send({status:"Error", message:"Error ocurrido al obtener el tamaño limite del usuario"});
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        }
     },
     downloadByUrl: function(req,res){
         if(checkUri(req)){
@@ -214,12 +211,12 @@ module.exports = {
 
                             filesModel.findOne({_id:req.body.fileid},function(err1,result1){
                                 filesModel.deleteOne({_id:req.body.fileid},function(err2,result2){
-
-                                    console.log(result1);
                                     console.log(STORAGE+result1.owner_id+"/"+req.body.fileid);
                                     if(!err){
                                         fs.rmSync(STORAGE+result1.owner_id+"/"+req.body.fileid);
-                                        res.status(200).send({status:"OK", message:"Se ha elimnado el archivo correctamente"});
+                                        res.status(200).send({status:"OK", message:"Se ha eliminado el elemento correctamente."});
+                                    }else{
+                                        res.status(200).send({status:"Error", message:"Problema ocurrido cuando se eliminaba el elemento."});
                                     }
                                 });
                             });
@@ -231,5 +228,32 @@ module.exports = {
                 });
             }
         }
+    },createFolder(req,res){
+        jwt.verify(req.body.token,process.env.SECRET_KEY,(err,decoded) =>{
+            if(err){
+                res.status(400).send({status:"error",message:"Token no authorizado"});
+            }else{
+                if(!userStorageExists(decoded.id)){
+                    createUserStorage(decoded.id);
+                }
+                userModel.findOne({_id:decoded.id},function(err,user){
+                    if(user !== null){
+                        if(!user.activated){
+                            res.status(400).json({status:"Error", message: "Cuenta no activada"});
+                        }else{
+                            filesModel.create({name:req.body.foldername,created_at:new Date(),modified_at:new Date(),owner_id:decoded.id,shared:false,parent:req.body.parent},function(err,result){
+                                if(err){
+                                    console.log(err);
+                                    res.status(400).json({status:"Error", message: "Error al crear la carpeta",err:err});
+                                }else{
+                                    res.status(200).json({status:"Ok", message: req.body.foldername.name+" se ha creado correctamente."});
+                                }
+                            });
+                            
+                        }
+                    }
+                });
+            }
+        });
     }
 }

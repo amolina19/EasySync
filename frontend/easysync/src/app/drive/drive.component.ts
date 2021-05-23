@@ -6,6 +6,7 @@ import { FileElement } from '../file-explorer/model/file-element';
 import { AuthService } from '../_services/auth.service';
 import { FileService } from '../_services/file.service';
 import { UserService } from '../_services/user.service';
+import dateFormat from 'dateformat';
 
 @Component({
   selector: 'app-drive',
@@ -25,10 +26,63 @@ export class DriveComponent implements OnInit {
   horizontalPosition: MatSnackBarHorizontalPosition = 'end';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
 
+  orderByName: boolean = true;
+  orderBySize: boolean = false;
+  orderByDate: boolean = false;
+
+  parentID:any = 'root';
+
   constructor(public fileService:FileService,private authService:AuthService,private router:Router,public userService:UserService,private snackBar:MatSnackBar) { }
 
   
   ngOnInit(): void {
+
+    dateFormat.i18n = {
+      dayNames: [
+        "Dom",
+        "Lun",
+        "Mar",
+        "Mie",
+        "Jue",
+        "Vie",
+        "Sab",
+        "Domingo",
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sabado",
+      ],
+      monthNames: [
+        "Ene",
+        "Feb",
+        "Mar",
+        "Abr",
+        "May",
+        "Jun",
+        "Jul",
+        "Ago",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dic",
+        "Enero",
+        "Febrero",
+        "Marzo",
+        "Abril",
+        "Mayo",
+        "Junio",
+        "Julio",
+        "Agosto",
+        "Septiembre",
+        "Octubre",
+        "Noviembre",
+        "Diciembre",
+      ],
+      timeNames: ["a", "p", "am", "pm", "A", "P", "AM", "PM"],
+    };
+
     if(this.authService.isLoggedIn === false){
       this.router.navigate(['/login']);
     }
@@ -53,7 +107,10 @@ export class DriveComponent implements OnInit {
         this.files = data;
         //console.log(this.files);
         this.files.forEach(element => {
-          this.fileService.add({id:element._id,name:element.name,size:element.size,isFolder:false,parent:'root',created_at:element.created_at,modified_at:element.modified_at,owner_id:element.owner_id,shared:element.shared,md5:element.md5,url:element.url,mimetype:element.mimetype});
+          if(element.parent === null){
+            element.parent = 'root';
+          }
+          this.fileService.add({id:element._id,name:element.name,size:element.size,isFolder:false,parent:element.parent,created_at:element.created_at,modified_at:element.modified_at,owner_id:element.owner_id,shared:element.shared,md5:element.md5,url:element.url,mimetype:element.mimetype,extension:element.extension});
         });
         this.updateFileElementQuery();
       }, err =>{
@@ -63,7 +120,6 @@ export class DriveComponent implements OnInit {
           verticalPosition: this.verticalPosition,
           duration: 5 * 1000
         });
-
       }
     )
   }
@@ -71,6 +127,24 @@ export class DriveComponent implements OnInit {
 
   addFolder(folder: { name: string }) {
     //this.fileService.add({ isFolder: true, name: folder.name,size:"102223 bytes", parent: this.currentRoot ? this.currentRoot.id : 'root' });
+    let folderDate = dateFormat(new Date(),'dddd dd mmm, yyyy HH:MM:ss');
+    this.fileService.add({id:null,name:folder.name,size:null,isFolder:true,parent:this.parentID,created_at:folderDate,modified_at:folderDate,owner_id:null,shared:null,md5:null,url:null,mimetype:null,extension:null});
+
+    this.userService.addFolder(folder.name,this.parentID).subscribe(
+      data =>{
+        this.snackBar.open(data.message, 'Cerrar', {
+          horizontalPosition: this.horizontalPosition,
+          verticalPosition: this.verticalPosition,
+          duration: 5 * 1000
+        });
+      },err =>{
+        this.snackBar.open(err.message, 'Cerrar', {
+          horizontalPosition: this.horizontalPosition,
+          verticalPosition: this.verticalPosition,
+          duration: 5 * 1000
+        });
+      }
+    );
     this.updateFileElementQuery();
   }
   
@@ -110,6 +184,7 @@ export class DriveComponent implements OnInit {
     this.updateFileElementQuery();
     this.currentPath = this.pushToPath(this.currentPath, element.name);
     this.canNavigateUp = true;
+    this.parentID = element.id;
   }
 
   pushToPath(path: string, folderName: string) {
@@ -125,5 +200,7 @@ export class DriveComponent implements OnInit {
     p = split.join('/');
     return p;
   }
+
+  
 
 }

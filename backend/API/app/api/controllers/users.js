@@ -14,6 +14,7 @@ const easyCrypt = require('../utils/crypto');
 //const sessionModel = require('../models/session');
 //const logsModel = require('../models/logs');
 const fs = require('fs');
+const { deleteOne } = require('../models/users');
 
 const typeToken = {
     activate: 0,
@@ -414,8 +415,6 @@ module.exports = {
             res.status(301).json({status:"Error",message:process.env.USE_ROUTE});
         }
     },change_password: function(req,res){
-
-        console.log(req.body);
         if(checkUri(req)){
 
             if(req.body.token !== null){
