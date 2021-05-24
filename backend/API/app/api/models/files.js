@@ -55,7 +55,7 @@ const FilesSchema = new Schema({
     },
     isFolder:{
         type:Boolean,
-        required:true
+        required:false
     }
 });
 

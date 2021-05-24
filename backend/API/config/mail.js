@@ -64,7 +64,7 @@ module.exports = {
     sendmailrecoverpassword: function(user,token){
 
         let link = "https://"+process.env.EMAIL_DOMAIN.toLowerCase()+":2096/api/users/recover?token="+token;
-        let email = "<b>Aquí tienes el link para recuperar tu contraseña"+user.username+"</b>, <a href="+link+">"+link+"</a>";
+        let email = "Aquí tienes el link para recuperar tu contraseña</b>"+user.username+"</b>, <a href="+link+">"+link+"</a>";
         
         let info = transporter.sendMail({
             from: process.env.EMAIL_DOMAIN+' '+process.env.EMAIL_HEADER, // sender address
@@ -76,7 +76,7 @@ module.exports = {
     },
     sendT2ACode: function(user,code){
         //let link = "https://"+process.env.EMAIL_DOMAIN.toLowerCase()+":2096/api/users/activate?token="+token;
-        let email = "Aqúi tiens tu código de autenticación "+user.username+", <b>"+code+"</b>";
+        let email = "Aquí tienes tu código de autenticación "+user.username+", <b>"+code+"</b>";
 
         let info = transporter.sendMail({
             from: process.env.EMAIL_DOMAIN+' '+process.env.EMAIL_HEADER, // sender address
