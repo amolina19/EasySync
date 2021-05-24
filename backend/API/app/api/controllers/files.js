@@ -74,7 +74,16 @@ module.exports = {
                                     if(totalSize > user.storage_limit){
                                         res.status(400).json({status:"Error", message: "Limite de almacenamiento alcanzado"});
                                     }else{
-                                        filesModel.create({name:file.name,size:file.size,mimetype:file.mimetype,md5:file.md5,created_at:new Date(),modified_at:new Date(),owner_id:decoded.id,shared:false,extension:file.extension},function(err,result){
+                                        let parent = null;
+                                        if(req.body.parent === undefined){
+                                            parent = 'root';
+                                        }
+
+                                        if(req.body.parent === null){
+                                            parent = 'root';
+                                        }
+
+                                        filesModel.create({name:file.name,size:file.size,mimetype:file.mimetype,md5:file.md5,created_at:new Date(),modified_at:new Date(),owner_id:decoded.id,shared:false,extension:file.extension,parent:parent},function(err,result){
                                             if(err){
                                                 console.log(err);
                                                 res.status(400).json({status:"Error", message: "Error al guardiar los cambios",err:err});
