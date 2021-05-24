@@ -11,6 +11,7 @@ import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition
 import { DriveComponent } from '../drive/drive.component';
 import { DownloadComponent } from './modals/download/download.component';
 import { AppComponent } from '../app.component';
+import { FileService } from '../_services/file.service';
 
 @Component({
   selector: 'file-explorer',
@@ -26,7 +27,7 @@ export class FileExplorerComponent {
   ascName: boolean = true;
   ascSize: boolean = false;
   
-  constructor(public dialog: MatDialog,private userService:UserService,private snackBar:MatSnackBar,private driveComponent:DriveComponent,private appComponent:AppComponent) {}
+  constructor(public dialog: MatDialog,private userService:UserService,private snackBar:MatSnackBar,private driveComponent:DriveComponent,private appComponent:AppComponent,private fileService:FileService) {}
 
   breakpoint:number;
   @Input() fileElements: FileElement[] =[];
@@ -57,7 +58,23 @@ export class FileExplorerComponent {
   }
 
   moveElement(element: FileElement, moveTo: FileElement) {
-    this.elementMoved.emit({ element: element, moveTo: moveTo });
+
+    this.userService.moveFolder(element.id,moveTo.id).subscribe(
+      data=>{
+        this.elementMoved.emit({ element: element, moveTo: moveTo });
+        this.snackBar.open(data.message, 'Cerrar', {
+          horizontalPosition: this.horizontalPosition,
+          verticalPosition: this.verticalPosition,
+          duration: 5 * 1000
+        });
+      },err =>{
+        this.snackBar.open(err.message, 'Cerrar', {
+          horizontalPosition: this.horizontalPosition,
+          verticalPosition: this.verticalPosition,
+          duration: 5 * 1000
+        });
+      }
+    );
   }
 
   openNewFolderDialog() {
@@ -131,6 +148,7 @@ export class FileExplorerComponent {
   openMoreInfoDialog(element:FileElement){
     //console.log(element);
     let dialogRef = this.dialog.open(MoreInfoComponent,{data:{element}});
+    this.fileService.hasChilds(element.id);
   }
 
   openDeleteDialog(element:FileElement){
@@ -140,6 +158,7 @@ export class FileExplorerComponent {
   openMenu(event: MouseEvent, viewChild: MatMenuTrigger) {
     event.preventDefault();
     viewChild.openMenu();
+    this.fileService.getChildMap().clear();
   }
 
   shortByDate():void{
@@ -158,5 +177,25 @@ export class FileExplorerComponent {
     this.ascSize = !this.ascSize;
     this.driveComponent.fileService.shortBySize(this.ascSize);
     this.driveComponent.updateFileElementQuery();
+  }
+
+  moveToMainFolder(element:any){
+    this.userService.moveFolder(element.id,'root').subscribe(
+      data=>{
+        this.snackBar.open(data.message, 'Cerrar', {
+          horizontalPosition: this.horizontalPosition,
+          verticalPosition: this.verticalPosition,
+          duration: 5 * 1000
+        });
+        this.driveComponent.updateFiles();
+      },err =>{
+        this.snackBar.open(err.message, 'Cerrar', {
+          horizontalPosition: this.horizontalPosition,
+          verticalPosition: this.verticalPosition,
+          duration: 5 * 1000
+        });
+      }
+    );
+    
   }
 }

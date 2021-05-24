@@ -106,11 +106,14 @@ export class DriveComponent implements OnInit {
         this.fileService.clear();
         this.files = data;
         //console.log(this.files);
+
+        //debug
+        
         this.files.forEach(element => {
-          if(element.parent === null){
+          if(element.parent === undefined){
             element.parent = 'root';
           }
-          this.fileService.add({id:element._id,name:element.name,size:element.size,isFolder:false,parent:element.parent,created_at:element.created_at,modified_at:element.modified_at,owner_id:element.owner_id,shared:element.shared,md5:element.md5,url:element.url,mimetype:element.mimetype,extension:element.extension});
+          this.fileService.add({id:element._id,name:element.name,size:element.size,isFolder:element.isFolder,parent:element.parent,created_at:element.created_at,modified_at:element.modified_at,owner_id:element.owner_id,shared:element.shared,md5:element.md5,url:element.url,mimetype:element.mimetype,extension:element.extension});
         });
         this.updateFileElementQuery();
       }, err =>{
@@ -126,17 +129,15 @@ export class DriveComponent implements OnInit {
 
 
   addFolder(folder: { name: string }) {
-    //this.fileService.add({ isFolder: true, name: folder.name,size:"102223 bytes", parent: this.currentRoot ? this.currentRoot.id : 'root' });
-    let folderDate = dateFormat(new Date(),'dddd dd mmm, yyyy HH:MM:ss');
-    this.fileService.add({id:null,name:folder.name,size:null,isFolder:true,parent:this.parentID,created_at:folderDate,modified_at:folderDate,owner_id:null,shared:null,md5:null,url:null,mimetype:null,extension:null});
-
     this.userService.addFolder(folder.name,this.parentID).subscribe(
       data =>{
+        //this.fileService.add({id:data.id,name:folder.name,size:null,isFolder:data.isFolder,parent:data.parent,created_at:folderDate,modified_at:data,owner_id:data.owner_id,shared:null,md5:null,url:null,mimetype:null,extension:null});
         this.snackBar.open(data.message, 'Cerrar', {
           horizontalPosition: this.horizontalPosition,
           verticalPosition: this.verticalPosition,
           duration: 5 * 1000
         });
+        this.updateFiles();
       },err =>{
         this.snackBar.open(err.message, 'Cerrar', {
           horizontalPosition: this.horizontalPosition,
@@ -145,7 +146,6 @@ export class DriveComponent implements OnInit {
         });
       }
     );
-    this.updateFileElementQuery();
   }
   
   removeElement(element: FileElement) {
@@ -171,11 +171,14 @@ export class DriveComponent implements OnInit {
     if (this.currentRoot && this.currentRoot.parent === 'root') {
       this.currentRoot = null;
       this.canNavigateUp = false;
+      this.parentID = 'root';
       this.updateFileElementQuery();
     } else {
       this.currentRoot = this.fileService.get(this.currentRoot.parent);
+      this.parentID = this.currentRoot.id;
       this.updateFileElementQuery();
     }
+    console.log(this.parentID);
     this.currentPath = this.popFromPath(this.currentPath);
   }
   
@@ -185,6 +188,7 @@ export class DriveComponent implements OnInit {
     this.currentPath = this.pushToPath(this.currentPath, element.name);
     this.canNavigateUp = true;
     this.parentID = element.id;
+    console.log(this.parentID);
   }
 
   pushToPath(path: string, folderName: string) {

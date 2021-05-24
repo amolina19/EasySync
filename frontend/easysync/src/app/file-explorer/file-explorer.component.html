@@ -31,7 +31,7 @@
   <div class="container-fluid" fxFlex fxLayout="row">
     
     <div class="content" fxFlex fxLayout="row">
-      <div class="row">
+      <div class="row pl-4">
         <div *ngFor="let element of fileElements" class="file-or-folder" >
           <span [matMenuTriggerFor]="rootMenu" [matMenuTriggerData]="{element: element}" #menuTrigger="matMenuTrigger"></span>
           <div fxLayout="column" fxLayoutAlign="space-between center" (click)="navigate(element)" (contextmenu)="openMenu($event, menuTrigger)" class="element justify-content-center">
@@ -44,7 +44,7 @@
             </div>
 
             <div class="row">
-              <span class="break-word text-center pr-4 pl-4">{{element.name}}</span>
+              <span class="text-break text-center mr-3 ml-3">{{element.name}}</span>
             </div>
             
           </div>
@@ -55,6 +55,12 @@
   
   <mat-menu #rootMenu="matMenu" [overlapTrigger]="false">
     <ng-template matMenuContent let-element="element">
+
+      <button *ngIf="element.parent !== 'root'" mat-menu-item (click)=" moveToMainFolder(element)">
+        <mat-icon>folder_special</mat-icon>
+        <span>Mover a la carpeta principal</span>
+      </button>
+
       <button mat-menu-item [matMenuTriggerFor]="moveToMenu" [matMenuTriggerData]="{self: element}">
         <mat-icon>open_with</mat-icon>
         <span>Mover a</span>
