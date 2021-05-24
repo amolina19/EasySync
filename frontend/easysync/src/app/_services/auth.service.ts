@@ -38,6 +38,13 @@ export class AuthService {
     return this.http.post(AUTH_API+ 'token',body.toString(),httpOptions);
   }
 
+  loginByT2A(token:string,code:string){
+    let body = new URLSearchParams();
+    body.set('token',token);
+    body.set('code',code);
+    return this.http.post(AUTH_API+ 't2a/login',body.toString(),httpOptions);
+  }
+
   register(user: { username: any; email: any; password: any; }): Observable<any>{
 
     let body = new URLSearchParams();

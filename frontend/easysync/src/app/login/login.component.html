@@ -1,4 +1,4 @@
-<div class="row mt-5">
+<div class="row mt-5" *ngIf="!t2aLogin">
   <div class="col-md-4"></div>
   <div class="col-md-4">
 
@@ -77,4 +77,63 @@
     </mat-card>
   </div>
   <div class="col-md-4"></div>
+</div>
+
+<div *ngIf="t2aLogin">
+  <div class="container mt-5 mb-5">
+
+    <div class="row justify-content-center mb-5">
+      <div class="col-md-4">
+        <img class="img-fluid" src="./../../assets/img/security.svg">
+      </div>
+      
+    </div>
+  
+    <div class="row justify-content-center mt-5">
+      <div class="col-md-4">
+        <form
+        *ngIf="!auth.isLoggedIn"
+        name="form"
+        (ngSubmit)="f.form.valid && onSubmitT2A()"
+        #f="ngForm"
+        novalidate
+      >
+          <mat-form-field class="full-width">
+            <mat-label>Código de acceso</mat-label>
+            <input matInput #message maxlength="8" placeholder="Ex. 19283442" matInput type="text" oninput="this.value = this.value.toUpperCase();"
+            name="t2acode"
+            [(ngModel)]="form.t2acode"
+            (keyup.enter)="onSubmitT2A()"
+            required
+            minlength="0"
+            maxlength="8"
+            #t2acode="ngModel">
+            <mat-hint align="start"><strong>Nunca reveles tu código de acceso a nadie!.</strong> </mat-hint>
+            <mat-hint align="end">{{message.value.length}} / 8</mat-hint>
+          </mat-form-field>
+
+
+          <div class="form-group mt-3">
+            <div
+              class="alert alert-danger"
+              role="alert"
+              *ngIf="isLoginFailed"
+            >
+              Inicio sesión fallido: {{ errorMessage }}
+            </div>
+          </div>
+
+          <div class="alert alert-success mt-3" *ngIf="auth.isLoggedIn">
+            Has iniciado sesión corrcetamente.
+          </div>
+        </form>
+      </div>
+    </div>
+  
+    <div class="row justify-content-center mt-3">
+      <button mat-raised-button color="primary" (click)="onSubmitT2A();" class="mr-3">Iniciar sesión</button>
+      <button mat-raised-button color="warn" (click)="volver();">Volver atrás</button>
+    </div>
+  </div>
+  
 </div>

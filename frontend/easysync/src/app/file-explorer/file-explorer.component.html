@@ -31,19 +31,19 @@
   <div class="container-fluid" fxFlex fxLayout="row">
     
     <div class="content" fxFlex fxLayout="row">
-      <div class="row pl-4">
+      <div class="row justify-content-center justify-content-sm-start">
         <div *ngFor="let element of fileElements" class="file-or-folder" >
           <span [matMenuTriggerFor]="rootMenu" [matMenuTriggerData]="{element: element}" #menuTrigger="matMenuTrigger"></span>
           <div fxLayout="column" fxLayoutAlign="space-between center" (click)="navigate(element)" (contextmenu)="openMenu($event, menuTrigger)" class="element justify-content-center">
             
 
 
-            <div class="row element-icon">
+            <div class="row element-icon justify-content-center">
               <mat-icon color="warn" class="file-or-folder-icon pointer" *ngIf="element.isFolder">folder</mat-icon>
               <mat-icon color="primary" class="file-or-folder-icon pointer" *ngIf="!element.isFolder">insert_drive_file</mat-icon>
             </div>
 
-            <div class="row">
+            <div class="row justify-content-center">
               <span class="text-break text-center mr-3 ml-3">{{element.name}}</span>
             </div>
             

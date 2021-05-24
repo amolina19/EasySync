@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 
 //LOCALSTORAGE
 const TOKEN_KEY = 'auth-token';
+const TOKENT2A_KEY = 'auth-tokent2a';
 const USER_KEY = 'auth-user';
 const DEVICE = 'device';
 const UUID = 'device-uuid';
@@ -111,6 +112,19 @@ export class TokenStorageService {
   public setDeviceUUID(uuid:string):void{
     window.localStorage.removeItem(UUID)
     window.localStorage.setItem(UUID,uuid);
+  }
+
+  public setTokenT2A(tokent2a:string):any{
+    window.localStorage.removeItem(TOKENT2A_KEY)
+    window.localStorage.setItem(TOKENT2A_KEY,tokent2a);
+  }
+
+  public getTokenT2A():string{
+    return window.localStorage.getItem(TOKENT2A_KEY);
+  }
+
+  public removeTokenT2A():void{
+    window.localStorage.removeItem(TOKENT2A_KEY);
   }
 
 }

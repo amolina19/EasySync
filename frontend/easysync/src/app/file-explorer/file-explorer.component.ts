@@ -87,13 +87,14 @@ export class FileExplorerComponent {
   }
 
   openRenameDialog(element: FileElement) {
-    let dialogRef = this.dialog.open(RenameDialogComponent);
+    let dialogRef = this.dialog.open(RenameDialogComponent,{data:{element}});
     dialogRef.afterClosed().subscribe(res => {
+      //console.log(res);
       if (res) {
         element.name = res;
         this.userService.renameFile(element.id,element.name).subscribe(
           data =>{
-            console.log(data);
+            //console.log(data);
             //this.elementRenamed.emit(element);
             this.driveComponent.updateFiles();
             this.snackBar.open(data.message, 'Cerrar', {
