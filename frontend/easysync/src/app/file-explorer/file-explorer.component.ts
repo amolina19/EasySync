@@ -28,7 +28,6 @@ export class FileExplorerComponent {
   ascDate: boolean = false;
   ascName: boolean = true;
   ascSize: boolean = false;
-  upload:any;
   
   constructor(public httpClient: HttpClient,public dialog: MatDialog,private userService:UserService,private snackBar:MatSnackBar,private driveComponent:DriveComponent,private appComponent:AppComponent,private fileService:FileService,private tokenStorage:TokenStorageService) {}
 
@@ -99,7 +98,7 @@ export class FileExplorerComponent {
 
     console.log(file);
 
-    this.upload = this.httpClient.post<any>(this.userService.API_FILES+"storage/upload", formData,{reportProgress: true, observe: "events"}).subscribe(
+    this.appComponent.uploadPost = this.httpClient.post<any>(this.userService.API_FILES+"storage/upload", formData,{reportProgress: true, observe: "events"}).subscribe(
       
       event => {
         this.appComponent.upload = true;

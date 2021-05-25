@@ -38,6 +38,7 @@ export class AppComponent implements OnInit {
   uploadProgress: number;
   uploadTotal:string;
   uploaded:string;
+  uploadPost:any;
 
   download$: Observable<Download>;
   //private keySize = 256;
@@ -48,7 +49,6 @@ export class AppComponent implements OnInit {
     @Inject(DOCUMENT) private document: Document) {}
 
   ngOnInit(): void {
-
     this.progressBar = true;
 
     if(this.TokenStorageService.getToken() !=null){
@@ -133,6 +133,7 @@ export class AppComponent implements OnInit {
       case 'upload':
         //this.filesExplorer.upload.unsubscribe();
         this.upload = false;
+        this.uploadPost.unsubscribe();
         this.uploadFinished = false;
         this.uploadState = null;
         this.uploadName= null;
@@ -155,6 +156,7 @@ export class AppComponent implements OnInit {
     switch(window){
       case 'upload':
         //this.filesExplorer.upload.unsubscribe();
+        this.uploadPost.unsubscribe();
         this.upload = false;
         this.uploadFinished = false;
         this.uploadState = null;

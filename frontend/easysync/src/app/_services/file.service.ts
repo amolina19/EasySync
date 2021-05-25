@@ -23,6 +23,7 @@ export interface IFileService {
 export class FileService implements IFileService {
   private map = new Map<string, FileElement>();
   private mapChild = new Map<string,string>();
+  
 
   constructor() {}
 
