@@ -9,18 +9,18 @@ import { DeleteDialogComponent } from './modals/delete-dialog/delete-dialog.comp
 import { UserService } from '../_services/user.service';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { DriveComponent } from '../drive/drive.component';
-import { DownloadComponent } from './modals/download/download.component';
 import { AppComponent } from '../app.component';
 import { FileService } from '../_services/file.service';
 import { TokenStorageService } from '../_services/token-storage.service';
 import { HttpClient, HttpEventType } from '@angular/common/http';
+import { OnInit } from '@angular/core';
 
 @Component({
   selector: 'file-explorer',
   templateUrl: './file-explorer.component.html',
   styleUrls: ['./file-explorer.component.css']
 })
-export class FileExplorerComponent {
+export class FileExplorerComponent implements OnInit{
 
   horizontalPosition: MatSnackBarHorizontalPosition = 'end';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
@@ -28,8 +28,26 @@ export class FileExplorerComponent {
   ascDate: boolean = false;
   ascName: boolean = true;
   ascSize: boolean = false;
+  userId:string;
+
   
-  constructor(public httpClient: HttpClient,public dialog: MatDialog,private userService:UserService,private snackBar:MatSnackBar,private driveComponent:DriveComponent,private appComponent:AppComponent,private fileService:FileService,private tokenStorage:TokenStorageService) {}
+
+  
+  constructor(public httpClient: HttpClient,public dialog: MatDialog,private userService:UserService,private snackBar:MatSnackBar,public driveComponent:DriveComponent,public appComponent:AppComponent,private fileService:FileService,private tokenStorage:TokenStorageService) {
+  }
+
+  ngOnInit():void{
+
+    let user = this.tokenStorage.getUser();
+    
+    this.userId = user._id;
+    console.log(this.userId);
+
+    console.log('Tus archivos',this.appComponent.tusarchivos);
+    console.log('Compartido',this.appComponent.compartido);
+    console.log('papelera',this.appComponent.papelera);
+
+  }
 
   breakpoint:number;
   @Input() fileElements: FileElement[] =[];
@@ -117,7 +135,7 @@ export class FileExplorerComponent {
             verticalPosition: this.verticalPosition,
             duration: 5 * 1000
           });
-          this.driveComponent.updateFiles();
+          this.driveComponent.updateFiles(0);
         }
 
         if (event.type === HttpEventType.UploadProgress) {
@@ -148,7 +166,7 @@ export class FileExplorerComponent {
           data =>{
             //console.log(data);
             //this.elementRenamed.emit(element);
-            this.driveComponent.updateFiles();
+            this.driveComponent.updateFiles(0);
             this.snackBar.open(data.message, 'Cerrar', {
               horizontalPosition: this.horizontalPosition,
               verticalPosition: this.verticalPosition,
@@ -240,7 +258,7 @@ export class FileExplorerComponent {
           verticalPosition: this.verticalPosition,
           duration: 5 * 1000
         });
-        this.driveComponent.updateFiles();
+        this.driveComponent.updateFiles(0);
       },err =>{
         this.snackBar.open(err.message, 'Cerrar', {
           horizontalPosition: this.horizontalPosition,

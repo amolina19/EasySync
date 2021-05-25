@@ -45,6 +45,13 @@ export class AppComponent implements OnInit {
   //private iterations = 100;
   //private salt = "xVhbJrXM7pQXK4wWcCPqU6YTCbFPe6xt";
 
+
+  path:string = "Tus Archivos";
+  tusarchivos:boolean = true;
+  compartido:boolean = false;
+  papelera:boolean = false;
+  isGettinFiles:boolean = false;
+
   constructor(private TokenStorageService: TokenStorageService, private userService:UserService,public auth:AuthService, public fileService: FileService,private downloads: DownloadService,
     @Inject(DOCUMENT) private document: Document) {}
 

@@ -7,6 +7,7 @@ import { AuthService } from '../_services/auth.service';
 import { FileService } from '../_services/file.service';
 import { UserService } from '../_services/user.service';
 import dateFormat from 'dateformat';
+import { AppComponent } from '../app.component';
 
 @Component({
   selector: 'app-drive',
@@ -15,6 +16,14 @@ import dateFormat from 'dateformat';
 })
 export class DriveComponent implements OnInit {
 
+
+  tusarchivos:boolean = true;
+  compartido:boolean = false;
+  papelera:boolean = false;
+
+
+  events: string[] = [];
+  opened: boolean;
 
   fileElements: Observable<FileElement[]>;
   currentRoot: FileElement;
@@ -32,7 +41,7 @@ export class DriveComponent implements OnInit {
 
   parentID:any = 'root';
 
-  constructor(public fileService:FileService,private authService:AuthService,private router:Router,public userService:UserService,private snackBar:MatSnackBar) { }
+  constructor(private appComponent:AppComponent, public fileService:FileService,private authService:AuthService,private router:Router,public userService:UserService,private snackBar:MatSnackBar) { }
 
   
   ngOnInit(): void {
@@ -87,7 +96,7 @@ export class DriveComponent implements OnInit {
       this.router.navigate(['/login']);
     }
 
-    this.updateFiles();
+    this.updateFiles(0);
 
     /*
     const folderA = this.fileService.add({ name: 'Folder A',size:"102223 bytes", isFolder: true, parent: 'root' });
@@ -99,13 +108,42 @@ export class DriveComponent implements OnInit {
     
   }
 
-  updateFiles():void{
-    this.userService.getFilesUser().subscribe(
+  tusArchivosDrive():void{
+    this.appComponent.path = "Tus Archivos";
+    this.appComponent.tusarchivos = true;
+    this.appComponent.compartido = false;
+    this.appComponent.papelera = false;
+    this.appComponent.isGettinFiles = true;
+    this.updateFiles(0);
+  }
+
+  papeleraDrive():void{
+    this.appComponent.path = "Papelera";
+    this.appComponent.tusarchivos = false;
+    this.appComponent.compartido = false;
+    this.appComponent.papelera = true;
+    this.appComponent.isGettinFiles = true;
+    //console.log(this.appComponent.path);
+    this.updateFiles(2);
+  }
+
+  compartidoDrive():void{
+    this.appComponent.path = "Compartido";
+    this.appComponent.tusarchivos = false;
+    this.appComponent.compartido = true;
+    this.appComponent.papelera = false;
+    this.appComponent.isGettinFiles = true;
+    //console.log(this.appComponent.path);
+    this.updateFiles(1);
+  }
+
+  updateFiles(type:number):void{
+    this.userService.getFilesUser(type).subscribe(
   
       data =>{
         this.fileService.clear();
         this.files = data;
-        //console.log(this.files);
+        console.log('DATA',data);
 
         //debug
         
@@ -113,8 +151,15 @@ export class DriveComponent implements OnInit {
           if(element.parent === undefined){
             element.parent = 'root';
           }
-          this.fileService.add({id:element._id,name:element.name,size:element.size,isFolder:element.isFolder,parent:element.parent,created_at:element.created_at,modified_at:element.modified_at,owner_id:element.owner_id,shared:element.shared,md5:element.md5,url:element.url,mimetype:element.mimetype,extension:element.extension});
+
+          if(type !== 0){
+            this.fileService.add({id:element._id,name:element.name,size:element.size,isFolder:element.isFolder,parent:'root',created_at:element.created_at,modified_at:element.modified_at,owner_id:element.owner_id,shared:element.shared,md5:element.md5,url:element.url,mimetype:element.mimetype,extension:element.extension,isTrash:element.isTrash});
+          }else{
+            this.fileService.add({id:element._id,name:element.name,size:element.size,isFolder:element.isFolder,parent:element.parent,created_at:element.created_at,modified_at:element.modified_at,owner_id:element.owner_id,shared:element.shared,md5:element.md5,url:element.url,mimetype:element.mimetype,extension:element.extension,isTrash:element.isTrash});
+          }
+          
         });
+        this.appComponent.isGettinFiles = false;
         this.updateFileElementQuery();
       }, err =>{
 
@@ -137,7 +182,7 @@ export class DriveComponent implements OnInit {
           verticalPosition: this.verticalPosition,
           duration: 5 * 1000
         });
-        this.updateFiles();
+        this.updateFiles(0);
       },err =>{
         this.snackBar.open(err.message, 'Cerrar', {
           horizontalPosition: this.horizontalPosition,

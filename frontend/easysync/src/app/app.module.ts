@@ -71,6 +71,7 @@ import { FileService } from './_services/file.service';
 import { FileExplorerModule } from './file-explorer/file-explorer.module';
 import { DriveComponent } from './drive/drive.component';
 import { getSaver, SAVER } from './_services/saver.provider';
+import { FileExplorerComponent } from './file-explorer/file-explorer.component';
 
 
 

@@ -55,39 +55,38 @@
 
   <div *ngIf="auth.isLoggedIn">
   </div>
-  
-  <div class="container-fluid">
-    <router-outlet></router-outlet>
+</div>
 
-    <div class="footer">
+<router-outlet></router-outlet>
+<div class="container-fluid">
+<div class="footer">
 
-      <mat-card *ngIf="download$ | async as download">
-        <div class="container-fluid">
-          <span class="mr-5 ml-3 float-left"><b>{{download.state}} </b>  Descargando.. {{ downloadName }} <b>{{convertBytesSize((downloadSizeNumber*(download.progress/100)).toFixed(2))}}</b> de <b>{{downloadSize}}</b></span>
-          <button class="float-right mb-2" mat-raised-button color="primary" *ngIf="download.progress === 100" (click)="cerrarVentana('download');">Cerrar</button>
-          <button class="float-right mb-2" mat-raised-button color="primary" *ngIf="download.progress !== 100" (click)="cancelar('download');">Cancelar</button>
-        </div>
+  <mat-card *ngIf="download$ | async as download">
+    <div class="container-fluid">
+      <span class="mr-5 ml-3 float-left"><b>{{download.state}} </b>  Descargando.. {{ downloadName }} <b>{{convertBytesSize((downloadSizeNumber*(download.progress/100)).toFixed(2))}}</b> de <b>{{downloadSize}}</b></span>
+      <button class="float-right mb-2" mat-raised-button color="primary" *ngIf="download.progress === 100" (click)="cerrarVentana('download');">Cerrar</button>
+      <button class="float-right mb-2" mat-raised-button color="primary" *ngIf="download.progress !== 100" (click)="cancelar('download');">Cancelar</button>
+    </div>
 
-        <mat-progress-bar 
-        [mode]="download.state == 'PENDING' ? 'buffer' : 'determinate'" 
-        [value]="download.progress">
-        </mat-progress-bar>
-      </mat-card>
+    <mat-progress-bar 
+    [mode]="download.state == 'PENDING' ? 'buffer' : 'determinate'" 
+    [value]="download.progress">
+    </mat-progress-bar>
+  </mat-card>
 
-      <mat-card *ngIf="upload">
-        <div class="container-fluid">
-            <span class="mr-5 ml-3 float-left" ><b>{{uploadState}} </b>  Subiendo.. {{uploadName}} <b>{{uploaded}}</b> de <b>{{uploadSize}}</b> </span>
-            <button class="float-right mb-2" mat-raised-button color="warn" *ngIf="uploadFinished" (click)="cerrarVentana('upload');">Cerrar</button>
-            <button class="float-right mb-2" mat-raised-button color="warn" *ngIf="uploadProgress < 100" (click)="cancelar('upload');">Cancelar</button>
-        </div>
+  <mat-card *ngIf="upload">
+    <div class="container-fluid">
+        <span class="mr-5 ml-3 float-left" ><b>{{uploadState}} </b>  Subiendo.. {{uploadName}} <b>{{uploaded}}</b> de <b>{{uploadSize}}</b> </span>
+        <button class="float-right mb-2" mat-raised-button color="warn" *ngIf="uploadFinished" (click)="cerrarVentana('upload');">Cerrar</button>
+        <button class="float-right mb-2" mat-raised-button color="warn" *ngIf="uploadProgress < 100" (click)="cancelar('upload');">Cancelar</button>
+    </div>
 
-          <mat-progress-bar
-          color="warn" 
-          mode="determinate" 
-          [value]="uploadProgress">
-          </mat-progress-bar>
-      </mat-card>
-  </div>
+      <mat-progress-bar
+      color="warn" 
+      mode="determinate" 
+      [value]="uploadProgress">
+      </mat-progress-bar>
+  </mat-card>
 </div>
 
 
