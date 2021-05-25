@@ -12,6 +12,8 @@ import { DriveComponent } from '../drive/drive.component';
 import { DownloadComponent } from './modals/download/download.component';
 import { AppComponent } from '../app.component';
 import { FileService } from '../_services/file.service';
+import { TokenStorageService } from '../_services/token-storage.service';
+import { HttpClient, HttpEventType } from '@angular/common/http';
 
 @Component({
   selector: 'file-explorer',
@@ -26,8 +28,9 @@ export class FileExplorerComponent {
   ascDate: boolean = false;
   ascName: boolean = true;
   ascSize: boolean = false;
+  upload:any;
   
-  constructor(public dialog: MatDialog,private userService:UserService,private snackBar:MatSnackBar,private driveComponent:DriveComponent,private appComponent:AppComponent,private fileService:FileService) {}
+  constructor(public httpClient: HttpClient,public dialog: MatDialog,private userService:UserService,private snackBar:MatSnackBar,private driveComponent:DriveComponent,private appComponent:AppComponent,private fileService:FileService,private tokenStorage:TokenStorageService) {}
 
   breakpoint:number;
   @Input() fileElements: FileElement[] =[];
@@ -73,6 +76,56 @@ export class FileExplorerComponent {
           verticalPosition: this.verticalPosition,
           duration: 5 * 1000
         });
+      }
+    );
+  }
+
+  generateUpload():void{
+    document.getElementById('upload').click();
+  }
+
+  onFileSelect(event) {
+    if (event.target.files.length > 0) {
+      console.log(event.target.files);
+      this.uploadFile(event.target.files[0]);
+    }
+  }
+
+  uploadFile(file:any){
+    const formData = new FormData();
+    formData.append('token',this.tokenStorage.getToken());
+    formData.append('file', file);
+    formData.append('parent', this.driveComponent.parentID);
+
+    console.log(file);
+
+    this.upload = this.httpClient.post<any>(this.userService.API_FILES+"storage/upload", formData,{reportProgress: true, observe: "events"}).subscribe(
+      
+      event => {
+        this.appComponent.upload = true;
+        this.appComponent.uploadName = file.name;
+        this.appComponent.uploadSize = this.appComponent.convertBytesSize(file.size);
+        this.appComponent.uploadState = "UPLOADING";
+        
+        if (event.type === HttpEventType.DownloadProgress) {
+            //console.log("download progress"); 
+        }
+        if (event.type === HttpEventType.Response) {
+          this.appComponent.uploadState = "DONE";
+          this.appComponent.uploadFinished = true;
+          this.snackBar.open("El archivo "+file.name+" se subio correctamente", 'Cerrar', {
+            horizontalPosition: this.horizontalPosition,
+            verticalPosition: this.verticalPosition,
+            duration: 5 * 1000
+          });
+          this.driveComponent.updateFiles();
+        }
+
+        if (event.type === HttpEventType.UploadProgress) {
+          this.appComponent.uploadProgress = Number.parseInt(""+(event.loaded*100)/event.total);
+          this.appComponent.uploaded = this.appComponent.convertBytesSize(event.loaded);
+          //console.log(this.appComponent.uploaded);
+        }
       }
     );
   }
@@ -142,7 +195,7 @@ export class FileExplorerComponent {
     this.appComponent.downloadName = element.name;
     this.appComponent.downloadURL = this.userService.API_FILES+"storage/download?url="+element.url;
     this.appComponent.downloadSize = this.appComponent.convertBytesSize(element.size);
-    this.appComponent.downloadSizeNumber = this.appComponent.convertBytesSizeWithoutStr(Number.parseInt(element.size));
+    this.appComponent.downloadSizeNumber = Number.parseInt(element.size);
     this.appComponent.download(this.appComponent.downloadURL,this.appComponent.downloadName);
   }
 

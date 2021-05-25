@@ -1,15 +1,20 @@
-  
+<input type="file" id="upload" style="opacity: 0.0; position: absolute; top: -10000;" (change)="onFileSelect($event)">
 <mat-toolbar>
     <mat-icon *ngIf="canNavigateUp" class="pointer" (click)="navigateUp()">arrow_back</mat-icon>
-    <span style="margin-left: 8px" class="">{{path || 'Tus Archivos'}}</span>
+    <span class="ml-0 mr-3 ml-sm-2" >{{path || 'Tus Archivos'}}</span>
     <span class="spacer"></span>
-    <mat-icon class="pointer" (click)="openNewFolderDialog()" matTooltip="Crear una nueva carpeta"
-    aria-label="Button that displays a tooltip when focused or hovered over">create_new_folder</mat-icon>
-    <mat-icon class="pointer ml-3" (click)="shortByName()" matTooltip="Ordernar los elementos por nombre"
-    aria-label="Button that displays a tooltip when focused or hovered over">sort_by_alpha</mat-icon>
-    <mat-icon class="pointer ml-3" (click)="shortByDate()" matTooltip="Ordenar los elementos por fecha de última creacion o modificación"
-    aria-label="Button that displays a tooltip when focused or hovered over">date_range</mat-icon>
-    <mat-icon class="pointer ml-3 mr-3" (click)="shortBySize()">format_list_bulleted</mat-icon>
+    <div class="row justify-content-center ml-2">
+      <mat-icon class="pointer" (click)="generateUpload()" matTooltip="Subir archivo"
+      aria-label="Button that displays a tooltip when focused or hovered over">cloud_upload</mat-icon>
+      <mat-icon class="pointer ml-3" (click)="openNewFolderDialog()" matTooltip="Crear una nueva carpeta"
+      aria-label="Button that displays a tooltip when focused or hovered over">create_new_folder</mat-icon>
+      <mat-icon class="pointer ml-3" (click)="shortByName()" matTooltip="Ordernar los elementos por nombre"
+      aria-label="Button that displays a tooltip when focused or hovered over">sort_by_alpha</mat-icon>
+      <mat-icon class="pointer ml-3" (click)="shortByDate()" matTooltip="Ordenar los elementos por fecha de última creacion o modificación"
+      aria-label="Button that displays a tooltip when focused or hovered over">date_range</mat-icon>
+      <mat-icon class="pointer ml-3 mr-3" (click)="shortBySize()">format_list_bulleted</mat-icon>
+    </div>
+    
   </mat-toolbar>
   <!--
   <div class="container" fxFlex fxLayout="row" fxLayoutAlign="space-between stretch">

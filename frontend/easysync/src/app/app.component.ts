@@ -28,6 +28,16 @@ export class AppComponent implements OnInit {
   downloadSize: string;
   downloadProgressSize: string;
   downloadSizeNumber:number;
+  downloadFinished:boolean = false;
+
+  upload:boolean = false;
+  uploadFinished:boolean = false;
+  uploadState:string;
+  uploadName:string;
+  uploadSize:string;
+  uploadProgress: number;
+  uploadTotal:string;
+  uploaded:string;
 
   download$: Observable<Download>;
   //private keySize = 256;
@@ -65,6 +75,10 @@ export class AppComponent implements OnInit {
       this.progressBar = false;
     }
   }
+
+  
+
+
 
   logout():void{
     this.TokenStorageService.signOut();
@@ -112,6 +126,52 @@ export class AppComponent implements OnInit {
       returnSize = (bytesNumber/1024/1024/1024/1024/1024).toFixed(2);
     }
     return returnSize;
+  }
+
+  cerrarVentana(window:string):void{
+    switch(window){
+      case 'upload':
+        //this.filesExplorer.upload.unsubscribe();
+        this.upload = false;
+        this.uploadFinished = false;
+        this.uploadState = null;
+        this.uploadName= null;
+        this.uploadSize = null;
+        this.uploadProgress = null;
+        this.uploadTotal = null;
+        this.uploaded = null;
+        break;
+      case 'download':
+        this.download$ = null;
+        this.downloadName = null;
+        this.downloadSize = null;
+        this.downloadProgressSize = null;
+        this.downloadSizeNumber = null;
+        break;
+    }
+  }
+
+  cancelar(window:string):void{
+    switch(window){
+      case 'upload':
+        //this.filesExplorer.upload.unsubscribe();
+        this.upload = false;
+        this.uploadFinished = false;
+        this.uploadState = null;
+        this.uploadName= null;
+        this.uploadSize = null;
+        this.uploadProgress = null;
+        this.uploadTotal = null;
+        this.uploaded = null;
+        break;
+      case 'download':
+        this.download$ = null;
+        this.downloadName = null;
+        this.downloadSize = null;
+        this.downloadProgressSize = null;
+        this.downloadSizeNumber = null;
+        break;
+    }
   }
 
   /*
