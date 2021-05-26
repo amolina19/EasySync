@@ -56,6 +56,8 @@ export class LoginComponent implements OnInit {
           var dataMap = new Map(Object.entries(data));
           this.tokenStorage.saveToken(dataMap.get('token'));
           this.tokenStorage.saveUser(dataMap.get('user'));
+          this.tokenStorage.setKeys(dataMap.get('keys'));
+          this.tokenStorage.setPBKDF2Key(dataMap.get('pbkdf2'));
   
           this.isLoginFailed = false;
           this.auth.isLoggedIn = true;
@@ -79,6 +81,8 @@ export class LoginComponent implements OnInit {
         var dataMap = new Map(Object.entries(data));
         this.tokenStorage.saveToken(dataMap.get('token'));
         this.tokenStorage.saveUser(dataMap.get('user'));
+        this.tokenStorage.setKeys(dataMap.get('keys'));
+        this.tokenStorage.setPBKDF2Key(dataMap.get('pbkdf2'));
         this.tokenStorage.removeTokenT2A();
         this.isLoginFailed = false;
         this.auth.isLoggedIn = true;

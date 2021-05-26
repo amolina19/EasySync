@@ -11,6 +11,7 @@ const UUID = 'device-uuid';
 
 //SESSION STORAGE
 const PBKDF2_KEY = 'pbkdf2key';
+const KEYS = 'keys';
 
 //var pbkdf2 = require('pbkdf2');
 
@@ -88,12 +89,21 @@ export class TokenStorageService {
   }
 
   public getPBKDF2Key():string{
-    return window.sessionStorage.getItem(PBKDF2_KEY);
+    return window.localStorage.getItem(PBKDF2_KEY);
   }
 
   public setPBKDF2Key(key):void{
-    window.sessionStorage.removeItem(PBKDF2_KEY);
-    window.sessionStorage.setItem(PBKDF2_KEY,key);
+    window.localStorage.removeItem(PBKDF2_KEY);
+    window.localStorage.setItem(PBKDF2_KEY,key);
+  }
+
+  public getKeys():string{
+    return window.localStorage.getItem(KEYS);
+  }
+
+  public setKeys(keys):void{
+    window.localStorage.removeItem(KEYS);
+    window.localStorage.setItem(KEYS,keys);
   }
 
   public getDevice(): any {

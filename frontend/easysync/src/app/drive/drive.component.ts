@@ -38,7 +38,7 @@ export class DriveComponent implements OnInit {
   orderByName: boolean = true;
   orderBySize: boolean = false;
   orderByDate: boolean = false;
-
+  path: string = "";
   parentID:any = 'root';
 
   constructor(private appComponent:AppComponent, public fileService:FileService,private authService:AuthService,private router:Router,public userService:UserService,private snackBar:MatSnackBar) { }
@@ -115,6 +115,7 @@ export class DriveComponent implements OnInit {
     this.appComponent.papelera = false;
     this.appComponent.isGettinFiles = true;
     this.updateFiles(0);
+    this.navigateUpToRoot();
   }
 
   papeleraDrive():void{
@@ -125,6 +126,7 @@ export class DriveComponent implements OnInit {
     this.appComponent.isGettinFiles = true;
     //console.log(this.appComponent.path);
     this.updateFiles(2);
+    this.navigateUpToRoot();
   }
 
   compartidoDrive():void{
@@ -135,6 +137,26 @@ export class DriveComponent implements OnInit {
     this.appComponent.isGettinFiles = true;
     //console.log(this.appComponent.path);
     this.updateFiles(1);
+    this.navigateUpToRoot();
+  }
+
+  navigateUpToRoot():void{
+
+    let navigateXtimes = this.sliptCounter();
+    for(let i=0;i<navigateXtimes;i++){
+      this.navigateUp();
+    }
+  }
+
+  sliptCounter():number{
+    let res = this.currentPath.split("");
+    let counter:number = 0;
+    for(let i=0;i<res.length;i++){
+      if(res[i] === '/'){
+        counter++;
+      }
+    }
+    return counter;
   }
 
   updateFiles(type:number):void{
