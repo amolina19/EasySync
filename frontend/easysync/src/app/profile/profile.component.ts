@@ -149,7 +149,7 @@ export class ProfileComponent implements OnInit {
   onSubmitNewEmail():void{
     this.progressBar = true;
     if(this.form.email === this.form.newemail){
-      this.authService.update_email(this.form.password).subscribe(
+      this.authService.update_email(this.form.email).subscribe(
         data =>{
           this.progressBar = false;
           this.snackBar.open(data.message, 'Cerrar', {

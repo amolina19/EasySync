@@ -18,7 +18,7 @@
           </mat-panel-title>
           </mat-expansion-panel-header>
             <div class="row justify-content-center">
-              <div class="mb-3"><b>{{userStorageUsed}}</b> de <b>{{userStorageTotal}}</b> ({{progressBarStorage}} %) de espacio utilizado.</div>
+              <div class="mb-3 pl-3 pl-sm-0"><b>{{userStorageUsed}}</b> de <b>{{userStorageTotal}}</b> ({{progressBarStorage}} %) de espacio utilizado.</div>
             </div>
             <div class="row justify-content-center">
               <div class="col-md-10">
@@ -36,10 +36,10 @@
           <mat-icon color="primary">supervised_user_circle</mat-icon> <div class="ml-2">Perfil</div>
           </mat-panel-title>
           </mat-expansion-panel-header>
-            <mat-card class="mt-2"><b>Usuario:      </b>{{currentUser.username}}</mat-card>
-            <mat-card class="mt-2"><b>Email:        </b> {{currentUser.email}}</mat-card>
-            <mat-card class="mt-2"><b>Fecha de creación:        </b> {{createdDateString}}</mat-card>
-            <mat-card class="mt-2"><b>Último inicio de sesión:        </b>{{lastLoginDateString}}</mat-card>
+            <mat-card class="mt-2 text-break"><b>Usuario:      </b>{{currentUser.username}}</mat-card>
+            <mat-card class="mt-2 text-break"><b>Email:        </b> {{currentUser.email}}</mat-card>
+            <mat-card class="mt-2 text-break"><b>Fecha de creación:        </b> {{createdDateString}}</mat-card>
+            <mat-card class="mt-2 text-break"><b>Último inicio de sesión:        </b>{{lastLoginDateString}}</mat-card>
         </mat-expansion-panel>
       </div>
 
@@ -146,7 +146,7 @@
           <mat-icon color="primary">alternate_email</mat-icon> <div class="ml-2">Cambiar correo electronico</div>
           </mat-panel-title>
           </mat-expansion-panel-header>
-          <p class="text-break">Introduce tu nuevo correo debajo, una vez cambiado todos los codigos ya sean de Autenticación o Recuperacion de contraseña llegaran al nuevo correo introducido.</p>
+          <p class="text-break pl-2">Introduce tu nuevo correo debajo, una vez cambiado todos los codigos ya sean de Autenticación o Recuperacion de contraseña llegaran al nuevo correo introducido.</p>
 
           <div class="row justify-content-center">
 
@@ -204,15 +204,15 @@
             <mat-panel-title>
             Clave de encriptación
             </mat-panel-title>
-            <mat-panel-description>
-            {{panelOpenState ? 'Dejar de Mostrar' : 'Mostrar'}}
+            <mat-panel-description class="mr-5">
+            {{panelOpenState ? 'Ocultar' : 'Ver'}}
             </mat-panel-description>
             </mat-expansion-panel-header>
             <p class="text-break">{{key}}</p>
             </mat-expansion-panel>
-            <div class="row mt-3">
-                <button class="ml-3 mr-3" mat-raised-button color="primary" (click)="copiedSuccesfull();" [cdkCopyToClipboard]="key">Copiar clave</button>
-                <button mat-raised-button color="warn" (click)="downloadKey();">Descargar clave</button>
+            <div class="row mt-3 justify-content-center">
+                <button class="mr-3 mt-3 mb-0 mb-xs-3 mr-xs-0" mat-raised-button color="primary" (click)="copiedSuccesfull();" [cdkCopyToClipboard]="key">Copiar clave</button>
+                <button class="mt-3" mat-raised-button color="warn" (click)="downloadKey();">Descargar clave</button>
             </div>
           </mat-expansion-panel>
       </div>
@@ -227,7 +227,7 @@
           </mat-expansion-panel-header>
             <div class="row"><p class="text-break ml-3 mr-3">Activa o desactiva la Autenticación en 2 factores, puedes activarlo o desactivarlo cuando quieras. Una vez activado los nuevos inicios de sesión requieren de un código que se te enviará por correo electrónico.</p></div>
             <div class="row">
-              <div class="ml-5"></div><mat-slide-toggle [(ngModel)]="T2A_OPCION" (change)="toggle($event)">{{T2A_MENSAJE}}</mat-slide-toggle>
+              <div class="ml-3"></div><mat-slide-toggle [(ngModel)]="T2A_OPCION" (change)="toggle($event)">{{T2A_MENSAJE}}</mat-slide-toggle>
             </div>
           </mat-expansion-panel>
       </div>

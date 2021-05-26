@@ -1,8 +1,14 @@
-<h1 mat-dialog-title>Reenombra el elemento</h1>
+<h1 mat-dialog-title  *ngIf="data.element.isFolder">Reenombrar la carpeta</h1>
+<h1 mat-dialog-title  *ngIf="!data.element.isFolder">Reenombrar el archivo</h1>
 
 <mat-dialog-content>
   <mat-form-field class="example-full-width">
-    <input matInput placeholder="Nombre carpeta" [(ngModel)]="folderName">
+    <input matInput *ngIf="data.element.isFolder" placeholder="Nombre carpeta" [(ngModel)]="folderName"
+    type="text" 
+    required>
+    <input matInput *ngIf="!data.element.isFolder" placeholder="Nombre archivo" [(ngModel)]="folderName"
+    type="text" 
+    required>
   </mat-form-field>
 </mat-dialog-content>
 

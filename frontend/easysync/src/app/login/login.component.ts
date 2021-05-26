@@ -22,12 +22,15 @@ export class LoginComponent implements OnInit {
   roles: string[] = [];
   hide = true;
   user:any;
+  t2aLogin:boolean = false;
 
   constructor(private authService: AuthService, private tokenStorage: TokenStorageService, private router: Router,private appComponent:AppComponent,public auth:AuthService,private deviceService: DeviceDetectorService) { }
 
   
 
   ngOnInit(): void {
+
+    this.t2aLogin = false;
 
     if(this.tokenStorage.userExits()){
       this.router.navigate(['/home']);
@@ -45,20 +48,19 @@ export class LoginComponent implements OnInit {
     this.appComponent.progressBar = true;
     this.authService.login(this.form).subscribe(
       data => {
-        console.log(data);
-        var dataMap = new Map(Object.entries(data));
-        this.tokenStorage.saveToken(dataMap.get('token'));
-        this.tokenStorage.saveUser(dataMap.get('user'));
-
-        this.isLoginFailed = false;
-        this.auth.isLoggedIn = true;
-        this.reloadPage();
-
-        /*
-        this.tokenStorage.setPBKDF2Key(dataMap.get('pbkdf2'));
-        */
-
-        this.auth.password = this.form.password;
+        if(data.user === undefined){
+          this.tokenStorage.setTokenT2A(data.token);
+          this.t2aLogin = true;
+          this.appComponent.progressBar = false;
+        }else{
+          var dataMap = new Map(Object.entries(data));
+          this.tokenStorage.saveToken(dataMap.get('token'));
+          this.tokenStorage.saveUser(dataMap.get('user'));
+  
+          this.isLoginFailed = false;
+          this.auth.isLoggedIn = true;
+          this.reloadPage();
+        }
       },
       err =>{
         this.errorMessage = err.error.message;
@@ -66,6 +68,34 @@ export class LoginComponent implements OnInit {
         this.appComponent.progressBar = false;
       }
     );
+  }
+
+  onSubmitT2A(){
+    this.appComponent.progressBar = true;
+    this.authService.loginByT2A(this.tokenStorage.getTokenT2A(),this.form.t2acode).subscribe(
+      data => {
+        console.log(data);
+        this.t2aLogin = false;
+        var dataMap = new Map(Object.entries(data));
+        this.tokenStorage.saveToken(dataMap.get('token'));
+        this.tokenStorage.saveUser(dataMap.get('user'));
+        this.tokenStorage.removeTokenT2A();
+        this.isLoginFailed = false;
+        this.auth.isLoggedIn = true;
+        this.reloadPage();
+      },
+      err =>{
+        console.log(err);
+        this.errorMessage = err.error.message;
+        this.isLoginFailed = true;
+        this.appComponent.progressBar = false;
+      }
+    );
+  }
+
+  volver(){
+    this.t2aLogin = false;
+    this.tokenStorage.removeTokenT2A();
   }
 
   reloadPage():void{

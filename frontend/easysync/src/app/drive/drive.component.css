@@ -1,0 +1,5 @@
+md-sidenav {
+    min-width: 200px !important;
+    width: 85vw !important;
+    max-width: 400px !important;
+} 

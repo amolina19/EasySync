@@ -45,10 +45,10 @@ export class UserService {
 
   //POST
 
-  getFilesUser(): Observable<any>{
+  getFilesUser(type:number): Observable<any>{
     let token = this.tokenStorageService.getToken();
     //console.log(token);
-    let request = this.API_FILES+'userfiles?token='+token;
+    let request = this.API_FILES+'userfiles?type='+type+'&&token='+token;
     //console.log(request);
     return this.http.get(request);
   }

@@ -13,8 +13,23 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     z-index: 100;
   }
   
-  .skip-link:focus {
-    top: 0;
-  }
+.skip-link:focus {
+  top: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.background {
+  position: absolute;
+  display: block;
+  top: 0;
+  left: 0;
+  z-index: 0;
+}
+
+html, body { height: 100%; width: 100%; margin: 0; }
 
 @import '~@angular/material/prebuilt-themes/indigo-pink.css'

@@ -28,17 +28,34 @@ export class AppComponent implements OnInit {
   downloadSize: string;
   downloadProgressSize: string;
   downloadSizeNumber:number;
+  downloadFinished:boolean = false;
+
+  upload:boolean = false;
+  uploadFinished:boolean = false;
+  uploadState:string;
+  uploadName:string;
+  uploadSize:string;
+  uploadProgress: number;
+  uploadTotal:string;
+  uploaded:string;
+  uploadPost:any;
 
   download$: Observable<Download>;
   //private keySize = 256;
   //private iterations = 100;
   //private salt = "xVhbJrXM7pQXK4wWcCPqU6YTCbFPe6xt";
 
+
+  path:string = "Tus Archivos";
+  tusarchivos:boolean = true;
+  compartido:boolean = false;
+  papelera:boolean = false;
+  isGettinFiles:boolean = false;
+
   constructor(private TokenStorageService: TokenStorageService, private userService:UserService,public auth:AuthService, public fileService: FileService,private downloads: DownloadService,
     @Inject(DOCUMENT) private document: Document) {}
 
   ngOnInit(): void {
-
     this.progressBar = true;
 
     if(this.TokenStorageService.getToken() !=null){
@@ -65,6 +82,10 @@ export class AppComponent implements OnInit {
       this.progressBar = false;
     }
   }
+
+  
+
+
 
   logout():void{
     this.TokenStorageService.signOut();
@@ -112,6 +133,54 @@ export class AppComponent implements OnInit {
       returnSize = (bytesNumber/1024/1024/1024/1024/1024).toFixed(2);
     }
     return returnSize;
+  }
+
+  cerrarVentana(window:string):void{
+    switch(window){
+      case 'upload':
+        //this.filesExplorer.upload.unsubscribe();
+        this.upload = false;
+        this.uploadPost.unsubscribe();
+        this.uploadFinished = false;
+        this.uploadState = null;
+        this.uploadName= null;
+        this.uploadSize = null;
+        this.uploadProgress = null;
+        this.uploadTotal = null;
+        this.uploaded = null;
+        break;
+      case 'download':
+        this.download$ = null;
+        this.downloadName = null;
+        this.downloadSize = null;
+        this.downloadProgressSize = null;
+        this.downloadSizeNumber = null;
+        break;
+    }
+  }
+
+  cancelar(window:string):void{
+    switch(window){
+      case 'upload':
+        //this.filesExplorer.upload.unsubscribe();
+        this.uploadPost.unsubscribe();
+        this.upload = false;
+        this.uploadFinished = false;
+        this.uploadState = null;
+        this.uploadName= null;
+        this.uploadSize = null;
+        this.uploadProgress = null;
+        this.uploadTotal = null;
+        this.uploaded = null;
+        break;
+      case 'download':
+        this.download$ = null;
+        this.downloadName = null;
+        this.downloadSize = null;
+        this.downloadProgressSize = null;
+        this.downloadSizeNumber = null;
+        break;
+    }
   }
 
   /*

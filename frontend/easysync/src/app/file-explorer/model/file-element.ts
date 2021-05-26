@@ -12,4 +12,5 @@ export class FileElement {
     url:string;
     mimetype:string;
     extension:string;
+    isTrash:boolean;
   }

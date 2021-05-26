@@ -1,16 +1,21 @@
-  
+<input type="file" id="upload" style="opacity: 0.0; position: absolute; top: 10000px;overflow:invisible" (change)="onFileSelect($event)">
 <mat-toolbar>
     <mat-icon *ngIf="canNavigateUp" class="pointer" (click)="navigateUp()">arrow_back</mat-icon>
-    <span style="margin-left: 8px" class="">{{path || 'Tus Archivos'}}</span>
+    <span class="ml-0 mr-3 ml-sm-2" >{{path || appComponent.path}}</span>
     <span class="spacer"></span>
-    <mat-icon class="pointer" (click)="openNewFolderDialog()" matTooltip="Crear una nueva carpeta"
-    aria-label="Button that displays a tooltip when focused or hovered over">create_new_folder</mat-icon>
-    <mat-icon class="pointer ml-3" (click)="shortByName()" matTooltip="Ordernar los elementos por nombre"
-    aria-label="Button that displays a tooltip when focused or hovered over">sort_by_alpha</mat-icon>
-    <mat-icon class="pointer ml-3" (click)="shortByDate()" matTooltip="Ordenar los elementos por fecha de última creacion o modificación"
-    aria-label="Button that displays a tooltip when focused or hovered over">date_range</mat-icon>
-    <mat-icon class="pointer ml-3 mr-3" (click)="shortBySize()">format_list_bulleted</mat-icon>
-  </mat-toolbar>
+    <div class="row justify-content-center ml-2">
+      <mat-icon class="pointer" (click)="generateUpload()" matTooltip="Subir archivo" *ngIf="appComponent.tusarchivos"
+      aria-label="Button that displays a tooltip when focused or hovered over">cloud_upload</mat-icon>
+      <mat-icon class="pointer ml-3" (click)="openNewFolderDialog()" matTooltip="Crear una nueva carpeta" *ngIf="appComponent.tusarchivos"
+      aria-label="Button that displays a tooltip when focused or hovered over">create_new_folder</mat-icon> 
+      <mat-icon class="pointer ml-3" (click)="shortByName()" matTooltip="Ordernar los elementos por nombre"
+      aria-label="Button that displays a tooltip when focused or hovered over">sort_by_alpha</mat-icon>
+      <mat-icon class="pointer ml-3" (click)="shortByDate()" matTooltip="Ordenar los elementos por fecha de última creacion o modificación"
+      aria-label="Button that displays a tooltip when focused or hovered over">date_range</mat-icon>
+      <mat-icon class="pointer ml-3 mr-3" (click)="shortBySize()">format_list_bulleted</mat-icon>
+    </div>
+    
+</mat-toolbar>
   <!--
   <div class="container" fxFlex fxLayout="row" fxLayoutAlign="space-between stretch">
     <div class="content" fxFlex fxLayout="row">
@@ -28,22 +33,21 @@
     </div>
   </div>
 -->
+  <mat-progress-bar color="warn" mode="indeterminate" *ngIf="appComponent.isGettinFiles"></mat-progress-bar>
   <div class="container-fluid" fxFlex fxLayout="row">
     
     <div class="content" fxFlex fxLayout="row">
-      <div class="row pl-4">
-        <div *ngFor="let element of fileElements" class="file-or-folder" >
+      <div class="row justify-content-center justify-content-sm-start">
+        <div *ngFor="let element of fileElements" class="file-or-folder">
           <span [matMenuTriggerFor]="rootMenu" [matMenuTriggerData]="{element: element}" #menuTrigger="matMenuTrigger"></span>
           <div fxLayout="column" fxLayoutAlign="space-between center" (click)="navigate(element)" (contextmenu)="openMenu($event, menuTrigger)" class="element justify-content-center">
             
-
-
-            <div class="row element-icon">
+            <div class="row element-icon justify-content-center" >
               <mat-icon color="warn" class="file-or-folder-icon pointer" *ngIf="element.isFolder">folder</mat-icon>
               <mat-icon color="primary" class="file-or-folder-icon pointer" *ngIf="!element.isFolder">insert_drive_file</mat-icon>
             </div>
 
-            <div class="row">
+            <div class="row justify-content-center">
               <span class="text-break text-center mr-3 ml-3">{{element.name}}</span>
             </div>
             
@@ -52,16 +56,20 @@
       </div>
     </div>
   </div>
+
+
+
+
   
   <mat-menu #rootMenu="matMenu" [overlapTrigger]="false">
     <ng-template matMenuContent let-element="element">
 
-      <button *ngIf="element.parent !== 'root'" mat-menu-item (click)=" moveToMainFolder(element)">
+      <button *ngIf="element.parent !== 'root' && appComponent.tusarchivos" mat-menu-item (click)=" moveToMainFolder(element)">
         <mat-icon>folder_special</mat-icon>
         <span>Mover a la carpeta principal</span>
       </button>
 
-      <button mat-menu-item [matMenuTriggerFor]="moveToMenu" [matMenuTriggerData]="{self: element}">
+      <button *ngIf="appComponent.tusarchivos" mat-menu-item [matMenuTriggerFor]="moveToMenu" [matMenuTriggerData]="{self: element}">
         <mat-icon>open_with</mat-icon>
         <span>Mover a</span>
       </button>
@@ -71,16 +79,16 @@
         <span>Descargar</span>
       </button>
 
-      <button mat-menu-item (click)="openRenameDialog(element)">
+      <button *ngIf="appComponent.tusarchivos" mat-menu-item (click)="openRenameDialog(element)">
         <mat-icon>edit</mat-icon>
         <span>Renombrar</span>
       </button>
-      <button mat-menu-item (click)="openDeleteDialog(element)">
+      <button *ngIf="appComponent.tusarchivos" mat-menu-item (click)="openDeleteDialog(element)">
         <mat-icon>delete</mat-icon>
         <span>Eliminar</span>
       </button>
 
-      <button mat-menu-item>
+      <button *ngIf="appComponent.tusarchivos" mat-menu-item>
         <mat-icon>share</mat-icon>
         <span>Compartir</span>
       </button>
