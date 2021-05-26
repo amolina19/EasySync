@@ -56,6 +56,14 @@ const FilesSchema = new Schema({
     isFolder:{
         type:Boolean,
         required:false
+    },
+    isTrash:{
+        type:Boolean,
+        required:false
+    },
+    encryptedPassword:{
+        type:String,
+        required:false
     }
 });
 

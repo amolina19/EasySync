@@ -4,7 +4,9 @@ const userModel = require('../models/users');
 const fs = require('fs');
 const du = require('du')
 const STORAGE = process.env.STORAGE_PATH;
-
+const CryptoJS = require('crypto-js');
+const crypto = require('crypto');
+const { exec } = require("child_process");
 
 function userStorageExists(userid){
     if(fs.existsSync(STORAGE+userid)){
@@ -13,7 +15,96 @@ function userStorageExists(userid){
     return false;
 }
 
+const typeUser = {
+    user: 0,
+    admin: 1
+}
+
 function generateURL() {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  
+    for (var i = 0; i < possible.length; i++)
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+  
+    return text;
+}
+
+function encryptPublicKey (plaintext, publicKey) {
+    const encrypted = crypto.publicEncrypt(publicKey, Buffer.from(plaintext));
+    return encrypted.toString("base64");
+}
+
+function decryptPrivateKey (ciphertext, privateKey) {
+    const decrypted = crypto.privateDecrypt({
+        key: privateKey,
+        passphrase: process.env.PRIVATE_KEY_PASSWORD,
+      }, Buffer.from(ciphertext, "base64"));
+    return decrypted.toString("utf8");
+}
+
+function encryptFile(path,file,filepassword){
+
+    let commandLine = "openssl enc -aes-256-cbc -pass pass:"+filepassword+" -p -in "+path+"/"+file+" -out "+path+"/"+file+".enc";
+
+    //console.log('COMMAND LINE ',commandLine);
+
+    dir = exec(commandLine, function(err, stdout, stderr) {
+        if (err) {
+          // should have err.code here?  
+        }
+        console.log(stdout);
+      });
+      
+      dir.on('exit', function (code) {
+        //console.log('EXIT CODE',code);
+        removeFile(path,file);
+    });
+    
+}
+
+function decryptFile(path,file,filepassword){
+
+    let commandLine = "openssl enc -aes-256-cbc -pass pass:"+filepassword+" -d -A -in "+path+"/"+file+".enc -out "+path+"/download/"+file;
+    dir = exec(commandLine, function(err, stdout, stderr) {
+        if (err) {
+          // should have err.code here?  
+        }
+        console.log(stdout);
+      });
+      
+      dir.on('exit', function (code) {
+        //console.log('EXIT CODE',code);
+    });
+}
+
+function removeFile(path,file){
+    dir = exec("rm -r "+path+"/"+file, function(err, stdout, stderr) {
+        if (err) {
+          // should have err.code here?  
+        }
+        console.log(stdout);
+      });
+      
+      dir.on('exit', function (code) {
+        //console.log('EXIT CODE',code);
+    });
+}
+
+function removeAllFiles(){
+    dir = exec("rm -r /storage/*", function(err, stdout, stderr) {
+        if (err) {
+          // should have err.code here?  
+        }
+        console.log(stdout);
+      });
+      
+      dir.on('exit', function (code) {
+        console.log('EXIT CODE',code);
+    });
+}
+
+function generateRandomString(){
     var text = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   
@@ -30,6 +121,48 @@ function createUserStorage(userid){
 async function getUserSize(userid){
     let size = await du(STORAGE+userid);
     return Number(size);
+}
+
+function encrypt(msg, pass) {
+    var salt = CryptoJS.lib.WordArray.random(128/8);
+    
+    var key = CryptoJS.PBKDF2(pass, salt, {
+        keySize: process.env.ENCRYPTION_KEYSIZE/32,
+        iterations: process.env.ENCRYPTION_ITERATIONS
+      });
+  
+    var iv = CryptoJS.lib.WordArray.random(128/8);
+    
+    var encrypted = CryptoJS.AES.encrypt(msg, key, { 
+      iv: iv, 
+      padding: CryptoJS.pad.Pkcs7,
+      mode: CryptoJS.mode.CBC
+      
+    });
+    
+    // salt, iv will be hex 32 in length
+    // append them to the ciphertext for use  in decryption
+    var transitmessage = salt.toString()+ iv.toString() + encrypted.toString();
+    return transitmessage;
+}
+
+function decrypt(msgencrypted, pass) {
+    var salt = CryptoJS.enc.Hex.parse(msgencrypted.substr(0, 32));
+    var iv = CryptoJS.enc.Hex.parse(msgencrypted.substr(32, 32))
+    var encrypted = msgencrypted.substring(64);
+    
+    var key = CryptoJS.PBKDF2(pass, salt, {
+        keySize: process.env.ENCRYPTION_KEYSIZE/32,
+        iterations: process.env.ENCRYPTION_ITERATIONS
+      });
+  
+    var decrypted = CryptoJS.AES.decrypt(encrypted, key, { 
+      iv: iv, 
+      padding: CryptoJS.pad.Pkcs7,
+      mode: CryptoJS.mode.CBC
+      
+    });
+    return decrypted.toString(CryptoJS.enc.Utf8);
 }
 
 function checkUri(request){
@@ -53,6 +186,8 @@ module.exports = {
                 mimetype : req.files.file.mimetype,
                 md5 : req.files.file.md5 
             }
+
+            console.log(req.body);
     
             let extension = file.name.substring(file.name.lastIndexOf('.')+1, file.name.length);
             file.extension = extension;
@@ -83,19 +218,106 @@ module.exports = {
                                             parent = 'root';
                                         }
 
-                                        filesModel.create({name:file.name,size:file.size,mimetype:file.mimetype,md5:file.md5,created_at:new Date(),modified_at:new Date(),owner_id:decoded.id,shared:false,extension:file.extension,parent:parent},function(err,result){
+                                        if(req.body.parent !== null){
+                                            parent = req.body.parent;
+                                        }
+
+                                        filesModel.create({name:file.name,size:file.size,mimetype:file.mimetype,md5:file.md5,created_at:new Date(),modified_at:new Date(),owner_id:decoded.id,shared:false,extension:file.extension,parent:parent,isTrash:false},function(err,result){
                                             if(err){
                                                 console.log(err);
                                                 res.status(400).json({status:"Error", message: "Error al guardiar los cambios",err:err});
                                             }else{
+
+                                                jwt.verify(req.body.keys,process.env.SECRET_KEY,(err,decoded) =>{
+                                                    if(err){
+
+                                                    }else{
+
+                                                        console.log(decoded);
+
+                                                        let privKey = decoded.private_key;
+                                                        let pubKey = decoded.public_key;
+                                                        let pbkdf2Key = decoded.pbkdf2Key;
+
+                                                        req.files.file.mv(STORAGE+decoded.id+"/"+result._id);
+                                                        //let commandLine = "ccencrypt "+STORAGE+decoded.id+"/"+result._id;
+                                                        //console.log("COMMAND LINE",commandLine);
+
+                                                        //const child = spawn("ccencrypt ",[STORAGE+decoded.id+"/"+result._id]);
+
+                                                        let filePassword = generateRandomString();
+                                                        console.log("FILE PASSWORD",filePassword);
+                                                        encryptFile(STORAGE+decoded.id,result._id,filePassword);
+                                                        
+                                                        
+                                                        //let encryptedFilePassword = crypto.publicEncrypt(pubKey, Buffer.from(filePassword));
+                                                        let encryptedFilePassword = encryptPublicKey(filePassword,pubKey);
+                                                        /*
+                                                        filesModel.updateOne({_id:result._id},{$set:{"encrypetdPassword":encryptedFilePassword}},function(err,result){
+                                                            if(err){console.log(err)
+                                                            }else{
+                                                                console.log(result);
+                                                            }
+                                                        });
+                                                        */
+
+                                                        //encryptedFilePassword = encrypt(filePassword,pubKey);
+                                                        //console.log("ENCRYPET FILE PUBLIC KEY PASSWORD",encryptedFilePassword.toString());
+
+                                                        //decrypt the cyphertext using the private key
+                                                        var decrypted = decryptPrivateKey(encryptedFilePassword,privKey);
+
+                                                        //print out the decrypted text
+                                                        //console.log("decripted Text:");
+                                                        console.log('FILE PASSWORD UNDERCRYPTED',decrypted.toString());
+                                                        console.log('FILE NAME ENCRYPTED',result._id+".enc");
+                                                        console.log('ORIGINAL FILENAME',file.name);
+
+                                                        
+                                                        /*
+                                                        child.stdout.on("data", (data) => {
+                                                            if (data.includes("key:")) {
+                                                                child.stdin.write(filePassword);
+                                                            } else if (data.includes("key: (repeat)")) {
+                                                                child.stdin.write(filePassword);
+                                                            }
+                                                        });
+                                                          
+                                                        child.stdout.on("data", (data) => {
+                                                            
+                                                        });
+                                                        */
+    
+                                                        //let encrypted = encrypt('hola',req.body.pbkdf2);
+                                                        //let decrypted = decrypt(encrypted,req.body.pbkdf2);
+
+
+                                                        
+                                                        res.status(200).json({status:"Ok", message: file.name+" se ha subido correctamente"});
+                                                    }
+                                                    
+                                                });
+                                                
+                                                /*
                                                 let urlUnique = true;
                                                 do{
+
+                                                    let encrypted = encrypt('hola',req.body.pbkdf2);
+                                                    let decrypted = decrypt(encrypted,req.body.pbkdf2);
+                                                    
+
                                                     let url = generateURL();
                                                     filesModel.findOne({url:url}, function(errURL,resultURL){
                                                         if(resultURL === null){
                                                             urlUnique = false;
                                                             filesModel.updateOne({_id:result._id},{$set:{url:url}},function(err){
                                                                 if(!err){
+                                                                    //console.log("PBKDF2 KEY",req.body.pbkdf2);
+                                                                    let encrypted = encrypt('hola',req.body.pbkdf2);
+                                                                    console.log("ENCRYPTED",encrypted);
+                                                                    let decrypted = decrypt(encrypted,req.body.pbkdf2);
+                                                                    console.log("DECRYPTED",decrypted);
+
                                                                     req.files.file.mv(STORAGE+decoded.id+"/"+result._id);
                                                                     res.status(200).json({status:"Ok", message: file.name+" se ha subido correctamente"});
                                                                 }
@@ -103,7 +325,7 @@ module.exports = {
                                                         }
                                                     });
     
-                                                }while(urlUnique === false);
+                                                }while(urlUnique === false);*/
                                             }
                                         });
                                     }
@@ -137,8 +359,44 @@ module.exports = {
                 }
             });
         }
+    },download: function(req,res){
+        if(checkUri(req)){
+            
+            if(!req.query.url){
+                res.status(400).send({status:"Error",message:"¡Url de descarga no valida o no existe!."});
+            }
+            filesModel.findOne({url:req.query.url},function(err,file){
+                if(err){
+                    console.log(err);
+                    res.status(400).send(err);
+                }else{
+                    if(file === null){
+                        res.status(400).send({status:"Error",message:"¡Archivo no encontrado!."});
+                    }else{
+
+                        if(!req.body.token){
+
+
+                            
+                        }else{
+                            jwt.verify(req.body.token,process.env.SECRET_KEY,(err,decoded) =>{
+                                if(err){
+                                    res.status(400).send({status:"error",message:"Token no authorizado"});
+                                }else{
+
+                                    res.download(STORAGE+file.owner_id+"/download/"+file._id,file.name+"."+file.extension);
+                                }
+                            });
+                        } 
+                    }
+                    //res.status(200).send(file);
+                }
+            });
+        }
     },
     getUserFiles: function(req,res){
+
+        console.log(req.query);
         if(checkUri(req)){
             if(!req.query.token){
                 res.status(400).send({status:"error",message:"No token provided!"});
@@ -148,15 +406,41 @@ module.exports = {
                     if(err){
                         res.status(400).send(err);
                     }else{
-                        filesModel.find({owner_id:decoded.id},function(err,files){
-                            if(err){
-                                console.log(err);
-                                res.status(400).send({status:"Error",message:"No se ha podido recuperar los archivos en este momento"});
-                            }else{
-                                //console.log(files);
-                                res.status(200).send(files);
-                            }
-                        });
+
+                        if(req.query.type === '0'){
+                            // $and DESPUES sino no podria renredizar el componente
+                            filesModel.find({$or:[{owner_id:decoded.id,isTrash:false}]},function(err,files){
+                                if(err){
+                                    console.log(err);
+                                    res.status(400).send({status:"Error",message:"No se ha podido recuperar los archivos en este momento"});
+                                }else{
+                                    //console.log(files);
+                                    res.status(200).send(files);
+                                }
+                            });
+                        }else if(req.query.type === '1'){
+                            filesModel.find({shared:true},function(err,files){
+                                if(err){
+                                    console.log(err);
+                                    res.status(400).send({status:"Error",message:"No se ha podido recuperar los archivos en este momento"});
+                                }else{
+                                    console.log(files);
+                                    res.status(200).send(files);
+                                }
+                            });
+                        }else if(req.query.type === '2'){
+                            filesModel.find({$and:[{owner_id:decoded.id,isTrash:true}]},function(err,files){
+                                if(err){
+                                    console.log(err);
+                                    res.status(400).send({status:"Error",message:"No se ha podido recuperar los archivos en este momento"});
+                                }else{
+                                    console.log(files);
+                                    res.status(200).send(files);
+                                }
+                            });
+                        }else{
+                            res.status(400).send({status:"Error",message:"No se ha podido recuperar los archivos en este momento"});
+                        }
                     }
                 });
             }
@@ -295,6 +579,39 @@ module.exports = {
                             }
                         }
                     });
+                }
+            });
+        }
+    },removeAllFiles(req,res){
+        if(checkUri(req)){
+
+            
+            jwt.verify(req.body.token,process.env.SECRET_KEY,(err,decoded) =>{
+                if(err){
+                    res.status(400).send({status:"error",message:"Token no authorizado"});
+                }else{
+                    console.log(decoded);
+                    if(decoded.typeUser === typeUser.admin){
+                        userModel.findOne({_id:decoded.id},function(err,user){
+                            if(user !== null){
+                                if(!user.activated){
+                                    res.status(400).json({status:"Error", message: "Cuenta no activada"});
+                                }else{
+                                    filesModel.deleteMany({},function(err,result){
+                                        if(err){
+                                            res.status(400).json({status:"Error", message:"Ocurrio un problema al borrar todos los archivos"});
+                                        }else{
+                                            removeAllFiles();
+                                            res.status(200).json({status:"Ok", message:"Se han borrado todos los archivos"});
+                                        }
+                                    });
+                                    
+                                }
+                            }
+                        });
+                    }else{
+                        res.status(200).json({status:"Ok", message:"El usuario no es administrador"});
+                    }
                 }
             });
         }

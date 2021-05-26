@@ -60,6 +60,12 @@ const UserSchema = new Schema({
     },
     t2a_code:{
         type:String
+    },
+    public_key:{
+        type:String
+    },
+    private_key:{
+        type:String
     }
 });
 
