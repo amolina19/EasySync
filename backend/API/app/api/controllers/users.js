@@ -143,7 +143,7 @@ module.exports = {
 
             userModel.find({$or:[{username:req.body.username},{email:req.body.email}]}, function(err,result){
                 if(result.length === 0){
-
+                    
                     generateKeyPair('rsa', {
                         modulusLength: 4096,
                         publicKeyEncoding: {
@@ -154,12 +154,13 @@ module.exports = {
                             type: 'pkcs8',
                             format: 'pem',
                             cipher: 'aes-256-cbc',
-                            passphrase: req.body.password
+                            passphrase: process.env.PRIVATE_KEY_PASSWORD
                         }
                         }, (err, publicKey, privateKey) => {
                             console.log('PUBLIC KEY',publicKey);
                             console.log('PRIVATE KEY',privateKey);
                             let privateEncryped = encrypt(privateKey,easyCrypt.easysync.getPBKDF2Hex(req.body.password));
+                            
 
                             //console.log('ENCRYPTED PRIVATE KEY',privateEncryped);
                             //console.log('DECRYPTED PRIVATE KEY',decrypt(privateEncryped,easyCrypt.easysync.getPBKDF2Hex(req.body.password)));
@@ -174,7 +175,7 @@ module.exports = {
                                     if(!user.activated){
         
                                         //Activation Link Token
-                                        const token = jwt.sign({id:user._id,typeToken:typeToken.activate},req.app.get('secretKey'), { expiresIn: "24h"});
+                                        const token = jwt.sign({id:user._id,typeToken:typeToken.activate,typeUser:user.type_user},req.app.get('secretKey'), { expiresIn: "24h"});
                                         email.sendmailactivateacc(user,token);
                                         res.status(201).json({status:"ok",message:"Usuario creado, por favor activa tu cuenta con el link enviado a "+user.email});
                                         console.log(user.username+" created on "+ new Date());
@@ -216,7 +217,7 @@ module.exports = {
                                 res.status(200).json({status:"ok",token:token,message:"Se ha enviado un código de autenticación, revista tu correo electronico"});
                             }else{
                                 
-                                const token = jwt.sign({id:user._id,typeToken:typeToken.authentication},req.app.get('secretKey'), { expiresIn: "7d"});
+                                const token = jwt.sign({id:user._id,typeToken:typeToken.authentication,typeUser:user.type_user},req.app.get('secretKey'), { expiresIn: "7d"});
                                 userModel.updateOne({email:user.email},{$set:{"last_login":new Date()}},function(err){});
     
                                 let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
@@ -226,7 +227,7 @@ module.exports = {
                                 console.log(user.username+" Login on "+ new Date());
                                 getIPInfo(ip);
                                 let privateKeyDecrypted = decrypt(user.private_key,easyCrypt.easysync.getPBKDF2Hex(req.body.password));
-                                const tokenKeys = jwt.sign({id:user._id,private_key:privateKeyDecrypted,public_key:user.public_key},req.app.get('secretKey'));
+                                const tokenKeys = jwt.sign({id:user._id,private_key:privateKeyDecrypted,public_key:user.public_key,pbkdf2:pbkdf2Key},req.app.get('secretKey'));
                                 let userSend = cleanReturn(user);
                                 
                                 res.status(200).json({status:"ok",message:"Usuario autenticado", user:userSend,token:token,keys:tokenKeys,pbkdf2:pbkdf2Key});

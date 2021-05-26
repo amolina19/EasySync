@@ -10,4 +10,8 @@ router.post('/storage/move',filesController.move);
 router.get('/storage/download',filesController.downloadByUrl);
 router.get('/userfiles/',filesController.getUserFiles);
 router.get('/storagesize',filesController.getUserSizeStorage);
+
+//ADMIN
+router.post('/storage/remove/all',filesController.removeAllFiles);
+
 module.exports = router;

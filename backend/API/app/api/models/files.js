@@ -60,6 +60,10 @@ const FilesSchema = new Schema({
     isTrash:{
         type:Boolean,
         required:false
+    },
+    encryptedPassword:{
+        type:String,
+        required:false
     }
 });
 

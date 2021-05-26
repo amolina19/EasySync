@@ -34,6 +34,7 @@
     "pbkdf2": "^3.1.2",
     "request": "^2.88.2",
     "spdy": "^4.0.2",
+    "suppose": "^0.6.2",
     "swagger-jsdoc": "6.0.0",
     "swagger-ui-express": "^4.1.6",
     "textbelt": "0.0.4"
