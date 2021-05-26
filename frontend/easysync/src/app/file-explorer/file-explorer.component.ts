@@ -112,6 +112,7 @@ export class FileExplorerComponent implements OnInit{
     const formData = new FormData();
     formData.append('token',this.tokenStorage.getToken());
     formData.append('file', file);
+    formData.append('keys', this.tokenStorage.getKeys());
     formData.append('parent', this.driveComponent.parentID);
 
     console.log(file);
@@ -136,6 +137,7 @@ export class FileExplorerComponent implements OnInit{
             duration: 5 * 1000
           });
           this.driveComponent.updateFiles(0);
+          this.path = this.driveComponent.path;
         }
 
         if (event.type === HttpEventType.UploadProgress) {
