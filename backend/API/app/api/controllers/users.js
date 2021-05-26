@@ -2,19 +2,60 @@ const userModel = require('../models/users');
 const sessionModel = require('../models/session');
 const logsModel = require('../models/logs');
 const request = require('request');
-
 const STORAGE = process.env.STORAGE_PATH;
-
-
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const email = require('../../../config/mail');
 const easyCrypt = require('../utils/crypto');
+const { generateKeyPair } = require('crypto');
+const CryptoJS = require('crypto-js');
+
+
+function encrypt(msg, pass) {
+    var salt = CryptoJS.lib.WordArray.random(128/8);
+    
+    var key = CryptoJS.PBKDF2(pass, salt, {
+        keySize: process.env.ENCRYPTION_KEYSIZE/32,
+        iterations: process.env.ENCRYPTION_ITERATIONS
+      });
+  
+    var iv = CryptoJS.lib.WordArray.random(128/8);
+    
+    var encrypted = CryptoJS.AES.encrypt(msg, key, { 
+      iv: iv, 
+      padding: CryptoJS.pad.Pkcs7,
+      mode: CryptoJS.mode.CBC
+      
+    });
+    
+    // salt, iv will be hex 32 in length
+    // append them to the ciphertext for use  in decryption
+    var transitmessage = salt.toString()+ iv.toString() + encrypted.toString();
+    return transitmessage;
+}
+
+function decrypt(msgencrypted, pass) {
+    var salt = CryptoJS.enc.Hex.parse(msgencrypted.substr(0, 32));
+    var iv = CryptoJS.enc.Hex.parse(msgencrypted.substr(32, 32))
+    var encrypted = msgencrypted.substring(64);
+    
+    var key = CryptoJS.PBKDF2(pass, salt, {
+        keySize: process.env.ENCRYPTION_KEYSIZE/32,
+        iterations: process.env.ENCRYPTION_ITERATIONS
+      });
+  
+    var decrypted = CryptoJS.AES.decrypt(encrypted, key, { 
+      iv: iv, 
+      padding: CryptoJS.pad.Pkcs7,
+      mode: CryptoJS.mode.CBC
+      
+    });
+    return decrypted.toString(CryptoJS.enc.Utf8);
+}
 
 //const sessionModel = require('../models/session');
 //const logsModel = require('../models/logs');
 const fs = require('fs');
-const { deleteOne } = require('../models/users');
 
 const typeToken = {
     activate: 0,
@@ -26,6 +67,15 @@ const typeToken = {
 const typeUser = {
     user: 0,
     admin: 1
+}
+
+function cleanReturn(userObject){
+    var sessionObj = userObject.toJSON();
+    delete sessionObj.password;
+    delete sessionObj.public_key;
+    delete sessionObj.private_key;
+    delete sessionObj.__v;
+    return sessionObj;
 }
 
 function userStorageExists(userid){
@@ -93,20 +143,45 @@ module.exports = {
 
             userModel.find({$or:[{username:req.body.username},{email:req.body.email}]}, function(err,result){
                 if(result.length === 0){
-                    userModel.create({username: req.body.username, email: req.body.email, password: req.body.password,activated:false,created_at: new Date()}, function(err,user){
-                        if(err){
-                            next(err);
-                        }else{
-                            if(!user.activated){
 
-                                //Activation Link Token
-                                const token = jwt.sign({id:user._id,typeToken:typeToken.activate},req.app.get('secretKey'), { expiresIn: "24h"});
-                                email.sendmailactivateacc(user,token);
-                                res.status(201).json({status:"ok",message:"Usuario creado, por favor activa tu cuenta con el link enviado a "+user.email});
-                                console.log(user.username+" created on "+ new Date());
-                            }
+                    generateKeyPair('rsa', {
+                        modulusLength: 4096,
+                        publicKeyEncoding: {
+                            type: 'spki',
+                            format: 'pem'
+                        },
+                        privateKeyEncoding: {
+                            type: 'pkcs8',
+                            format: 'pem',
+                            cipher: 'aes-256-cbc',
+                            passphrase: req.body.password
                         }
-                    });
+                        }, (err, publicKey, privateKey) => {
+                            console.log('PUBLIC KEY',publicKey);
+                            console.log('PRIVATE KEY',privateKey);
+                            let privateEncryped = encrypt(privateKey,easyCrypt.easysync.getPBKDF2Hex(req.body.password));
+
+                            //console.log('ENCRYPTED PRIVATE KEY',privateEncryped);
+                            //console.log('DECRYPTED PRIVATE KEY',decrypt(privateEncryped,easyCrypt.easysync.getPBKDF2Hex(req.body.password)));
+
+                            //userModel.updateOne({_id:user._id},{$set:{"public_key":publicKey}},function(err){});
+                            //userModel.updateOne({_id:user._id},{$set:{"private_key":privateEncryped}},function(err){});
+
+                            userModel.create({username: req.body.username, email: req.body.email, password: req.body.password,activated:false,created_at: new Date(),private_key:privateEncryped,public_key:publicKey}, function(err,user){
+                                if(err){
+                                    next(err);
+                                }else{
+                                    if(!user.activated){
+        
+                                        //Activation Link Token
+                                        const token = jwt.sign({id:user._id,typeToken:typeToken.activate},req.app.get('secretKey'), { expiresIn: "24h"});
+                                        email.sendmailactivateacc(user,token);
+                                        res.status(201).json({status:"ok",message:"Usuario creado, por favor activa tu cuenta con el link enviado a "+user.email});
+                                        console.log(user.username+" created on "+ new Date());
+                                    }
+                                }
+                            });
+                        });
                 }else{
                     res.status(400).json({status:"Error", message: "Ya existe ese usuario o email"});
                 }
@@ -127,6 +202,8 @@ module.exports = {
                             res.status(400).json({status:"Error", message: "Cuenta no activada, verifica tu email para realizar la activación"});
                         }else{
 
+                            let pbkdf2Key = easyCrypt.easysync.getPBKDF2Hex(req.body.password);
+
                             if(!userStorageExists(user._id)){
                                 createUserStorage(user._id);
                             }
@@ -144,18 +221,21 @@ module.exports = {
     
                                 let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
                                 console.log(ip);
-
-                                
-    
                                 //sessionModel.create({},function(err){});
-                                let derivedKey = easyCrypt.easysync.getPBKDF2Hex(user.password);
+                                //console.log(derivedKey);
                                 console.log(user.username+" Login on "+ new Date());
                                 getIPInfo(ip);
-                                res.status(200).json({status:"ok",message:"Usuario autenticado", user:user,token:token,pbkdf2:derivedKey});
+                                let privateKeyDecrypted = decrypt(user.private_key,easyCrypt.easysync.getPBKDF2Hex(req.body.password));
+                                const tokenKeys = jwt.sign({id:user._id,private_key:privateKeyDecrypted,public_key:user.public_key},req.app.get('secretKey'));
+                                let userSend = cleanReturn(user);
+                                
+                                res.status(200).json({status:"ok",message:"Usuario autenticado", user:userSend,token:token,keys:tokenKeys,pbkdf2:pbkdf2Key});
                                 
                                 //fs.writeFileSync('/root/EasySync/EasySync/backend/API/logs/login.log',writeToFile,"UTF-8",{'flag': 'a+'});
                             }
                         }
+                    }else{
+                        res.status(401).json({status:"Error",message:'Contraseña o Usuario incorrecto'});
                     }
                 }
             });

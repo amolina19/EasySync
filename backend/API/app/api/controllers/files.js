@@ -4,7 +4,7 @@ const userModel = require('../models/users');
 const fs = require('fs');
 const du = require('du')
 const STORAGE = process.env.STORAGE_PATH;
-
+const CryptoJS = require('crypto-js');
 
 function userStorageExists(userid){
     if(fs.existsSync(STORAGE+userid)){
@@ -32,6 +32,48 @@ async function getUserSize(userid){
     return Number(size);
 }
 
+function encrypt(msg, pass) {
+    var salt = CryptoJS.lib.WordArray.random(128/8);
+    
+    var key = CryptoJS.PBKDF2(pass, salt, {
+        keySize: process.env.ENCRYPTION_KEYSIZE/32,
+        iterations: process.env.ENCRYPTION_ITERATIONS
+      });
+  
+    var iv = CryptoJS.lib.WordArray.random(128/8);
+    
+    var encrypted = CryptoJS.AES.encrypt(msg, key, { 
+      iv: iv, 
+      padding: CryptoJS.pad.Pkcs7,
+      mode: CryptoJS.mode.CBC
+      
+    });
+    
+    // salt, iv will be hex 32 in length
+    // append them to the ciphertext for use  in decryption
+    var transitmessage = salt.toString()+ iv.toString() + encrypted.toString();
+    return transitmessage;
+}
+
+function decrypt(msgencrypted, pass) {
+    var salt = CryptoJS.enc.Hex.parse(msgencrypted.substr(0, 32));
+    var iv = CryptoJS.enc.Hex.parse(msgencrypted.substr(32, 32))
+    var encrypted = msgencrypted.substring(64);
+    
+    var key = CryptoJS.PBKDF2(pass, salt, {
+        keySize: process.env.ENCRYPTION_KEYSIZE/32,
+        iterations: process.env.ENCRYPTION_ITERATIONS
+      });
+  
+    var decrypted = CryptoJS.AES.decrypt(encrypted, key, { 
+      iv: iv, 
+      padding: CryptoJS.pad.Pkcs7,
+      mode: CryptoJS.mode.CBC
+      
+    });
+    return decrypted.toString(CryptoJS.enc.Utf8);
+}
+
 function checkUri(request){
     if(request.secure){
         return true;
@@ -53,6 +95,8 @@ module.exports = {
                 mimetype : req.files.file.mimetype,
                 md5 : req.files.file.md5 
             }
+
+            console.log(req.body);
     
             let extension = file.name.substring(file.name.lastIndexOf('.')+1, file.name.length);
             file.extension = extension;
@@ -83,7 +127,11 @@ module.exports = {
                                             parent = 'root';
                                         }
 
-                                        filesModel.create({name:file.name,size:file.size,mimetype:file.mimetype,md5:file.md5,created_at:new Date(),modified_at:new Date(),owner_id:decoded.id,shared:false,extension:file.extension,parent:parent},function(err,result){
+                                        if(req.body.parent !== null){
+                                            parent = req.body.parent;
+                                        }
+
+                                        filesModel.create({name:file.name,size:file.size,mimetype:file.mimetype,md5:file.md5,created_at:new Date(),modified_at:new Date(),owner_id:decoded.id,shared:false,extension:file.extension,parent:parent,isTrash:false},function(err,result){
                                             if(err){
                                                 console.log(err);
                                                 res.status(400).json({status:"Error", message: "Error al guardiar los cambios",err:err});
@@ -96,6 +144,12 @@ module.exports = {
                                                             urlUnique = false;
                                                             filesModel.updateOne({_id:result._id},{$set:{url:url}},function(err){
                                                                 if(!err){
+                                                                    //console.log("PBKDF2 KEY",req.body.pbkdf2);
+                                                                    let encrypted = encrypt('hola',req.body.pbkdf2);
+                                                                    console.log("ENCRYPTED",encrypted);
+                                                                    let decrypted = decrypt(encrypted,req.body.pbkdf2);
+                                                                    console.log("DECRYPTED",decrypted);
+
                                                                     req.files.file.mv(STORAGE+decoded.id+"/"+result._id);
                                                                     res.status(200).json({status:"Ok", message: file.name+" se ha subido correctamente"});
                                                                 }
@@ -139,6 +193,8 @@ module.exports = {
         }
     },
     getUserFiles: function(req,res){
+
+        console.log(req.query);
         if(checkUri(req)){
             if(!req.query.token){
                 res.status(400).send({status:"error",message:"No token provided!"});
@@ -148,15 +204,41 @@ module.exports = {
                     if(err){
                         res.status(400).send(err);
                     }else{
-                        filesModel.find({owner_id:decoded.id},function(err,files){
-                            if(err){
-                                console.log(err);
-                                res.status(400).send({status:"Error",message:"No se ha podido recuperar los archivos en este momento"});
-                            }else{
-                                //console.log(files);
-                                res.status(200).send(files);
-                            }
-                        });
+
+                        if(req.query.type === '0'){
+                            // $and DESPUES sino no podria renredizar el componente
+                            filesModel.find({$or:[{owner_id:decoded.id,isTrash:null}]},function(err,files){
+                                if(err){
+                                    console.log(err);
+                                    res.status(400).send({status:"Error",message:"No se ha podido recuperar los archivos en este momento"});
+                                }else{
+                                    console.log(files);
+                                    res.status(200).send(files);
+                                }
+                            });
+                        }else if(req.query.type === '1'){
+                            filesModel.find({shared:true},function(err,files){
+                                if(err){
+                                    console.log(err);
+                                    res.status(400).send({status:"Error",message:"No se ha podido recuperar los archivos en este momento"});
+                                }else{
+                                    console.log(files);
+                                    res.status(200).send(files);
+                                }
+                            });
+                        }else if(req.query.type === '2'){
+                            filesModel.find({$and:[{owner_id:decoded.id,isTrash:true}]},function(err,files){
+                                if(err){
+                                    console.log(err);
+                                    res.status(400).send({status:"Error",message:"No se ha podido recuperar los archivos en este momento"});
+                                }else{
+                                    console.log(files);
+                                    res.status(200).send(files);
+                                }
+                            });
+                        }else{
+                            res.status(400).send({status:"Error",message:"No se ha podido recuperar los archivos en este momento"});
+                        }
                     }
                 });
             }
