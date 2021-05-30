@@ -20,6 +20,7 @@ import { MatList, MatListItem, MatListModule } from '@angular/material/list';
 import { DeleteDialogComponent } from './modals/delete-dialog/delete-dialog.component';
 import { DownloadComponent } from './modals/download/download.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { RestoreComponent } from './modals/restore/restore.component';
 
 @NgModule({
   imports: [
@@ -38,7 +39,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     MatButtonModule,
     MatProgressBarModule
   ],
-  declarations: [FileExplorerComponent, NewFolderDialogComponent, RenameDialogComponent, MoreInfoComponent, ShareComponent, DeleteDialogComponent, DownloadComponent],
+  declarations: [FileExplorerComponent, NewFolderDialogComponent, RenameDialogComponent, MoreInfoComponent, ShareComponent, DeleteDialogComponent, DownloadComponent, RestoreComponent],
   exports: [FileExplorerComponent],
   entryComponents: [NewFolderDialogComponent, RenameDialogComponent]
 })

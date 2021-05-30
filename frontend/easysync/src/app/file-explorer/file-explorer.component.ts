@@ -30,6 +30,9 @@ export class FileExplorerComponent implements OnInit{
   ascSize: boolean = false;
   userId:string;
 
+  public screenWidth: any;
+  public screenHeight: any;
+
   
 
   
@@ -37,6 +40,9 @@ export class FileExplorerComponent implements OnInit{
   }
 
   ngOnInit():void{
+    this.screenWidth = window.innerWidth;
+    this.screenHeight = window.innerHeight;
+    document.getElementById('upload').setAttribute('style',"opacity: 0.0; position: absolute; left: "+(this.screenWidth-Number.parseInt("100"))+"px;overflow:invisible");
 
     let user = this.tokenStorage.getUser();
     
@@ -98,7 +104,11 @@ export class FileExplorerComponent implements OnInit{
   }
 
   generateUpload():void{
+    let upload = 
+    document.getElementById('upload').removeAttribute('disabled');
     document.getElementById('upload').click();
+    document.getElementById('upload').setAttribute('disabled',"true");
+    
   }
 
   onFileSelect(event) {
@@ -212,10 +222,10 @@ export class FileExplorerComponent implements OnInit{
     */
 
     this.appComponent.downloadName = element.name;
-    this.appComponent.downloadURL = this.userService.API_FILES+"storage/download?url="+element.url;
+    this.appComponent.downloadIDFile = this.userService.API_FILES+"storage/download?idfile="+element.id+"&&token="+this.tokenStorage.getToken()+"&&keys="+this.tokenStorage.getKeys();
     this.appComponent.downloadSize = this.appComponent.convertBytesSize(element.size);
     this.appComponent.downloadSizeNumber = Number.parseInt(element.size);
-    this.appComponent.download(this.appComponent.downloadURL,this.appComponent.downloadName);
+    this.appComponent.download(this.appComponent.downloadIDFile,this.appComponent.downloadName);
   }
 
   openMoreInfoDialog(element:FileElement){
@@ -226,7 +236,50 @@ export class FileExplorerComponent implements OnInit{
 
   openDeleteDialog(element:FileElement){
     let dialogRef = this.dialog.open(DeleteDialogComponent,{data:{element}});
+    dialogRef.afterClosed().subscribe(res => {
+      if(res === undefined){
+          this.userService.moveToTrash(this.fileService.getItems(element.id),true).subscribe( data=>{
+          this.driveComponent.updateFiles(this.driveComponent.getActualDrive());
+          this.snackBar.open(data.message, 'Cerrar', {
+            horizontalPosition: this.horizontalPosition,
+            verticalPosition: this.verticalPosition,
+            duration: 5 * 1000
+          });
+        },err =>{
+          this.snackBar.open(err.message, 'Cerrar', {
+            horizontalPosition: this.horizontalPosition,
+            verticalPosition: this.verticalPosition,
+            duration: 5 * 1000
+          });
+
+        });
+      }
+    });
   }
+
+  openRestoreDialog(element:FileElement){
+    let dialogRef = this.dialog.open(DeleteDialogComponent,{data:{element}});
+    dialogRef.afterClosed().subscribe(res => {
+      if(res === undefined){
+          this.userService.moveToTrash(this.fileService.getItems(element.id),false).subscribe( data=>{
+          this.driveComponent.updateFiles(this.driveComponent.getActualDrive());
+          this.snackBar.open(data.message, 'Cerrar', {
+            horizontalPosition: this.horizontalPosition,
+            verticalPosition: this.verticalPosition,
+            duration: 5 * 1000
+          });
+        },err =>{
+          this.snackBar.open(err.message, 'Cerrar', {
+            horizontalPosition: this.horizontalPosition,
+            verticalPosition: this.verticalPosition,
+            duration: 5 * 1000
+          });
+
+        });
+      }
+    });
+  }
+
 
   openMenu(event: MouseEvent, viewChild: MatMenuTrigger) {
     event.preventDefault();

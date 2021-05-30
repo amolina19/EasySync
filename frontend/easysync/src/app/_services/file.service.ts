@@ -23,7 +23,7 @@ export interface IFileService {
 export class FileService implements IFileService {
   private map = new Map<string, FileElement>();
   private mapChild = new Map<string,string>();
-  
+  private parentsRoot = new Map<string, FileElement>();  
 
   constructor() {}
 
@@ -208,5 +208,27 @@ export class FileService implements IFileService {
       }
     });
     return valueReturn;
+  }
+
+  getItems(idElement:any):any{
+    let items = new Array();
+    let itemCount = 0;
+    this.hasChilds(idElement).forEach((value,key)=>{
+      items[itemCount] = key;
+      itemCount++;
+    });
+    return items;
+  }
+
+  rootParentOf():any{
+    this.map.forEach((value,key)=>{
+      if(!this.map.has(this.map.get(key).parent) && this.map.get(key).parent !== 'root'){
+        let x = this.map.get(key);
+        x.parent = 'root';
+        this.map.set(key,x);
+      }
+    });
+    console.log(this.map);
+    console.log(this.parentsRoot);
   }
 }

@@ -22,6 +22,7 @@ export class UserService {
   API_URL = 'https://api.easysync.es/test/';
   API_USER = 'https://easysync.es:2096/api/users/';
   API_FILES = 'https://easysync.es:2096/api/files/';
+  API_DOCUMENTATION = 'https://easysync.es:2096/api/api';
 
   constructor(private http: HttpClient,private tokenStorageService:TokenStorageService) { }
 
@@ -70,6 +71,10 @@ export class UserService {
     return fixDate.toString();
   }
 
+  getAPI(){
+    return this.http.get(this.API_DOCUMENTATION);
+  }
+
   getUserStorageSize(): Observable<any>{
     let token = this.tokenStorageService.getToken();
     //console.log(token);
@@ -111,6 +116,15 @@ export class UserService {
     body.set('elementid',elementid);
     body.set('parent',parent);
     return this.http.post(this.API_FILES + 'storage/move',body.toString(), httpOptions);
+  }
+
+  moveToTrash(elements:any,value):Observable<any>{
+    let token = this.tokenStorageService.getToken();
+    let body = new URLSearchParams();
+    body.set('token',token);
+    body.set('elements',elements);
+    body.set('trash',value);
+    return this.http.post(this.API_FILES + 'storage/trash',body.toString(), httpOptions);
   }
 
     /*

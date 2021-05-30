@@ -14,6 +14,7 @@ export class DeleteDialogComponent implements OnInit {
   constructor(private fileService:FileService,public dialogRef: MatDialogRef<MoreInfoComponent>,@Inject(MAT_DIALOG_DATA) public data: any) { }
 
   moreThanOne:boolean = false;
+  deleteButton:boolean;
 
   ngOnInit(): void {
     this.fileService.getChildMap().clear();
@@ -22,7 +23,7 @@ export class DeleteDialogComponent implements OnInit {
       this.moreThanOne = true;
       
     }
-    console.log(childs.size);
+    //console.log(childs.size);
   }
 
 }

@@ -1,19 +1,19 @@
-<input type="file" id="upload" style="opacity: 0.0; position: absolute; top: 10000px;overflow:invisible" (change)="onFileSelect($event)">
+<input type="file" id="upload" (change)="onFileSelect($event)" disabled>
 <mat-toolbar>
-    <mat-icon *ngIf="canNavigateUp" class="pointer" (click)="navigateUp()">arrow_back</mat-icon>
-    <span class="ml-0 mr-3 ml-sm-2" >{{path || appComponent.path}}</span>
+  
+
+    <mat-icon *ngIf="canNavigateUp" class="pointer mr-3" (click)="navigateUp()">arrow_back</mat-icon>
+    <span class="d-none d-md-block" >{{path || appComponent.path}}</span>
     <span class="spacer"></span>
-    <div class="row justify-content-center ml-2">
-      <mat-icon class="pointer" (click)="generateUpload()" matTooltip="Subir archivo" *ngIf="appComponent.tusarchivos"
-      aria-label="Button that displays a tooltip when focused or hovered over">cloud_upload</mat-icon>
-      <mat-icon class="pointer ml-3" (click)="openNewFolderDialog()" matTooltip="Crear una nueva carpeta" *ngIf="appComponent.tusarchivos"
-      aria-label="Button that displays a tooltip when focused or hovered over">create_new_folder</mat-icon> 
-      <mat-icon class="pointer ml-3" (click)="shortByName()" matTooltip="Ordernar los elementos por nombre"
-      aria-label="Button that displays a tooltip when focused or hovered over">sort_by_alpha</mat-icon>
-      <mat-icon class="pointer ml-3" (click)="shortByDate()" matTooltip="Ordenar los elementos por fecha de última creacion o modificación"
-      aria-label="Button that displays a tooltip when focused or hovered over">date_range</mat-icon>
-      <mat-icon class="pointer ml-3 mr-3" (click)="shortBySize()">format_list_bulleted</mat-icon>
-    </div>
+    <mat-icon class="pointer" (click)="generateUpload()" matTooltip="Subir archivo" *ngIf="appComponent.tusarchivos"
+    aria-label="Button that displays a tooltip when focused or hovered over">cloud_upload</mat-icon>
+    <mat-icon class="pointer ml-3" (click)="openNewFolderDialog()" matTooltip="Crear una nueva carpeta" *ngIf="appComponent.tusarchivos"
+    aria-label="Button that displays a tooltip when focused or hovered over">create_new_folder</mat-icon> 
+    <mat-icon class="pointer ml-3" (click)="shortByName()" matTooltip="Ordernar los elementos por nombre"
+    aria-label="Button that displays a tooltip when focused or hovered over">sort_by_alpha</mat-icon>
+    <mat-icon class="pointer ml-3" (click)="shortByDate()" matTooltip="Ordenar los elementos por fecha de última creacion o modificación"
+    aria-label="Button that displays a tooltip when focused or hovered over">date_range</mat-icon>
+    <mat-icon class="pointer ml-3 mr-3" (click)="shortBySize()">format_list_bulleted</mat-icon>
     
 </mat-toolbar>
   <!--
@@ -34,7 +34,7 @@
   </div>
 -->
   <mat-progress-bar color="warn" mode="indeterminate" *ngIf="appComponent.isGettinFiles"></mat-progress-bar>
-  <div class="container-fluid" fxFlex fxLayout="row">
+  <div class="container-fluid border-top border-warning" fxFlex fxLayout="row">
     
     <div class="content" fxFlex fxLayout="row">
       <div class="row justify-content-center justify-content-sm-start">
@@ -79,11 +79,16 @@
         <span>Descargar</span>
       </button>
 
+      <button *ngIf="appComponent.papelera" mat-menu-item (click)="openRestoreDialog(element)">
+        <mat-icon>restore</mat-icon>
+        <span>Restaurar</span>
+      </button>
+
       <button *ngIf="appComponent.tusarchivos" mat-menu-item (click)="openRenameDialog(element)">
         <mat-icon>edit</mat-icon>
         <span>Renombrar</span>
       </button>
-      <button *ngIf="appComponent.tusarchivos" mat-menu-item (click)="openDeleteDialog(element)">
+      <button *ngIf="appComponent.tusarchivos || appComponent.papelera" mat-menu-item (click)="openDeleteDialog(element)">
         <mat-icon>delete</mat-icon>
         <span>Eliminar</span>
       </button>
@@ -97,6 +102,7 @@
         <mat-icon>info</mat-icon>
         <span>Más información</span>
       </button>
+      
     </ng-template>
   </mat-menu>
   

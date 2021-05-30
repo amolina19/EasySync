@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { UserService } from '../_services/user.service';
 
 @Component({
   selector: 'app-api',
@@ -7,9 +8,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ApiComponent implements OnInit {
 
-  constructor() { }
+  constructor(private userService: UserService) { }
+
+  API_DOCUMENT:string;
 
   ngOnInit(): void {
+    console.log(this.API_DOCUMENT); 
   }
 
 }

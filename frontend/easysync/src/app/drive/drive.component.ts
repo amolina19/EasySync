@@ -17,9 +17,7 @@ import { AppComponent } from '../app.component';
 export class DriveComponent implements OnInit {
 
 
-  tusarchivos:boolean = true;
-  compartido:boolean = false;
-  papelera:boolean = false;
+
 
 
   events: string[] = [];
@@ -108,6 +106,19 @@ export class DriveComponent implements OnInit {
     
   }
 
+  getActualDrive():number{
+
+    let number = 0;
+    if(this.appComponent.tusarchivos){
+      number = 0;
+    }else if(this.appComponent.compartido){
+      number = 1;
+    }else if(this.appComponent.papelera){
+      number = 2;
+    }
+    return number;
+  }
+
   tusArchivosDrive():void{
     this.appComponent.path = "Tus Archivos";
     this.appComponent.tusarchivos = true;
@@ -150,22 +161,29 @@ export class DriveComponent implements OnInit {
 
   sliptCounter():number{
     let res = this.currentPath.split("");
-    let counter:number = 0;
-    for(let i=0;i<res.length;i++){
-      if(res[i] === '/'){
-        counter++;
+    if(this.currentPath.length > 0){
+      let counter:number = 0;
+      for(let i=0;i<res.length;i++){
+        if(res[i] === '/'){
+          counter++;
+        }
       }
+      return counter;
     }
-    return counter;
+    return 0;
+   
   }
 
   updateFiles(type:number):void{
     this.userService.getFilesUser(type).subscribe(
+
+      
   
       data =>{
+        console.log("TYPE",type);
         this.fileService.clear();
         this.files = data;
-        console.log('DATA',data);
+        //console.log('DATA',data);
 
         //debug
         
@@ -173,14 +191,16 @@ export class DriveComponent implements OnInit {
           if(element.parent === undefined){
             element.parent = 'root';
           }
-
+          /*
           if(type !== 0){
             this.fileService.add({id:element._id,name:element.name,size:element.size,isFolder:element.isFolder,parent:'root',created_at:element.created_at,modified_at:element.modified_at,owner_id:element.owner_id,shared:element.shared,md5:element.md5,url:element.url,mimetype:element.mimetype,extension:element.extension,isTrash:element.isTrash});
           }else{
             this.fileService.add({id:element._id,name:element.name,size:element.size,isFolder:element.isFolder,parent:element.parent,created_at:element.created_at,modified_at:element.modified_at,owner_id:element.owner_id,shared:element.shared,md5:element.md5,url:element.url,mimetype:element.mimetype,extension:element.extension,isTrash:element.isTrash});
-          }
+          }*/
           
+          this.fileService.add({id:element._id,name:element.name,size:element.size,isFolder:element.isFolder,parent:element.parent,created_at:element.created_at,modified_at:element.modified_at,owner_id:element.owner_id,shared:element.shared,md5:element.md5,url:element.url,mimetype:element.mimetype,extension:element.extension,isTrash:element.isTrash});
         });
+        this.fileService.rootParentOf();
         this.appComponent.isGettinFiles = false;
         this.updateFileElementQuery();
       }, err =>{

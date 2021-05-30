@@ -23,7 +23,7 @@ export class AppComponent implements OnInit {
   user: any;
   progressBar = false;
 
-  downloadURL: string;
+  downloadIDFile: string;
   downloadName: string;
   downloadSize: string;
   downloadProgressSize: string;

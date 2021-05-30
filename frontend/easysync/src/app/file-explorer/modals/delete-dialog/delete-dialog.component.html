@@ -1,12 +1,23 @@
 
 
-<h1 mat-dialog-title *ngIf="!moreThanOne">Eliminar elemento</h1>
-<div mat-dialog-content *ngIf="!moreThanOne">¿Estas seguro de eliminar este elemento?</div>
+<h1 mat-dialog-title *ngIf="!moreThanOne && !data.element.isTrash">Eliminar elemento</h1>
+<div mat-dialog-content *ngIf="!moreThanOne && !data.element.isTrash">¿Estas seguro de eliminar este elemento?</div>
+<div mat-dialog-content *ngIf="!moreThanOne && !data.element.isTrash">Si aceptas este elemento se moverá a la papelera hasta confirmar su eliminación</div>
 
-<h1 mat-dialog-title *ngIf="moreThanOne">Eliminar elementos</h1>
-<div mat-dialog-content *ngIf="moreThanOne">¿Estas seguro de eliminar este elemento y todos los que contenga en su interior?</div>
+
+<h1 mat-dialog-title *ngIf="!moreThanOne && data.element.isTrash">Eliminar elemento</h1>
+<div mat-dialog-content *ngIf="!moreThanOne && data.element.isTrash">¿Estas seguro de eliminar este elemento?</div>
+<div mat-dialog-content *ngIf="!moreThanOne && data.element.isTrash">Si aceptas este elemento se eliminará para siempre y los usuarios con los que tienes compartido este elemento dejará de ser accesible</div>
+
+<h1 mat-dialog-title *ngIf="moreThanOne && !data.element.isTrash">Eliminar elementos</h1>
+<div mat-dialog-content *ngIf="moreThanOne && !data.element.isTrash">¿Estas seguro de eliminar este elemento y todos los que contenga en su interior?</div>
+<div mat-dialog-content *ngIf="moreThanOne && !data.element.isTrash">Si aceptas estos elementos se moverán a la papelera hasta confirmar su eliminación</div>
+
+<h1 mat-dialog-title *ngIf="moreThanOne && data.element.isTrash">Eliminar elementos</h1>
+<div mat-dialog-content *ngIf="moreThanOne && data.element.isTrash">¿Estas seguro de eliminar este elemento y todos los que contenga en su interior?</div>
+<div mat-dialog-content *ngIf="moreThanOne && data.element.isTrash">Si aceptas estos elementos se eliminarán para siempre y los usuarios con los que tienes compartidos estos elementos dejarán de ser accesibles</div>
 
 <div mat-dialog-actions>
-  <button mat-button mat-dialog-close color="warn">Eliminar</button>
+  <button mat-button [mat-dialog-close]="deleteButton" color="warn">Eliminar</button>
   <button mat-button mat-dialog-close>Cancelar</button>
 </div>

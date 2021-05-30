@@ -1,7 +1,7 @@
 <mat-progress-bar mode="query" *ngIf="progressBar"></mat-progress-bar>
 <div id="app">
 
-  <nav class="navbar navbar-expand-sm navbar-light bg-light">
+  <nav class="navbar navbar-expand-sm navbar navbar-light" style="background-color: hsl(210, 33%, 95%);">
     
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <mat-icon>menu</mat-icon>
@@ -42,12 +42,12 @@
       </ul>
 
       <ul class="navbar-nav ml-auto" *ngIf="auth.isLoggedIn">
-        <li class="nav-item mr-3">
-          <a href="/profile" class="nav-link" routerLink="profile" data-toggle="collapse" data-target=".navbar-collapse.show"><button mat-icon-button color="primary" aria-label="profile"><mat-icon>supervised_user_circle</mat-icon><span class="ml-1">{{username}}</span>
+        <li class="nav-item">
+          <a href="/profile" class="nav-link mr-4" routerLink="profile" data-toggle="collapse" data-target=".navbar-collapse.show"><button mat-icon-button color="primary" aria-label="profile"><mat-icon>supervised_user_circle</mat-icon><span class="ml-1">{{username}}</span>
           </button></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link mr-5" data-toggle="collapse" data-target=".navbar-collapse.show"><button  mat-icon-button color="warn" (click)="logout()"><mat-icon>exit_to_app</mat-icon><span class="ml-1">Desconectar</span></button></a>
+          <a href="/disconect" class="nav-link mr-5" data-toggle="collapse" data-target=".navbar-collapse.show"><button  mat-icon-button color="warn" (click)="logout()"><mat-icon>exit_to_app</mat-icon><span class="ml-1">Desconectar</span></button></a>
         </li>
       </ul>
     </div>
