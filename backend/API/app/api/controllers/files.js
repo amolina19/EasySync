@@ -1,6 +1,7 @@
 const filesModel = require('../models/files');
-const jwt = require('jsonwebtoken');
 const userModel = require('../models/users');
+const keysModel = require('../models/keys');
+const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const du = require('du')
 const STORAGE = process.env.STORAGE_PATH;
@@ -63,9 +64,18 @@ function encryptFile(path,file,filepassword){
     
 }
 
-function decryptFile(path,file,filepassword){
+function decryptFile(path,file,userDownloadId,filepassword){
 
-    let commandLine = "openssl enc -aes-256-cbc -pass pass:"+filepassword+" -d -A -in "+path+"/"+file+".enc -out "+path+"/download/"+file;
+    let commandLine = "openssl enc -aes-256-cbc -pass pass:"+filepassword+" -d -A -in "+path+"/"+file+".enc -out "+path+"/download/"+userDownloadId+"/"+file;
+
+    if(!fs.existsSync(path+"/download/")){
+        fs.mkdirSync(path+"/download/");
+        if(!fs.existsSync(path+"/download/"+userDownloadId)){
+            fs.mkdirSync(path+"/download/"+userDownloadId);
+        }
+    }
+
+    console.log(commandLine);
     dir = exec(commandLine, function(err, stdout, stderr) {
         if (err) {
           // should have err.code here?  
@@ -74,7 +84,7 @@ function decryptFile(path,file,filepassword){
       });
       
       dir.on('exit', function (code) {
-        //console.log('EXIT CODE',code);
+        console.log('EXIT CODE',code);
     });
 }
 
@@ -252,6 +262,8 @@ module.exports = {
                                                         
                                                         //let encryptedFilePassword = crypto.publicEncrypt(pubKey, Buffer.from(filePassword));
                                                         let encryptedFilePassword = encryptPublicKey(filePassword,pubKey);
+                                                        
+                                                        keysModel.create({id_file:result._id,owner_id:user._id,password:encryptedFilePassword,shared_id:user._id},function(err,result){});
                                                         /*
                                                         filesModel.updateOne({_id:result._id},{$set:{"encrypetdPassword":encryptedFilePassword}},function(err,result){
                                                             if(err){console.log(err)
@@ -361,11 +373,13 @@ module.exports = {
         }
     },download: function(req,res){
         if(checkUri(req)){
+            let url = "none";
             
             if(!req.query.url){
-                res.status(400).send({status:"Error",message:"¡Url de descarga no valida o no existe!."});
+                //res.status(400).send({status:"Error",message:"¡Url de descarga no valida o no existe!."});
+
             }
-            filesModel.findOne({url:req.query.url},function(err,file){
+            filesModel.findOne({_id:req.body.idfile},function(err,file){
                 if(err){
                     console.log(err);
                     res.status(400).send(err);
@@ -383,8 +397,23 @@ module.exports = {
                                 if(err){
                                     res.status(400).send({status:"error",message:"Token no authorizado"});
                                 }else{
+                                    //console.log(decoded);
+                                    keysModel.findOne({shared_id:decoded.id},function(err,result){
+                                        //console.log(result.password);
 
-                                    res.download(STORAGE+file.owner_id+"/download/"+file._id,file.name+"."+file.extension);
+                                        jwt.verify(req.body.keys,process.env.SECRET_KEY,(err,decoded) =>{
+                                            if(err){
+                                                res.status(400).send({status:"error",message:"Token no authorizado"});
+                                            }else{
+                                                let passwordFile = decryptPrivateKey(result.password,decoded.private_key);
+                                                console.log(passwordFile);
+                                                decryptFile(STORAGE+result.owner_id,result.id_file,decoded.id,passwordFile);
+                                                //console.log(decoded);
+                                                res.download(STORAGE+result.owner_id+"/download/"+result.id_file,file.name+"."+file.extension);
+                                            }
+                                        });
+                                    });
+                                    
                                 }
                             });
                         } 
