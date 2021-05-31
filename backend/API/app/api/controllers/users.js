@@ -277,9 +277,9 @@ module.exports = {
                 if(user !== null){
                     const token = jwt.sign({id:user._id,typeToken:typeToken.recover_password},req.app.get('secretKey'), { expiresIn: "24h"});
                     email.sendmailrecoverpassword(user,token);
-                    res.status(201).json({status:"ok",message:"Email para recuperar tu contraseña se ha enviado  a tu dirección de email."});
+                    res.status(201).json({status:"ok",message:"El email para recuperar tu contraseña se ha enviado correctamente. Tienes 24h para recuperar tu contraseña, si no consigues acceder vuelve a intentarlo nuevamente."});
                 }else{
-                    res.status(400).json({status:"Error",message:"User o email no existe!."});
+                    res.status(400).json({status:"Error",message:"El usuario o email que has proporcionado no existe."});
                 }
             });
             
@@ -291,7 +291,7 @@ module.exports = {
     activate: function(req,res,next){
         if(checkUri){
 
-            let tokenStr = req.query.token;
+            let tokenStr = req.body.token;
             if(!tokenStr){
                 return res.status(403).send({status:"Error",message:process.env.NO_TOKEN_PROVIDED})
             }
@@ -303,8 +303,10 @@ module.exports = {
 
                 if(decoded.typeToken === typeToken.activate){
                     userModel.updateOne({_id:decoded.id},{$set:{"activated":true}},function(err){
-                        if(!err){
-                            res.status(201).json({status:"ok",message:"Cuenta no activada, verifica tu email para realizar la activación"});
+                        if(err){
+                            res.status(400).json({status:"Error",message:"No se ha podido activar la cuenta, intentalo de nuevo."});
+                        }else{
+                            res.status(201).json({status:"Exito",message:"Tu cuenta ha sido activada correctamente."});
                         }
                     });
                 }

@@ -14,7 +14,7 @@ router.post('/auth/update_email',userController.update_email);
 router.post('/delete',userController.eliminate_account);
 router.post('/admin/delete',userController.delete);
 
-router.get('/activate',userController.activate);
+router.post('/activate',userController.activate);
 
 router.delete('/delete/:id',userController.delete);
 

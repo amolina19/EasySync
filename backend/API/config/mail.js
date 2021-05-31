@@ -51,25 +51,25 @@ module.exports = {
     sendmailactivateacc: function(user,token){
 
         
-        let link = "https://"+process.env.EMAIL_DOMAIN.toLowerCase()+":2096/api/users/activate?token="+token;
+        let link = "https://"+process.env.EMAIL_DOMAIN.toLowerCase()+"/activate?token="+token;
         let email = "<b>Aquí tienes tu link de activación "+user.username+"</b>, <a href="+link+">"+link+"</a>";
 
         let info = transporter.sendMail({
             from: process.env.EMAIL_DOMAIN+' '+process.env.EMAIL_HEADER, // sender address
             to: user.email, // list of receivers
-            subject: "Activa tu cuenta "+user.username, // Subject line, // plain text body
+            subject: "Activar tu cuenta", // Subject line, // plain text body
             html: email, // html body
         });
     },
     sendmailrecoverpassword: function(user,token){
 
-        let link = "https://"+process.env.EMAIL_DOMAIN.toLowerCase()+":2096/api/users/recover?token="+token;
-        let email = "Aquí tienes el link para recuperar tu contraseña</b>"+user.username+"</b>, <a href="+link+">"+link+"</a>";
+        let link = "https://"+process.env.EMAIL_DOMAIN.toLowerCase()+"/recover-password?token="+token;
+        let email = "Aquí tienes el link para recuperar tu contraseña </b>"+user.username+"</b>, <a href="+link+">"+link+"</a>";
         
         let info = transporter.sendMail({
             from: process.env.EMAIL_DOMAIN+' '+process.env.EMAIL_HEADER, // sender address
             to: user.email, // list of receivers
-            subject: "Recupera tu contraseña "+user.username, // Subject line
+            subject: "Recuperación de contraseña", // Subject line
             html: email, // html body
         });
         
@@ -81,7 +81,7 @@ module.exports = {
         let info = transporter.sendMail({
             from: process.env.EMAIL_DOMAIN+' '+process.env.EMAIL_HEADER, // sender address
             to: user.email, // list of receivers
-            subject: "Tú código de autenticación "+user.username, // Subject line, // plain text body
+            subject: "Código de Autenticación ", // Subject line, // plain text body
             html: email, // html body
         });
     }
