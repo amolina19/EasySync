@@ -856,32 +856,47 @@ module.exports = {
                 if(user === null){
                     res.status(301).json({status:"error",message:"No existe este usuario."});
                 }else{
-                    jwt.verify(req.body.keys,process.env.SECRET_KEY,(err,decoded) =>{
+
+                    jwt.verify(req.body.token,process.env.SECRET_KEY,(err,owner) =>{
                         if(err){
-
-                        }else{
-
-                            filesModel.findOne({_id:req.body.idfile},function(err,file){
-                                let privKey = decoded.private_key;
-                                let pubKey = decoded.public_key;
-                                let pbkdf2Key = decoded.pbkdf2Key;
-
-                                keysModel.findOne({})
-
-                            });
-
-                            //console.log(decoded);
-
-                            
-
-                            
+                            res.status(400).send({status:"error",message:"Token no authorizado"});
                         }
+
+                        jwt.verify(req.body.keys,process.env.SECRET_KEY,(err,decoded) =>{
+                            if(err){
+                                res.status(400).send({status:"error",message:"Claves no válidas"});
+                            }else{
+    
+                                filesModel.findOne({_id:req.body.idfile},function(err,file){
+
+                                    if(!err){
+                                        let privKey = decoded.private_key;
+                                        let pubKey = decoded.public_key;
+                                        let pbkdf2Key = decoded.pbkdf2Key;
+        
+                                        //keysModel.findOne({})
+                                        keysModel.findOne({$and:[{shared_id:user._id,id_file:req.body.idfile,owner_id:owner.id}]},function(err4,keysResult){
+                                            if(keysResult.length === 0){
+                                                keysModel.findOne({$and:[{shared_id:owner.id,id_file:req.body.idfile,owner_id:owner.id}]} ,function(err,keyResult2){
+                                                    let Filepassword = decryptPrivateKey(keyResult2.password,privKey);
+                                                    let encryptedPassword = encryptPublicKey(Filepassword,user.public_key);
+                                                    keysModel.create({id_file:req.body.idfile,owner_id:owner.id,password:encryptedPassword,shared_id:user.id},function(err,resultKeyCreate){
+                                                        if(!err){
+                                                            res.status(200).json({status:"Ok", message: file.name+" se ha compartido correctamente"});
+                                                        }
+                                                    });
+                                                });
+                                            }
+                                        });
+                                    }else{
+                                        res.status(400).send({status:"error",message:"Error al compartir el archivo"});
+                                    }
+                                });   
+                            }
+                        });
                     });
-
-
                 }
             });
-
         }else{
             res.status(301).json({status:"error",message:process.env.USE_ROUTE});
         }
@@ -889,6 +904,51 @@ module.exports = {
         if(checkUri(req)){
             if(req.body.idFile){
 
+                jwt.verify(req.body.keys,process.env.SECRET_KEY,(err,decoded) =>{
+                    if(err){
+                        res.status(400).send({status:"error",message:"Claves no válidas"});
+                    }else{
+                        let privKey = decoded.private_key;
+                        let pubKey = decoded.public_key;
+                        let pbkdf2Key = decoded.pbkdf2Key;
+
+                        keysModel.findOne({$and:[{shared_id:decoded.id,id_file:req.body.idfile,owner_id:decoded.id}]},function(err4,keysResult){
+
+                            let passwordDecrypted = decryptPrivateKey(keysResult.password,privKey);
+                            
+
+                            userModel.findOne({username:'public'},function(err,publicUser){
+                                let encryptedPassword = encryptPublicKey(passwordDecrypted,publicUser.public_key);
+
+                                keysModel.create({id_file:req.body.idfile,owner_id:decoded.id,password:encryptedPassword,shared_id:publicUser.id},function(err,resultKeyCreate){
+                                    if(!err){
+                                        let urlUnique = true;
+                                        do{        
+                                            let url = generateURL();
+                                            filesModel.findOne({url:url}, function(errURL,resultURL){
+                                                if(resultURL === null){
+                                                    urlUnique = false;
+                                                    filesModel.updateOne({_id:result._id},{$set:{url:url}},function(err){
+                                                        if(!err){
+                                                            res.status(200).json({status:"Ok", message: file.name+" se ha publicado correctamente",url:url});
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }while(urlUnique === false);
+                                    }
+                                });
+
+                            });
+                        });
+                    }
+                });
+
+
+                
+                    
+
+                
             }
 
         }else{
