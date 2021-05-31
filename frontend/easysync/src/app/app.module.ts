@@ -72,6 +72,9 @@ import { FileExplorerModule } from './file-explorer/file-explorer.module';
 import { DriveComponent } from './drive/drive.component';
 import { getSaver, SAVER } from './_services/saver.provider';
 import { FileExplorerComponent } from './file-explorer/file-explorer.component';
+import { DownloadComponent } from './download/download.component';
+import { ActivateComponent } from './activate/activate.component';
+import { RecoverPasswordComponent } from './recover-password/recover-password.component';
 
 
 
@@ -85,7 +88,10 @@ import { FileExplorerComponent } from './file-explorer/file-explorer.component';
     BoardAdminComponent,
     BoardUserComponent,
     ApiComponent,
-    DriveComponent
+    DriveComponent,
+    DownloadComponent,
+    ActivateComponent,
+    RecoverPasswordComponent
   ],
   imports: [
     MatFormFieldModule,

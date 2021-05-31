@@ -92,5 +92,11 @@ export class AuthService {
         this.tokenService.saveUser(dataMap.get('user'));
     });
   }
+
+  activate(token:string){
+    let body = new URLSearchParams();
+    body.set('token', token);
+    return this.http.post(USERS_API+'activate',body.toString(),httpOptions);
+  }
   
 }
