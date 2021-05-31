@@ -1,0 +1,12 @@
+<h1 mat-dialog-title *ngIf="!moreThanOne">Restaurar elemento</h1>
+<div mat-dialog-content *ngIf="!moreThanOne">¿Estas seguro de restaurar este elemento?</div>
+<div mat-dialog-content *ngIf="!moreThanOne">Si aceptas este elemento se moverá nuevamente a Tus Archivos</div>
+
+<h1 mat-dialog-title *ngIf="moreThanOne">Restaurar elementos</h1>
+<div mat-dialog-content *ngIf="moreThanOne">¿Estas seguro de restaurar este elemento y todos los que contenga en su interior?</div>
+<div mat-dialog-content *ngIf="moreThanOne">Si aceptas estos elementos se moverán a Tus Archivos.</div>
+
+<div mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="restoreButton" color="warn">Eliminar</button>
+  <button mat-button mat-dialog-close>Cancelar</button>
+</div>

@@ -13,4 +13,5 @@ export class FileElement {
     mimetype:string;
     extension:string;
     isTrash:boolean;
+    path:string;
   }

@@ -1,7 +1,7 @@
 <mat-progress-bar mode="query" *ngIf="progressBar"></mat-progress-bar>
 <div id="app">
 
-  <nav class="navbar navbar-expand-sm navbar-light bg-light">
+  <nav class="navbar navbar-expand-sm navbar navbar-light" style="background-color: hsl(210, 33%, 95%);">
     
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <mat-icon>menu</mat-icon>
@@ -42,12 +42,12 @@
       </ul>
 
       <ul class="navbar-nav ml-auto" *ngIf="auth.isLoggedIn">
-        <li class="nav-item mr-3">
-          <a href="/profile" class="nav-link" routerLink="profile" data-toggle="collapse" data-target=".navbar-collapse.show"><button mat-icon-button color="primary" aria-label="profile"><mat-icon>supervised_user_circle</mat-icon><span class="ml-1">{{username}}</span>
+        <li class="nav-item">
+          <a href="/profile" class="nav-link mr-4" routerLink="profile" data-toggle="collapse" data-target=".navbar-collapse.show"><button mat-icon-button color="primary" aria-label="profile"><mat-icon>supervised_user_circle</mat-icon><span class="ml-1">{{username}}</span>
           </button></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link mr-5" data-toggle="collapse" data-target=".navbar-collapse.show"><button  mat-icon-button color="warn" (click)="logout()"><mat-icon>exit_to_app</mat-icon><span class="ml-1">Desconectar</span></button></a>
+          <a href="/disconect" class="nav-link mr-5" data-toggle="collapse" data-target=".navbar-collapse.show"><button  mat-icon-button color="warn" (click)="logout()"><mat-icon>exit_to_app</mat-icon><span class="ml-1">Desconectar</span></button></a>
         </li>
       </ul>
     </div>
@@ -63,7 +63,8 @@
 
   <mat-card *ngIf="download$ | async as download">
     <div class="container-fluid">
-      <span class="mr-5 ml-3 float-left"><b>{{download.state}} </b>  Descargando.. {{ downloadName }} <b>{{convertBytesSize((downloadSizeNumber*(download.progress/100)).toFixed(2))}}</b> de <b>{{downloadSize}}</b></span>
+      <span class="mr-5 ml-3 float-left" *ngIf="!downloadIsFolder"><b>{{download.state}} </b>  Descargando.. {{ downloadName }} <b>{{convertBytesSize((downloadSizeNumber*(download.progress/100)).toFixed(2))}}</b> de <b>{{downloadSize}}</b></span>
+      <span class="mr-5 ml-3 float-left" *ngIf="downloadIsFolder"><b>{{download.state}} {{download.progress}}% </b>  Descargando carpeta.. {{ downloadName }}</span>
       <button class="float-right mb-2" mat-raised-button color="primary" *ngIf="download.progress === 100" (click)="cerrarVentana('download');">Cerrar</button>
       <button class="float-right mb-2" mat-raised-button color="primary" *ngIf="download.progress !== 100" (click)="cancelar('download');">Cancelar</button>
     </div>

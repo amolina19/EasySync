@@ -1,23 +1,24 @@
 
 <mat-sidenav-container>
   <mat-sidenav #sidenav mode="side" [(opened)]="opened" (opened)="events.push('open!')"
-               (closed)="events.push('close!')">
+               (closed)="events.push('close!')" class="border-rigth border-warning">
     <div class="container mt-2">
       <div class="row">
-        <mat-icon class="float-left mr-2 ml-2 mt-1" >folder_open</mat-icon><button mat-button (click)="tusArchivosDrive()">Tus archivos</button>
+        <mat-icon class="float-left mr-1 ml-2 mt-1" >folder_open</mat-icon><button mat-button (click)="tusArchivosDrive()">Tus archivos</button>
       </div>
       <div class="row">
-        <mat-icon class="float-left mr-2 ml-2 mt-1" >folder_shared</mat-icon><button mat-button (click)="compartidoDrive()">Compartido</button>
+        <mat-icon class="float-left mr-1 ml-2 mt-1" >folder_shared</mat-icon><button mat-button (click)="compartidoDrive()">Compartido</button>
       </div>
       <div class="row">
-        <mat-icon class="float-left mr-2 ml-2 mt-1">restore_from_trash</mat-icon><button mat-button (click)="papeleraDrive()">Papelera</button>
+        <mat-icon class="float-left mr-1 ml-2 mt-1">restore_from_trash</mat-icon><button mat-button (click)="papeleraDrive()">Papelera</button>
       </div>  
     </div>
   </mat-sidenav>
 
   <mat-sidenav-content>
-    <mat-icon class="ml-4" (click)="sidenav.toggle()">menu</mat-icon>
-    <div class="mt-2" style="padding: 5px; height: 100%; box-sizing: border-box;">
+    <mat-icon *ngIf="!opened"(click)="sidenav.toggle()">chevron_right</mat-icon>
+    <mat-icon *ngIf="opened"(click)="sidenav.toggle()">chevron_left</mat-icon>
+    <div class="mt-2 pl-5 pr-5" style="padding: 5px; height: 100%; box-sizing: border-box;">
       <mat-card style="box-sizing: border-box; padding:0">
         <file-explorer
           [fileElements]="fileElements | async"
