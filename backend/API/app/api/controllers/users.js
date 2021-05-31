@@ -108,17 +108,6 @@ function checkUri(request){
     return false;
 }
 
-/**
- * @api {get} /ipInfo/:id Request IP information
- * @apiName GetUser
- * @apiGroup User
- *
- * @apiParam {Number} id User's unique ID.
- *
- * @apiSuccess {String} firstname Firstname of the User.
- * @apiSuccess {String} lastname  Lastname of the User.
- */
-
 function getIPInfo(ip){
     
         let array = ip.split(':');
@@ -212,20 +201,25 @@ module.exports = {
                             if(user.t2a){
                                 let code = generateRandomeCode(8);
                                 email.sendT2ACode(user,code);
-                                const token = jwt.sign({id:user._id,typeToken:typeToken.t2a_authentication,typeUser:user.type_user},req.app.get('secretKey'), { expiresIn: "24h"});
+                                const token = jwt.sign({id:user._id,typeToken:typeToken.t2a_authentication,typeUser:user.type_user},req.app.get('secretKey'));
                                 userModel.updateOne({_id:user._id},{$set:{"t2a_code":code}},function(err){});
                                 res.status(200).json({status:"ok",token:token,message:"Se ha enviado un código de autenticación, revista tu correo electronico"});
                             }else{
                                 
-                                const token = jwt.sign({id:user._id,typeToken:typeToken.authentication,typeUser:user.type_user},req.app.get('secretKey'), { expiresIn: "7d"});
+                                const token = jwt.sign({id:user._id,typeToken:typeToken.authentication,typeUser:user.type_user},req.app.get('secretKey'));
                                 userModel.updateOne({email:user.email},{$set:{"last_login":new Date()}},function(err){});
     
-                                let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
-                                console.log(ip);
+                                
+                                
                                 //sessionModel.create({},function(err){});
                                 //console.log(derivedKey);
                                 console.log(user.username+" Login on "+ new Date());
-                                getIPInfo(ip);
+                                if(req.body.device === undefined){
+                                    let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+                                    console.log(ip);
+                                    getIPInfo(ip);
+                                }
+                               
                                 let privateKeyDecrypted = decrypt(user.private_key,easyCrypt.easysync.getPBKDF2Hex(req.body.password));
                                 const tokenKeys = jwt.sign({id:user._id,private_key:privateKeyDecrypted,public_key:user.public_key,pbkdf2:pbkdf2Key},req.app.get('secretKey'));
                                 let userSend = cleanReturn(user);
@@ -336,7 +330,7 @@ module.exports = {
                         if(!user.activated){
                             res.status(400).json({status:"Error", message: "Cuenta no activada, verifica tu email para realizar la activación"});
                         }else{
-                            const token = jwt.sign({id:user._id,typeToken:typeToken.authentication,typeUser:user.type_user},req.app.get('secretKey'), { expiresIn: "7d"});
+                            const token = jwt.sign({id:user._id,typeToken:typeToken.authentication,typeUser:user.type_user},req.app.get('secretKey'));
                             userModel.updateOne({email:user.email},{$set:{"last_login":new Date()}},function(err){});
                             let derivedKey = easyCrypt.easysync.getPBKDF2Hex(user.password);
                             res.status(200).json({status:"ok",message:"El usuario ha sido autenticado", user:user,token:token,pbkdf2:derivedKey});
@@ -347,7 +341,53 @@ module.exports = {
         }else{
             res.status(301).json({status:"Error",message:process.env.USE_ROUTE});
         }
+    },change_password: function(req,res){
+        if(checkUri(req)){
+            
+            if(req.body.token !== undefined){
+                jwt.verify(req.body.token,req.app.get('secretKey'),(err, decoded) =>{
+                    if(err){
+                        return res.status(401).send({status:"Error",message:process.env.UNATHORIZED});
+                    }else{
+                        if(decoded.typeToken === typeToken.authentication){
+                            let password = bcrypt.hashSync(req.body.password, 10);
+
+                            jwt.verify(req.body.keys,req.app.get('secretKey'),(err2, decodedKey) =>{
+                                if(err2){
+                                    
+                                }else{
+                                    //console.log("DECODED KEYS",decodedKey);
+                                    userModel.findOne({_id:decoded.id},function(err3,result){
+                                        if(err3){
+                                            console.log(err3);
+                                        }else{
+                                            //console.log("ENTRO 3",decodedKey);
+                                            let private_enc_key = result.private_key;
+                                            let decrypted_key = decrypt(private_enc_key,decodedKey.pbkdf2);
+                                            //console.log("DECRYPTED KEY",decrypted_key);
+                                            let privateEncrypedSave = encrypt(decrypted_key,easyCrypt.easysync.getPBKDF2Hex(req.body.password));
+
+                                            userModel.updateOne({_id:decoded.id},{$set:{"password":password,private_key:privateEncrypedSave}},function(err4){
+                                                if(!err4){
+                                                    res.status(201).json({status:"ok",message:"Contraseña actualizada"});
+                                                }else{
+                                                    res.status(401).json({status:"Error",message:"Ocurrio un problema cuando se actualizaba la contraseña"});
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            }); 
+                        }
+                    }
+                });
+            }
+        }else{
+            res.status(301).json({status:"Error",message:process.env.USE_ROUTE});
+        }
     },recover_password: function(req,res){
+
+        CONSOLE.LOG("BODY",req.body)
         if(checkUri(req)){
 
             if(req.body.token !== undefined){
@@ -357,11 +397,12 @@ module.exports = {
                     }else{
                         if(decoded.typeToken === typeToken.recover_password){
                             let password = bcrypt.hashSync(req.body.password, 10);
+                            
                             userModel.updateOne({_id:decoded.id},{$set:{"password":password}},function(err){
                                 if(!err){
                                     res.status(201).json({status:"ok",message:"Contraseña actualizada"});
                                 }else{
-                                    res.status(401).json({status:"Error",message:"Ocurrio un problema cuando se actualizaba tú contraseña"});
+                                    res.status(401).json({status:"Error",message:"Ocurrio un problema cuando se actualizaba la contraseña"});
                                 }
                             });
                         }
@@ -487,34 +528,6 @@ module.exports = {
                             userModel.deleteOne({_id:decoded.id},function(err){
                                 if(!err){
                                     res.status(200).json({status:"ok",message:"Cuenta de usuario eliminada correctamente."});
-                                }
-                            });
-                        }
-                    }
-                });
-            }else{
-                res.status(401).json({status:"Error",message:"Token expired or value is null or not expected."});
-            }
-        }else{
-            res.status(301).json({status:"Error",message:process.env.USE_ROUTE});
-        }
-    },change_password: function(req,res){
-        if(checkUri(req)){
-
-            if(req.body.token !== null){
-                jwt.verify(req.body.token,req.app.get('secretKey'),(err, decoded) =>{
-                    if(err){
-                        return res.status(401).send({status:"Error",message:process.env.UNATHORIZED});
-                    }else{
-                        console.log(decoded);
-                        if(decoded.typeToken === typeToken.authentication){
-                            
-                            let password = bcrypt.hashSync(req.body.password, 10);
-                            userModel.updateOne({_id:decoded.id},{$set:{"password":password}},function(err){
-                                if(!err){
-                                    res.status(201).json({status:"ok",message:"Contraseña de usuario actualizada!."});
-                                }else{
-                                    res.status(401).json({status:"Error",message:"Problema ocurrido cuando se actualizaba la contraseña."});
                                 }
                             });
                         }
