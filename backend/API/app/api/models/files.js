@@ -64,6 +64,10 @@ const FilesSchema = new Schema({
     encryptedPassword:{
         type:String,
         required:false
+    },
+    path:{
+        type:String,
+        required:false
     }
 });
 
