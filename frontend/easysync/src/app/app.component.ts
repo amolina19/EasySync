@@ -29,6 +29,7 @@ export class AppComponent implements OnInit {
   downloadProgressSize: string;
   downloadSizeNumber:number;
   downloadFinished:boolean = false;
+  downloadIsFolder:boolean;
 
   upload:boolean = false;
   uploadFinished:boolean = false;

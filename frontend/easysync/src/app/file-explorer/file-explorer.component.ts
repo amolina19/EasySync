@@ -85,7 +85,14 @@ export class FileExplorerComponent implements OnInit{
 
   moveElement(element: FileElement, moveTo: FileElement) {
 
-    this.userService.moveFolder(element.id,moveTo.id).subscribe(
+    let pathTo = "";
+    if(element.parent === 'root'){
+      pathTo = moveTo.name+"/";
+    }else{
+      pathTo = this.path+moveTo.name+"/";
+    }
+
+    this.userService.moveFolder(element.id,moveTo.id,pathTo).subscribe(
       data=>{
         this.elementMoved.emit({ element: element, moveTo: moveTo });
         this.snackBar.open(data.message, 'Cerrar', {
@@ -124,6 +131,13 @@ export class FileExplorerComponent implements OnInit{
     formData.append('file', file);
     formData.append('keys', this.tokenStorage.getKeys());
     formData.append('parent', this.driveComponent.parentID);
+
+    if(this.path === undefined){
+      formData.append('path', "");
+    }else{
+      formData.append('path', this.path);
+    }
+    
 
     console.log(file);
 
@@ -225,6 +239,11 @@ export class FileExplorerComponent implements OnInit{
     this.appComponent.downloadIDFile = this.userService.API_FILES+"storage/download?idfile="+element.id+"&&token="+this.tokenStorage.getToken()+"&&keys="+this.tokenStorage.getKeys();
     this.appComponent.downloadSize = this.appComponent.convertBytesSize(element.size);
     this.appComponent.downloadSizeNumber = Number.parseInt(element.size);
+    if(element.isFolder){
+      this.appComponent.downloadIsFolder = true;
+    }else{
+      this.appComponent.downloadIsFolder = false;
+    }
     this.appComponent.download(this.appComponent.downloadIDFile,this.appComponent.downloadName);
   }
 
@@ -306,7 +325,7 @@ export class FileExplorerComponent implements OnInit{
   }
 
   moveToMainFolder(element:any){
-    this.userService.moveFolder(element.id,'root').subscribe(
+    this.userService.moveFolder(element.id,'root',"").subscribe(
       data=>{
         this.snackBar.open(data.message, 'Cerrar', {
           horizontalPosition: this.horizontalPosition,

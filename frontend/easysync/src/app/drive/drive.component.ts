@@ -198,7 +198,7 @@ export class DriveComponent implements OnInit {
             this.fileService.add({id:element._id,name:element.name,size:element.size,isFolder:element.isFolder,parent:element.parent,created_at:element.created_at,modified_at:element.modified_at,owner_id:element.owner_id,shared:element.shared,md5:element.md5,url:element.url,mimetype:element.mimetype,extension:element.extension,isTrash:element.isTrash});
           }*/
           
-          this.fileService.add({id:element._id,name:element.name,size:element.size,isFolder:element.isFolder,parent:element.parent,created_at:element.created_at,modified_at:element.modified_at,owner_id:element.owner_id,shared:element.shared,md5:element.md5,url:element.url,mimetype:element.mimetype,extension:element.extension,isTrash:element.isTrash});
+          this.fileService.add({id:element._id,name:element.name,size:element.size,isFolder:element.isFolder,parent:element.parent,created_at:element.created_at,modified_at:element.modified_at,owner_id:element.owner_id,shared:element.shared,md5:element.md5,url:element.url,mimetype:element.mimetype,extension:element.extension,isTrash:element.isTrash,path:element.path});
         });
         this.fileService.rootParentOf();
         this.appComponent.isGettinFiles = false;
@@ -216,7 +216,7 @@ export class DriveComponent implements OnInit {
 
 
   addFolder(folder: { name: string }) {
-    this.userService.addFolder(folder.name,this.parentID).subscribe(
+    this.userService.addFolder(folder.name,this.parentID,this.currentPath).subscribe(
       data =>{
         //this.fileService.add({id:data.id,name:folder.name,size:null,isFolder:data.isFolder,parent:data.parent,created_at:folderDate,modified_at:data,owner_id:data.owner_id,shared:null,md5:null,url:null,mimetype:null,extension:null});
         this.snackBar.open(data.message, 'Cerrar', {
