@@ -1,4 +1,4 @@
-<div class="row mt-5" *ngIf="!t2aLogin">
+<div class="row mt-5" *ngIf="!t2aLogin && !passwordRecover">
   <div class="col-md-4"></div>
   <div class="col-md-4">
 
@@ -56,10 +56,16 @@
           </div>
         </div>
 
-        
-        <div class="form-group">
-          <button mat-raised-button color="primary">Iniciar Sesión</button>
+        <div class="row">
+          <div class="form-group ml-3">
+            <button mat-raised-button color="primary">Iniciar Sesión</button>
+          </div>
+
+          <!--<a href="/recover-password" class="nav-link" routerLink="/recover-password">¿Has perdido tu contraseña?</a>-->
+
+            <a (click)="recoverPassword();" class="nav-link" >¿Has perdido tu contraseña?</a>
         </div>
+        
         <div class="form-group">
           <div
             class="alert alert-danger"
@@ -72,7 +78,7 @@
       </form>
   
       <div class="alert alert-success" *ngIf="auth.isLoggedIn">
-        Has iniciado sesión corrcetamente.
+        Has iniciado sesión correctamente.
       </div>
     </mat-card>
   </div>
@@ -86,7 +92,6 @@
       <div class="col-md-4">
         <img class="img-fluid" src="./../../assets/img/security.svg">
       </div>
-      
     </div>
   
     <div class="row justify-content-center mt-5">
@@ -100,7 +105,7 @@
       >
           <mat-form-field class="full-width">
             <mat-label>Código de acceso</mat-label>
-            <input matInput #message maxlength="8" placeholder="Ex. 19283442" matInput type="text" oninput="this.value = this.value.toUpperCase();"
+            <input matInput #message maxlength="8" placeholder="Ex. 1A82DBCA" matInput type="text" oninput="this.value = this.value.toUpperCase();"
             name="t2acode"
             [(ngModel)]="form.t2acode"
             (keyup.enter)="onSubmitT2A()"
@@ -124,7 +129,7 @@
           </div>
 
           <div class="alert alert-success mt-3" *ngIf="auth.isLoggedIn">
-            Has iniciado sesión corrcetamente.
+            Has iniciado sesión correctamente.
           </div>
         </form>
       </div>
@@ -136,4 +141,72 @@
     </div>
   </div>
   
+</div>
+
+<div class="container" *ngIf="passwordRecover">
+  <div class="row">
+    <div class="col-md-3"></div>
+
+    <div class="col-md-6">
+      <div class="row justify-content-center mb-5 mt-5">
+        <div>
+          <img class="img-fluid orange col-sx-4" src="./../../assets/img/password-reset.svg">
+        </div>
+      </div>
+    
+      <mat-card class="mb-3">
+        <p class="text-center">Introduce el nombre de usuario o email de la cuenta que necesitas recuperar.</p>
+        <p class="red text-center">*Si deseas conservar tus archivos necesitarás ingresar posteriormente la clave de recuperación.</p>
+      </mat-card>
+    
+      <mat-card>
+        <form
+        name="form"
+        (ngSubmit)="f.form.valid && onSubmit()"
+        #f="ngForm"
+        novalidate
+        >
+    
+        <div class="form-group">
+          <mat-form-field class="full-width">
+            <mat-label>Usuario o Email</mat-label>
+            <input matInput type="text"
+            name="useremail"
+            [(ngModel)]="form.useremail"
+            (keyup.enter)="onSubmitRecover()"
+            required
+            minlength="0"
+            maxlength="128"
+            #useremail="ngModel">
+          </mat-form-field>
+          <div
+            class="alert alert-danger"
+            role="alert"
+            *ngIf="f.submitted && useremail.invalid"
+          >
+            Se requiere de un usuario o email!
+          </div>
+          </div>
+          <div class="form-group mt-3">
+            <div
+              class="alert alert-danger"
+              role="alert"
+              *ngIf="isSendedFailed"
+            >
+              Error: {{ errorMessage }}
+            </div>
+          </div>
+    
+          <div class="alert alert-success mt-3" *ngIf="isSended">
+            Has iniciado sesión correctamente.
+          </div>
+        </form>
+
+        <div class="row justify-content-center mt-3">
+          <button mat-raised-button color="primary" (click)="onSubmitT2A();" class="mr-3">Recuperar Cuenta</button>
+          <button mat-raised-button color="warn" (click)="volver();">Volver</button>
+        </div>
+      </mat-card>
+    </div>
+  </div>
 </div>

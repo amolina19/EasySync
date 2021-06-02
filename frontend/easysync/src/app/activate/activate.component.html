@@ -1,0 +1,18 @@
+<div class="container">
+
+    <div class="row mt-5">
+        <div class="col-md-3">
+
+        </div>
+
+        <div class="col-md-6 justify-content-center">
+            <mat-card class="justify-content-center">
+                <div class="alert alert-success" *ngIf="successFull">{{successMessage}} </div>
+                <div class="alert alert-success" *ngIf="!successFull">{{errorMessage}} </div>
+                
+                <a mat-button routerLinkActive="mat-raised-button" color="primary" routerLink="/login">Iniciar Sesión</a>
+            </mat-card>
+        </div>
+    </div>
+   
+</div>

@@ -1,1 +1,16 @@
-<p>share works!</p>
+<h1 mat-dialog-title  *ngIf="data.element.isFolder">Compartir carpeta</h1>
+<h1 mat-dialog-title  *ngIf="!data.element.isFolder">Compartir archivo</h1>
+
+
+<mat-dialog-content>
+  <mat-form-field class="example-full-width">
+    <input matInput placeholder="Usuario o Email" [(ngModel)]="userEmail"
+    type="text" 
+    required>
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-raised-button mat-dialog-close>Cancelar</button>
+  <button mat-raised-button [mat-dialog-close]="userEmail" color="primary">Aceptar</button>
+</mat-dialog-actions>

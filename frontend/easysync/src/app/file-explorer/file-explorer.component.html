@@ -9,7 +9,7 @@
     aria-label="Button that displays a tooltip when focused or hovered over">cloud_upload</mat-icon>
     <mat-icon class="pointer ml-3" (click)="openNewFolderDialog()" matTooltip="Crear una nueva carpeta" *ngIf="appComponent.tusarchivos"
     aria-label="Button that displays a tooltip when focused or hovered over">create_new_folder</mat-icon> 
-    <mat-icon class="pointer ml-3" (click)="shortByName()" matTooltip="Ordernar los elementos por nombre"
+    <mat-icon class="pointer ml-3 fadeout" (click)="shortByName()" matTooltip="Ordernar los elementos por nombre"
     aria-label="Button that displays a tooltip when focused or hovered over">sort_by_alpha</mat-icon>
     <mat-icon class="pointer ml-3" (click)="shortByDate()" matTooltip="Ordenar los elementos por fecha de última creacion o modificación"
     aria-label="Button that displays a tooltip when focused or hovered over">date_range</mat-icon>
@@ -93,10 +93,18 @@
         <span>Eliminar</span>
       </button>
 
-      <button *ngIf="appComponent.tusarchivos" mat-menu-item>
+      <button *ngIf="appComponent.tusarchivos || appComponent.papelera" (click)="openShareDialog(element)" mat-menu-item>
         <mat-icon>share</mat-icon>
         <span>Compartir</span>
       </button>
+
+      <button *ngIf="appComponent.tusarchivos || appComponent.papelera" mat-menu-item (click)="generateURL(element)">
+        <mat-icon>lock</mat-icon>
+        <span *ngIf="!element.shared">Obtener URL</span>
+        <span *ngIf="element.shared">Compartir URL</span>
+
+      </button>
+      
 
       <button mat-menu-item (click)="openMoreInfoDialog(element)">
         <mat-icon>info</mat-icon>

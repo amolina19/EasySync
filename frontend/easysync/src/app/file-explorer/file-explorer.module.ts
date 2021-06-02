@@ -21,6 +21,8 @@ import { DeleteDialogComponent } from './modals/delete-dialog/delete-dialog.comp
 import { DownloadComponent } from './modals/download/download.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RestoreComponent } from './modals/restore/restore.component';
+import { GenerateUrlComponent } from './modals/generate-url/generate-url.component';
+import {ClipboardModule} from '@angular/cdk/clipboard';
 
 @NgModule({
   imports: [
@@ -37,9 +39,10 @@ import { RestoreComponent } from './modals/restore/restore.component';
     MatInputModule,
     FormsModule,
     MatButtonModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    ClipboardModule
   ],
-  declarations: [FileExplorerComponent, NewFolderDialogComponent, RenameDialogComponent, MoreInfoComponent, ShareComponent, DeleteDialogComponent, DownloadComponent, RestoreComponent],
+  declarations: [FileExplorerComponent, NewFolderDialogComponent, RenameDialogComponent, MoreInfoComponent, ShareComponent, DeleteDialogComponent, DownloadComponent, RestoreComponent, GenerateUrlComponent],
   exports: [FileExplorerComponent],
   entryComponents: [NewFolderDialogComponent, RenameDialogComponent]
 })

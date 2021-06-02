@@ -23,6 +23,9 @@ export class LoginComponent implements OnInit {
   hide = true;
   user:any;
   t2aLogin:boolean = false;
+  passwordRecover:boolean = false;
+  isSendedFailed:boolean = false;
+  isSended:boolean = false;
 
   constructor(private authService: AuthService, private tokenStorage: TokenStorageService, private router: Router,private appComponent:AppComponent,public auth:AuthService,private deviceService: DeviceDetectorService) { }
 
@@ -42,6 +45,14 @@ export class LoginComponent implements OnInit {
       this.tokenStorage.setDevice(this.deviceService.getDeviceInfo());
     }
     
+  }
+
+  recoverPassword(){
+    this.passwordRecover = true;
+  }
+
+  onSubmitRecover(){
+    this.appComponent.progressBar = true;
   }
 
   onSubmit(){
@@ -76,7 +87,7 @@ export class LoginComponent implements OnInit {
     this.appComponent.progressBar = true;
     this.authService.loginByT2A(this.tokenStorage.getTokenT2A(),this.form.t2acode).subscribe(
       data => {
-        console.log(data);
+        //console.log(data);
         this.t2aLogin = false;
         var dataMap = new Map(Object.entries(data));
         this.tokenStorage.saveToken(dataMap.get('token'));
@@ -89,7 +100,7 @@ export class LoginComponent implements OnInit {
         this.reloadPage();
       },
       err =>{
-        console.log(err);
+        //console.log(err);
         this.errorMessage = err.error.message;
         this.isLoginFailed = true;
         this.appComponent.progressBar = false;
@@ -99,6 +110,7 @@ export class LoginComponent implements OnInit {
 
   volver(){
     this.t2aLogin = false;
+    this.passwordRecover = false;
     this.tokenStorage.removeTokenT2A();
   }
 
