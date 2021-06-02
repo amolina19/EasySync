@@ -63,6 +63,8 @@
 
   <mat-card *ngIf="download$ | async as download">
     <div class="container-fluid">
+
+      <mat-spinner class="ml-1 float-left" *ngIf="download.state == 'PENDING'" diameter="20"></mat-spinner>
       <span class="mr-5 ml-3 float-left" *ngIf="!downloadIsFolder"><b>{{download.state}} </b>  Descargando.. {{ downloadName }} <b>{{convertBytesSize((downloadSizeNumber*(download.progress/100)).toFixed(2))}}</b> de <b>{{downloadSize}}</b></span>
       <span class="mr-5 ml-3 float-left" *ngIf="downloadIsFolder && download.state == 'IN_PROGRESS'"><b>{{download.state}} {{download.progress}}% </b>  Descargando carpeta.. {{ downloadName }}</span>
       <span class="mr-5 ml-3 float-left" *ngIf="downloadIsFolder && download.state == 'PENDING'"><b>{{download.state}} {{download.progress}}% </b>  Desencriptando carpeta.. {{ downloadName }}</span>

@@ -1,0 +1,49 @@
+<h1 mat-dialog-title  *ngIf="!data.element.shared">Obtener URL..</h1>
+<h1 mat-dialog-title  *ngIf="data.element.shared">URL Compartido</h1>
+
+<mat-dialog-content>
+    
+    <div class="row justify-content-center">
+
+        <div class="col-md-10">
+            <form
+            name="form"
+            (ngSubmit)="f.form.valid"
+            #f="ngForm"
+            novalidate
+          >
+              <div *ngIf="password" class="form-group">
+                <mat-form-field >
+                  <mat-label>URL</mat-label>
+                  <input matInput type="text"
+                  name="name"
+                  [(ngModel)]="form.url"
+                  #url="ngModel">
+                </mat-form-field>
+              </div>
+            </form>
+        </div>
+
+        <div class="col-md-10" *ngIf="showPassword">
+          <mat-hint class="text-break">Clave: <b>{{password}}</b></mat-hint>
+        </div>
+        
+
+        <div class="col-md-10">
+            <div class="row justify-content-center">
+                <button class="mt-2 ml-4 mr-3"mat-stroked-button color="primary" *ngIf="!form.url && !password" (click)="generarURL();">Generar URL</button>
+                <button class="mt-2 ml-1" *ngIf="form.url && password && !showPassword" mat-stroked-button color="primary" (click)="show();">Mostrar URL con clave</button>
+                <button class="mt-2 ml-1" *ngIf="form.url && password && showPassword" mat-stroked-button color="accent" (click)="hide();">Dejar de Mostrar</button>
+                <button class="mt-2 ml-2" *ngIf="form.url && password" mat-stroked-button color="warn" (click)="deleteURL();">Eliminar URL</button>
+                <button class="mt-2 ml-2" mat-stroked-button color="accent" (click)="copy();" [cdkCopyToClipboard]="form.url">Copiar URL</button>
+            </div>
+        </div>
+    </div>
+  
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-raised-button [mat-dialog-close]>Cancelar</button>
+  <button mat-raised-button [mat-dialog-close] color="primary">Aceptar</button>
+</mat-dialog-actions>

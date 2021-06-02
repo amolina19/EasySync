@@ -1,1 +1,78 @@
-<p>download works!</p>
+
+<div class="container mt-5 mb-5">
+
+
+
+    <div class="row justify-content-center mb-5">
+      <div class="col-sx-1 col-md-3">
+        <img class="img-fluid" src="./../../assets/img/file/file-download.svg">
+      </div>
+
+      <!--
+
+      <div class="col-md-3">
+        <img class="img-fluid" src="./../../assets/img/file/file-notfound.svg">
+      </div>
+
+      <div class="col-md-3">
+        <img class="img-fluid" src="./../../assets/img/file/file-decrypting.svg">
+      </div>
+
+      <div class="col-md-3">
+        <img class="img-fluid" src="./../../assets/img/file/file-downloading.svg">
+      </div>
+
+      <div class="col-md-3">
+        <img class="img-fluid" src="./../../assets/img/folder/folder-download.svg">
+      </div>-->
+
+      <div class="col-md-6">
+        <div class="row justify-content-center mb-5">
+
+            <div class="col-md-10">
+                <div class="mt-5 mb-2 col-md-6 text-break font-weight-bold">{{name}}</div>
+                <div class="mb-3 col-md-6" ><div class="text-uppercase b">{{size}}</div></div>
+                <div class="col-md-2"><button mat-raised-button color="primary" (click)="download();" class="mr-3">Descargar</button></div>
+                <!--
+                <div>
+                  <button mat-raised-button color="primary" (click)="download();" class="mr-3">Cancelar</button>
+                </div>
+                -->
+
+                <div class="mt-3 col-md-10" *ngIf="!passwordMatch"> 
+                    <!--*ngIf="!auth.isLoggedIn"-->
+
+                    <mat-hint class="red">{{errorString}}</mat-hint>
+                  <form
+                      
+                      name="form"
+                      (ngSubmit)="f.form.valid && download();"
+                      #f="ngForm"
+                      novalidate
+                      >
+                      <mat-form-field class="full">
+                          <mat-label>Código de descifrado</mat-label>
+                          <input matInput #message maxlength="32" placeholder="Ejemplo 1A82DBCA94LKGKDE9Ñ294LERKFDLSA854DR92LAS932" matInput type="text" oninput="this.value = this.value.toUpperCase();"
+                          name="t2acode"
+                          [(ngModel)]="form.download"
+                          (keyup.enter)="download();"
+                          required
+                          minlength="0"
+                          maxlength="62"
+                          #t2acode="ngModel">
+                          <mat-hint align="end">{{message.value.length}} / 62</mat-hint>
+                      </mat-form-field>
+                  </form>
+        
+                </div>
+            </div>
+          </div>
+      </div>
+    </div>
+
+    <div class="row justify-content-center mt-5 mb-5">
+        
+    </div>
+
+</div>
+

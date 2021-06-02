@@ -14,6 +14,8 @@ import { FileService } from '../_services/file.service';
 import { TokenStorageService } from '../_services/token-storage.service';
 import { HttpClient, HttpEventType } from '@angular/common/http';
 import { OnInit } from '@angular/core';
+import { ShareComponent } from './modals/share/share.component';
+import { GenerateUrlComponent } from './modals/generate-url/generate-url.component';
 
 @Component({
   selector: 'file-explorer',
@@ -295,6 +297,24 @@ export class FileExplorerComponent implements OnInit{
           });
 
         });
+      }
+    });
+  }
+
+  openShareDialog(element:FileElement){
+    let dialogRef = this.dialog.open(ShareComponent,{data:{element}});
+    dialogRef.afterClosed().subscribe(res => {
+      if (res) {
+        //this.folderAdded.emit({ name: res });
+      }
+    });
+  }
+
+  generateURL(element:FileElement){
+    let dialogRef = this.dialog.open(GenerateUrlComponent,{data:{element}});
+    dialogRef.afterClosed().subscribe(res => {
+      if (res) {
+        //this.folderAdded.emit({ name: res });
       }
     });
   }

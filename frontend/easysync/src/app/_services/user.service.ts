@@ -129,7 +129,7 @@ export class UserService {
     return this.http.post(this.API_FILES + 'storage/trash',body.toString(), httpOptions);
   }
 
-    /*
+  /*
   downloadByUrl(url:any):Observable<any>{
     //let token = this.tokenStorageService.getToken();
     //let body = new URLSearchParams();
@@ -137,5 +137,47 @@ export class UserService {
     //body.set('url',url);
     return this.http.get(this.API_FILES + 'storage/download?url='+url,{ responseType: 'blob',reportProgress: true, observe: 'events', });
   }*/
+
+  /*
+  downloadByUrl(url:any,password:any){
+    //let token = this.tokenStorageService.getToken();
+    let body = new URLSearchParams();
+    //body.set('token',token);
+    body.set('url',url);
+    body.set('password',password);
+    return this.http.post(this.API_FILES + 'download',body.toString(), httpOptions);
+  }*/
+
+  getFileToDownload(url:any,password:any){
+  //let token = this.tokenStorageService.getToken();
+    let body = new URLSearchParams();
+    //body.set('token',token);
+    body.set('url',url);
+    body.set('password',password);
+    return this.http.post(this.API_FILES + 'download',body.toString(), httpOptions);
+  }
+
+  getURLFile(idfile:any){
+    let body = new URLSearchParams();
+    body.set('idfile',idfile);
+    body.set('keys',this.tokenStorageService.getKeys());
+    return this.http.post(this.API_FILES + 'storage/geturlfile/',body.toString(), httpOptions);
+  }
+
+  getPublicFilePassword(idfile:any){
+    let body = new URLSearchParams();
+    body.set('idfile',idfile);
+    body.set('keys',this.tokenStorageService.getKeys());
+    return this.http.post(this.API_FILES + 'storage/getpublicpassword',body.toString(), httpOptions);
+  }
+
+  deleteURLFile(idfile:any){
+    let body = new URLSearchParams();
+    body.set('idfile',idfile);
+    body.set('keys',this.tokenStorageService.getKeys());
+    return this.http.post(this.API_FILES + 'storage/deleteurl/',body.toString(), httpOptions);
+  }
+
+
 
 }
