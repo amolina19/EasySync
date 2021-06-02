@@ -94,10 +94,20 @@ function zipFile(id_owner,name,res){
             }
         });
     });
-        
-
-    
 }
+
+function cleanReturn(fileObject){
+    var sessionObj = fileObject.toJSON();
+    delete sessionObj.isTrash;
+    delete sessionObj.owner_id;
+    delete sessionObj.parent;
+    delete sessionObj.__v;
+    delete sessionObj.path;
+    delete sessionObj.created_at;
+    delete sessionObj.modified_at;
+    return sessionObj;
+}
+
 
 function removeDirectory(path){
 
@@ -541,8 +551,91 @@ module.exports = {
         }else{
             res.status(301).json({status:"error",message:process.env.USE_ROUTE});
         }
-    },
-    getUserFiles: function(req,res){
+    },downloadURL: function(req,res){
+        //NEEED TO CREATE V4 FOR PUBLIC DOWNLOADS
+        if(checkUri(req)){
+            filesModel.findOne({_id:req.body.url},function(err,file){
+                
+                if(err){
+                    console.log(err);
+                    res.status(400).send(err);
+                }else{
+                    if(file === null){
+                        //console.log("FILE NULL",file);
+                        res.status(400).send({status:"Error",message:"¡Archivo no encontrado!."});
+                    }else{
+
+                        userModel.findOne({username:'public'},function(err2,userPublic){
+                            if(err2){
+                                res.status(400).send({status:"Error",message:"Oops,Claves no encontradas!."});
+                            }else{
+                                //let private_key_public = userPublic.private_key;
+
+                                if(file.isFolder){
+                                    mapChild.clear();
+                                    hasChilds(file._id,file.q);
+                                    sleep(1000);
+                                    console.log("RESULT MAP CHILD",mapChild);
+                                    //console.log(filePath);
+                                    //console.log(decoded.id);
+                                    
+                                    mapChild.forEach((value,key)=>{
+        
+                                        filesModel.findOne({_id:key},function(err,result){
+        
+                                            if(!result.isFolder){
+                                                if(!fs.existsSync("/download/"+result.owner_id+"/"+result.path)){
+                                                    fs.mkdirSync("/download/"+result.owner_id+"/"+result.path,{recursive: true});
+                                                }
+        
+                                                keysModel.findOne({$and:[{shared_id:userPublic.id,id_file:result._id}]},function(err4,keysResult){
+                                                    let passwordFile = decryptPrivateKey(keysResult.password,userPublic.private_key);
+                                                    console.log("PASSWORD FILE",passwordFile);
+                                                    //console.log(resultAux);
+                                                    decryptFile("/download/"+result.owner_id+"/"+result.path,result,decoded,passwordFile,res,file,true);
+                                                    //console.log("RESULT AUX PATH ",result.path);
+                                                });
+                                            }
+                                            //console.log("RESULT TRUE",result);
+                                        });
+                                    });
+                                    sleep(30000);
+                                    zipFile(decoded.id,file.name,res);
+                                    
+                                    
+                                }else{
+                                    keysModel.findOne({$and:[{shared_id:userPublic.id,id_file:req.body.url}]},function(err3,result){
+                                    
+                                        //console.log(decoded);
+                                        //console.log(decoded.id);
+                                        if(err3){
+                                            //console.log("ERROR",err2);
+                                        }
+        
+                                        
+                                        //console.log("ENTRA 2");
+                                        let passwordFile = decryptPrivateKey(result.password,userPublic.private_key);
+                                        //console.log(passwordFile);
+                                        decryptFile(STORAGE+result.owner_id,result,decoded,passwordFile,res,file,false);
+                                        //console.log(decoded);
+                                        
+                                            
+                                        
+                                    });
+                                }
+                            }
+                        })
+
+                        
+                    }
+                    //res.status(200).send(file);
+                }
+            });
+        }else{
+            res.status(301).json({status:"error",message:process.env.USE_ROUTE});
+        }
+
+    },getUserFiles: function(req,res){
 
         console.log(req.query);
         if(checkUri(req)){
@@ -902,7 +995,7 @@ module.exports = {
         }
     },setPublicDownload(req,res){
         if(checkUri(req)){
-            if(req.body.idFile){
+            if(req.body.idfile){
 
                 jwt.verify(req.body.keys,process.env.SECRET_KEY,(err,decoded) =>{
                     if(err){
@@ -913,42 +1006,178 @@ module.exports = {
                         let pbkdf2Key = decoded.pbkdf2Key;
 
                         keysModel.findOne({$and:[{shared_id:decoded.id,id_file:req.body.idfile,owner_id:decoded.id}]},function(err4,keysResult){
-
-                            let passwordDecrypted = decryptPrivateKey(keysResult.password,privKey);
                             
+                            
+                            if(keysResult === null){
+                                //keysModel.deleteOne({$and:[{shared_id:decoded.id,id_file:req.body.idfile,owner_id:decoded.id}]},function(err5){});
+                                res.status(401).send({status:"error",message:"Surgió un problema al generar la URL"});
+                            }else{
+                                
 
-                            userModel.findOne({username:'public'},function(err,publicUser){
-                                let encryptedPassword = encryptPublicKey(passwordDecrypted,publicUser.public_key);
+                                let passwordDecrypted = decryptPrivateKey(keysResult.password,privKey);
+                                //console.log("PASSWORRD",passwordDecrypted);
+                                userModel.findOne({username:'public'},function(err,publicUser){
+                                    let encryptedPassword = encryptPublicKey(passwordDecrypted,publicUser.public_key);
 
-                                keysModel.create({id_file:req.body.idfile,owner_id:decoded.id,password:encryptedPassword,shared_id:publicUser.id},function(err,resultKeyCreate){
-                                    if(!err){
-                                        let urlUnique = true;
-                                        do{        
-                                            let url = generateURL();
-                                            filesModel.findOne({url:url}, function(errURL,resultURL){
-                                                if(resultURL === null){
-                                                    urlUnique = false;
-                                                    filesModel.updateOne({_id:result._id},{$set:{url:url}},function(err){
-                                                        if(!err){
-                                                            res.status(200).json({status:"Ok", message: file.name+" se ha publicado correctamente",url:url});
+                                    keysModel.findOne({id_file:req.body.idfile,owner_id:decoded.id,shared_id:publicUser.id},function(err,keysFind){
+
+                                        
+                                        if(keysFind !== null){
+                                            keysModel.deleteOne({id_file:req.body.idfile,shared_id:process.env.SHARE_PUBLIC_USER_ID,owner_id:decoded.id},function(err3,keysResult){
+                                            });
+                                        }
+
+                                        
+                                        keysModel.create({id_file:req.body.idfile,owner_id:decoded.id,password:encryptedPassword,shared_id:publicUser.id},function(err,resultKeyCreate){
+                                            if(!err){
+                                                let urlUnique = true;
+                                                do{   
+                                                    let url = generateURL();
+                                                    filesModel.findOne({url:url}, function(errURL,resultURL){
+                                                        if(resultURL === null){
+                                                            urlUnique = false;
+                                                            console.log("URL",url);
+                                                            filesModel.updateOne({_id:req.body.idfile},{$set:{url:url,shared:true}},function(err){
+                                                                if(!err){
+                                                                    res.status(200).json({status:"Ok", message:"Se ha generado la URL correctamente",url:url,password:passwordDecrypted});
+                                                                }else{
+                                                                    res.status(400).send({status:"error",message:"Surgió un problema al generar la URL"});
+                                                                }
+                                                            });
                                                         }
                                                     });
-                                                }
-                                            });
-                                        }while(urlUnique === false);
+                                                }while(urlUnique === false);
+                                            }else{
+                                                res.status(400).send({status:"error",message:"Surgió un problema al generar la URL"});
+                                            }
+                                        });
+                                        
+                                    });
+                                    
+                                });
+                            }
+                        });
+                    }
+                });  
+            }
+        }else{
+            res.status(301).send({status:"error",message:process.env.USE_ROUTE});
+        }
+    },getFileToDownload: function(req,res){
+        if(checkUri(req)){
+            if(req.body.url !== null){
+                
+                filesModel.findOne({url:req.body.url},function(err,result){
+                    if(result === null){
+                        res.status(401).send({status:"error",message:"¡Archivo no encontrado!"});
+                    }else{
+                        
+                        userModel.findOne({username:'public'},function(err2,userPublic){
+                            if(err){
+                                res.status(400).send({status:"error",message:"No se ha encontrado las Claves!"});
+                            }else{
+                                keysModel.findOne({$and:[{id_file:result._id,shared_id:userPublic._id}]},function(err3,keysResult){
+
+                                    if(err3){
+                                        res.status(401).send({status:"error",message:"No se encontraron las claves de encriptación en este archivo."});
+                                    }else{
+                                        if(keysResult === null){
+                                            res.status(401).send({status:"error",message:"Archivo no disponible o borrado por el usuario"});
+                                        }else{
+                                            
+                                            let passwordDecrypted = decryptPrivateKey(keysResult.password,userPublic.private_key);
+
+                                            result = cleanReturn(result);
+                                            if(passwordDecrypted === req.body.password){
+                                                res.status(201).send({status:"Success",result:result,password:true});
+                                            }else{
+                                                res.status(201).send({status:"error",result:result,password:false,message:"Código de encriptación no válido."});
+                                            }
+                                        }
                                     }
                                 });
+                            }
+                        });
+                    }
+                })
+            }else{
+                res.status(401).json({status:"error",message:"¡Archivo no encontrado!"});
+            }
 
-                            });
+        }else{
+            res.status(301).json({status:"error",message:process.env.USE_ROUTE});
+        }
+    },getPublicFilePassword: function(req,res){
+        if(checkUri(req)){
+            if(req.body.idfile !== null){
+                //console.log(req.body);
+
+                jwt.verify(req.body.keys,process.env.SECRET_KEY,(err,decoded) =>{
+                    if(err){
+                        res.status(401).json({status:"error",message:"Error surgió un problema al encontrar la clave!"});
+                    }else{
+                        
+                        keysModel.findOne({id_file:req.body.idfile,shared_id:process.env.SHARE_PUBLIC_USER_ID,owner_id:decoded.id},function(err3,keysResult){
+                            if(err3){
+                                console.log(err3);
+                            }
+                            console.log(keysResult);
+
+                            if(keysResult !== null){
+
+                                userModel.findOne({username:'public'},function(err,result){
+                                    if(err){
+                                        res.status(401).json({status:"error",message:"Error, no se encontraron las claves del archivo!"});
+                                    }else{
+                                        let passwordDecrypted = decryptPrivateKey(keysResult.password,result.private_key);
+                                        //console.log(passwordDecrypted);
+                                        res.status(201).json({status:"Success",password:passwordDecrypted});
+                                    }
+                                })
+                            }else{
+                                res.status(401).json({status:"error",message:"Error surgió un problema al encontrar la clave!"});
+                            }
                         });
                     }
                 });
+            }else{
+                res.status(301).json({status:"error",message:"¡Archivo no encontrado!"});
+            }
 
-
+        }else{
+            res.status(301).json({status:"error",message:process.env.USE_ROUTE});
+        }
+    },deleteURL: function(req,res){
+        if(checkUri(req)){
+            if(req.body.idfile !== null){
                 
-                    
 
-                
+                jwt.verify(req.body.keys,process.env.SECRET_KEY,(err,decoded) =>{
+                    if(err){
+                        res.status(401).json({status:"error",message:"Error surgió un problema al encontrar la clave!"});
+                    }else{
+                        
+                        
+                        keysModel.deleteOne({id_file:req.body.idfile,shared_id:process.env.SHARE_PUBLIC_USER_ID,owner_id:decoded.id},function(err3,keysResult){
+                            if(err3){
+                                console.log(err3);
+                            }else{
+                                console.log(keysResult);
+                                filesModel.updateOne({_id:req.body.idfile},{$set:{url:null,shared:false}},function(err,result){
+                                    if(err){
+                                        console.log(err);
+                                        res.status(401).json({status:"error",message:"Error, un problema al borrar el URL!"});
+                                    }else{
+                                        console.log(result);
+                                        res.status(201).json({status:"Success",message:"La URL se eliminó correctamente"});
+                                    }
+                                });
+                            } 
+                        });
+                    }
+                });
+            }else{
+                res.status(301).json({status:"error",message:"¡Archivo no encontrado!"});
             }
 
         }else{

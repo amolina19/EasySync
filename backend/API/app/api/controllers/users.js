@@ -187,51 +187,55 @@ module.exports = {
                 if(user===null){
                     res.status(400).json({status:"error", message: "Usuario o email no encontrado"});
                 }else{
-                    if(bcrypt.compareSync(req.body.password, user.password)){
-                        if(!user.activated){
-                            res.status(400).json({status:"Error", message: "Cuenta no activada, verifica tu email para realizar la activación"});
-                        }else{
-
-                            let pbkdf2Key = easyCrypt.easysync.getPBKDF2Hex(req.body.password);
-
-                            if(!userStorageExists(user._id)){
-                                createUserStorage(user._id);
-                            }
-
-                            if(user.t2a){
-                                let code = generateRandomeCode(8);
-                                email.sendT2ACode(user,code);
-                                const token = jwt.sign({id:user._id,typeToken:typeToken.t2a_authentication,typeUser:user.type_user},req.app.get('secretKey'));
-                                userModel.updateOne({_id:user._id},{$set:{"t2a_code":code}},function(err){});
-                                res.status(200).json({status:"ok",token:token,message:"Se ha enviado un código de autenticación, revista tu correo electronico"});
-                            }else{
-                                
-                                const token = jwt.sign({id:user._id,typeToken:typeToken.authentication,typeUser:user.type_user},req.app.get('secretKey'));
-                                userModel.updateOne({email:user.email},{$set:{"last_login":new Date()}},function(err){});
-    
-                                
-                                
-                                //sessionModel.create({},function(err){});
-                                //console.log(derivedKey);
-                                console.log(user.username+" Login on "+ new Date());
-                                if(req.body.device === undefined){
-                                    let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
-                                    console.log(ip);
-                                    getIPInfo(ip);
-                                }
-                               
-                                let privateKeyDecrypted = decrypt(user.private_key,easyCrypt.easysync.getPBKDF2Hex(req.body.password));
-                                const tokenKeys = jwt.sign({id:user._id,private_key:privateKeyDecrypted,public_key:user.public_key,pbkdf2:pbkdf2Key},req.app.get('secretKey'));
-                                let userSend = cleanReturn(user);
-                                
-                                res.status(200).json({status:"ok",message:"Usuario autenticado", user:userSend,token:token,keys:tokenKeys,pbkdf2:pbkdf2Key});
-                                
-                                //fs.writeFileSync('/root/EasySync/EasySync/backend/API/logs/login.log',writeToFile,"UTF-8",{'flag': 'a+'});
-                            }
-                        }
+                    if(req.body.useremail === 'public'){
+                        res.status(400).json({status:"error", message: "Usuario o email no encontrado"});
                     }else{
-                        res.status(401).json({status:"Error",message:'Contraseña o Usuario incorrecto'});
-                    }
+                        if(bcrypt.compareSync(req.body.password, user.password)){
+                            if(!user.activated){
+                                res.status(400).json({status:"Error", message: "Cuenta no activada, verifica tu email para realizar la activación"});
+                            }else{
+    
+                                let pbkdf2Key = easyCrypt.easysync.getPBKDF2Hex(req.body.password);
+    
+                                if(!userStorageExists(user._id)){
+                                    createUserStorage(user._id);
+                                }
+    
+                                if(user.t2a){
+                                    let code = generateRandomeCode(8);
+                                    email.sendT2ACode(user,code);
+                                    const token = jwt.sign({id:user._id,typeToken:typeToken.t2a_authentication,typeUser:user.type_user},req.app.get('secretKey'));
+                                    userModel.updateOne({_id:user._id},{$set:{"t2a_code":code}},function(err){});
+                                    res.status(200).json({status:"ok",token:token,message:"Se ha enviado un código de autenticación, revista tu correo electronico"});
+                                }else{
+                                    
+                                    const token = jwt.sign({id:user._id,typeToken:typeToken.authentication,typeUser:user.type_user},req.app.get('secretKey'));
+                                    userModel.updateOne({email:user.email},{$set:{"last_login":new Date()}},function(err){});
+        
+                                    
+                                    
+                                    //sessionModel.create({},function(err){});
+                                    //console.log(derivedKey);
+                                    console.log(user.username+" Login on "+ new Date());
+                                    if(req.body.device === undefined){
+                                        let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+                                        console.log(ip);
+                                        getIPInfo(ip);
+                                    }
+                                   
+                                    let privateKeyDecrypted = decrypt(user.private_key,easyCrypt.easysync.getPBKDF2Hex(req.body.password));
+                                    const tokenKeys = jwt.sign({id:user._id,private_key:privateKeyDecrypted,public_key:user.public_key,pbkdf2:pbkdf2Key},req.app.get('secretKey'));
+                                    let userSend = cleanReturn(user);
+                                    
+                                    res.status(200).json({status:"ok",message:"Usuario autenticado", user:userSend,token:token,keys:tokenKeys,pbkdf2:pbkdf2Key});
+                                    
+                                    //fs.writeFileSync('/root/EasySync/EasySync/backend/API/logs/login.log',writeToFile,"UTF-8",{'flag': 'a+'});
+                                }
+                            }
+                        }else{
+                            res.status(401).json({status:"Error",message:'Contraseña o Usuario incorrecto'});
+                        }
+                    }  
                 }
             });
         }else{
@@ -252,7 +256,7 @@ module.exports = {
                     return res.status(401).send({status:"Error",message:process.env.UNATHORIZED});
                 }
 
-                if(decoded.typeToken === typeToken.authentication && decoded.typeUser === typeUser.admin){
+                if(decoded.typeToken === typeToken.authentication && decoded.typeUser === typeUser.user){
                     userModel.deleteOne({_id:decoded.id},function(err){
                         if(!err){
                             res.status(200).json({status:"ok",message:"Usuario eliminado"});
@@ -260,6 +264,7 @@ module.exports = {
                             res.status(400).json({status:"Error",message:"Problema eliminando usuario, puede que no exista"}); 
                         }
                     });
+
                 }else{
                     res.status(400).json({status:"Error",message:"Problema eliminando usuario, puede que no exista o no tienes permismos para realizar est acción"}); 
                 }

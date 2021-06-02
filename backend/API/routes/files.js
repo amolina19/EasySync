@@ -13,6 +13,13 @@ router.get('/download',filesController.downloadByUrl);
 router.get('/userfiles/',filesController.getUserFiles);
 router.get('/storagesize',filesController.getUserSizeStorage);
 
+router.post('/download/',filesController.getFileToDownload);
+router.get('/download/',filesController.downloadURL);
+
+router.post('/storage/geturlfile/',filesController.setPublicDownload);
+router.post('/storage/getpublicpassword/',filesController.getPublicFilePassword);
+router.post('/storage/deleteurl/',filesController.deleteURL);
+
 //ADMIN
 router.post('/storage/remove/all',filesController.removeAllFiles);
 
