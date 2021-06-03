@@ -53,6 +53,10 @@ function generateURL() {
     return text;
 }
 
+function generateUUID(){
+    return generateURL();
+}
+
 function encryptPublicKey (plaintext, publicKey) {
     const encrypted = crypto.publicEncrypt(publicKey, Buffer.from(plaintext));
     return encrypted.toString("base64");
@@ -553,8 +557,11 @@ module.exports = {
         }
     },downloadURL: function(req,res){
         //NEEED TO CREATE V4 FOR PUBLIC DOWNLOADS
+
+        console.log(req.query);
+        let UUID = generateUUID();
         if(checkUri(req)){
-            filesModel.findOne({_id:req.body.url},function(err,file){
+            filesModel.findOne({url:req.query.url},function(err,file){
                 
                 if(err){
                     console.log(err);
@@ -569,11 +576,10 @@ module.exports = {
                             if(err2){
                                 res.status(400).send({status:"Error",message:"Oops,Claves no encontradas!."});
                             }else{
-                                //let private_key_public = userPublic.private_key;
 
                                 if(file.isFolder){
                                     mapChild.clear();
-                                    hasChilds(file._id,file.q);
+                                    hasChilds(file._id,file.owner_id);
                                     sleep(1000);
                                     console.log("RESULT MAP CHILD",mapChild);
                                     //console.log(filePath);
@@ -590,9 +596,8 @@ module.exports = {
         
                                                 keysModel.findOne({$and:[{shared_id:userPublic.id,id_file:result._id}]},function(err4,keysResult){
                                                     let passwordFile = decryptPrivateKey(keysResult.password,userPublic.private_key);
-                                                    console.log("PASSWORD FILE",passwordFile);
                                                     //console.log(resultAux);
-                                                    decryptFile("/download/"+result.owner_id+"/"+result.path,result,decoded,passwordFile,res,file,true);
+                                                    decryptFile("/download/"+result.owner_id+"/"+result.path,result,decoded,req.query.password,res,file,true);
                                                     //console.log("RESULT AUX PATH ",result.path);
                                                 });
                                             }
@@ -604,19 +609,16 @@ module.exports = {
                                     
                                     
                                 }else{
-                                    keysModel.findOne({$and:[{shared_id:userPublic.id,id_file:req.body.url}]},function(err3,result){
-                                    
-                                        //console.log(decoded);
-                                        //console.log(decoded.id);
+                                    keysModel.findOne({$and:[{shared_id:userPublic.id,id_file:file._id}]},function(err3,result){
+
                                         if(err3){
                                             //console.log("ERROR",err2);
                                         }
-        
                                         
-                                        //console.log("ENTRA 2");
-                                        let passwordFile = decryptPrivateKey(result.password,userPublic.private_key);
-                                        //console.log(passwordFile);
-                                        decryptFile(STORAGE+result.owner_id,result,decoded,passwordFile,res,file,false);
+                                        let decoded = {
+                                            id: UUID
+                                        };
+                                        decryptFile(STORAGE+result.owner_id,result,decoded,req.query.password,res,file,false);
                                         //console.log(decoded);
                                         
                                             

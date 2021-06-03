@@ -9,7 +9,6 @@ router.post('/storage/createfolder',filesController.createFolder);
 router.post('/storage/move',filesController.move);
 router.post('/storage/trash',filesController.trash);
 router.get('/storage/download',filesController.download);
-router.get('/download',filesController.downloadByUrl);
 router.get('/userfiles/',filesController.getUserFiles);
 router.get('/storagesize',filesController.getUserSizeStorage);
 
