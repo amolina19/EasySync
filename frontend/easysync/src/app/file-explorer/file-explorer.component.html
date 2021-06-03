@@ -98,7 +98,7 @@
         <span>Compartir</span>
       </button>
 
-      <button *ngIf="appComponent.tusarchivos || appComponent.papelera" mat-menu-item (click)="generateURL(element)">
+      <button *ngIf="!element.isFolder && appComponent.tusarchivos || appComponent.papelera" mat-menu-item (click)="generateURL(element)">
         <mat-icon>lock</mat-icon>
         <span *ngIf="!element.shared">Obtener URL</span>
         <span *ngIf="element.shared">Compartir URL</span>

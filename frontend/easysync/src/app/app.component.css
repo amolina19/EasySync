@@ -17,7 +17,7 @@ button.active:focus {
 
 
 * {
-animation: fadeInAnimation ease 0.5s;
+animation: fadeInAnimation ease 0.25s;
 animation-iteration-count: 1;
 animation-fill-mode: forwards;
 }

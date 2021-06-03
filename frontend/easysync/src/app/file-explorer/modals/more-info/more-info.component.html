@@ -1,18 +1,41 @@
 <h1 mat-dialog-title>Información</h1>
 
 <mat-dialog-content>
-    <mat-card>
+
         <mat-list>
-            <mat-list-item class="pr-4 text-break "> Nombre : {{data.element.name}} </mat-list-item>
-            <mat-list-item class="pr-4 text-break"> Tamaño: {{data.element.size}} </mat-list-item>
-            <mat-list-item *ngIf="!data.element.isFolder" class="pr-4 text-break"> Tipo de archivo: {{data.element.mimetype}} </mat-list-item>
-            <mat-list-item *ngIf="!data.element.isFolder" class="pr-4 text-break"> Extension: {{data.element.extension}} </mat-list-item>
-            <mat-list-item class="pr-4 text-break"> Compartido : {{data.element.shared}} </mat-list-item>
-            <mat-list-item class="pr-4 text-break"> Creado el : {{createdString}} </mat-list-item>
-            <mat-list-item class="pr-4 text-break"> Modificado el : {{modified_atString}} </mat-list-item>
-            <mat-list-item *ngIf="!data.element.isFolder" class="pr-4 text-break"> MD5 : {{data.element.md5}} </mat-list-item>
+            <div class="row ml-2">
+                <span class="pr-4 text-break "> <b>Nombre :</b> {{data.element.name}} </span>
+            </div>
+
+            <div class="row ml-2">
+                <span class="pr-4 text-break"> <b>Tamaño:</b> {{data.element.size}} </span>
+            </div>
+
+            <div class="row ml-2">
+                <span *ngIf="!data.element.isFolder" class="pr-4 text-break"><b>Tipo de archivo:</b>  {{data.element.mimetype}} </span>
+            </div>
+
+            <div class="row ml-2">
+                <span *ngIf="!data.element.isFolder" class="pr-4 text-break"> <b>Extension:</b> {{data.element.extension}} </span>
+            </div>
+
+            <div class="row ml-2">
+                <span class="pr-4 text-break"> <b>Compartido :</b> {{data.element.shared}} </span>
+            </div>
+
+            <div class="row ml-2">
+                <span class="pr-4 text-break"> <b>Creado el :</b> {{createdString}} </span>
+            </div>
+
+            <div class="row ml-2">
+                <span class="pr-4 text-break"> <b>Modificado el :</b> {{modified_atString}} </span>
+            </div>
+
+            <div class="row ml-2">
+                <span *ngIf="!data.element.isFolder" class="pr-4 text-break"><b>MD5 :</b>  {{data.element.md5}} </span>
+            </div> 
         </mat-list>
-    </mat-card>
+
 
     <div mat-dialog-actions>
         <button mat-button mat-dialog-close>Cerrar</button>
