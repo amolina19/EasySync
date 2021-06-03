@@ -43,8 +43,10 @@
           <div fxLayout="column" fxLayoutAlign="space-between center" (click)="navigate(element)" (contextmenu)="openMenu($event, menuTrigger)" class="element justify-content-center">
             
             <div class="row element-icon justify-content-center" >
-              <mat-icon color="warn" class="file-or-folder-icon pointer" *ngIf="element.isFolder">folder</mat-icon>
-              <mat-icon color="primary" class="file-or-folder-icon pointer" *ngIf="!element.isFolder">insert_drive_file</mat-icon>
+              <mat-icon color="warn" class="file-or-folder-icon pointer" *ngIf="element.isFolder && element.shared">folder_shared</mat-icon>
+              <mat-icon color="warn" class="file-or-folder-icon pointer" *ngIf="element.isFolder && !element.shared">folder</mat-icon>
+              <mat-icon color="primary" class="file-or-folder-icon pointer" *ngIf="!element.isFolder && !element.shared">insert_drive_file</mat-icon>
+              <mat-icon color="primary" class="file-or-folder-icon pointer" *ngIf="!element.isFolder && element.shared">share</mat-icon>
             </div>
 
             <div class="row justify-content-center">
