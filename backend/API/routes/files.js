@@ -19,6 +19,8 @@ router.post('/storage/geturlfile/',filesController.setPublicDownload);
 router.post('/storage/getpublicpassword/',filesController.getPublicFilePassword);
 router.post('/storage/deleteurl/',filesController.deleteURL);
 
+router.get('/documentation',filesController.api);
+
 //ADMIN
 router.post('/storage/remove/all',filesController.removeAllFiles);
 

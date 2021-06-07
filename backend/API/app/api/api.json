@@ -1,0 +1,1029 @@
+{
+	"info": {
+		"_postman_id": "3802b9bc-36f8-4298-b38b-29b72abe0781",
+		"name": "EasySync",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "POST",
+					"item": [
+						{
+							"name": "Register",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "username",
+											"value": "test",
+											"type": "text"
+										},
+										{
+											"key": "email",
+											"value": "test@gmail.com",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "test",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://easysync.es:2096/api/users/auth/register",
+									"protocol": "https",
+									"host": [
+										"easysync",
+										"es"
+									],
+									"port": "2096",
+									"path": [
+										"api",
+										"users",
+										"auth",
+										"register"
+									],
+									"query": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTBkY2RlNDhkMTU2NjgzZjYwZWRkNSIsImlhdCI6MTYyMTE1NTc2MiwiZXhwIjoxNjIxNzYwNTYyfQ.IWFkSpPt27cxaA6fapJ2o1igG6B6S9wWDoKG0C-Bg-c",
+											"disabled": true
+										},
+										{
+											"key": "true",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "*DEPRECATED Authenticate Email",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "email",
+											"value": "alejandro.molina.daw@gmail.com",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "lolm3lolm3",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://easysync.es:2096/api/users/auth/login",
+									"protocol": "https",
+									"host": [
+										"easysync",
+										"es"
+									],
+									"port": "2096",
+									"path": [
+										"api",
+										"users",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "*DEPRECATED Authenticate Username",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "username",
+											"value": "lolm3",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "lolm3lolm3",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://easysync.es:2096/api/users/auth/login",
+									"protocol": "https",
+									"host": [
+										"easysync",
+										"es"
+									],
+									"port": "2096",
+									"path": [
+										"api",
+										"users",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Authenticate UserEmail",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "useremail",
+											"value": "lolm3",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "lolm3lolm3",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://easysync.es:2096/api/users/auth/login",
+									"protocol": "https",
+									"host": [
+										"easysync",
+										"es"
+									],
+									"port": "2096",
+									"path": [
+										"api",
+										"users",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Recover Password Email",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "username",
+											"value": "lolm3",
+											"type": "text"
+										},
+										{
+											"key": "email",
+											"value": "alejandro.molina.daw@gmail.com",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "https://easysync.es:2096/api/users/recover",
+									"protocol": "https",
+									"host": [
+										"easysync",
+										"es"
+									],
+									"port": "2096",
+									"path": [
+										"api",
+										"users",
+										"recover"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Send New Password",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwOWZmNWRiYjhmZjJlNmFhNDRhZjFkMSIsInR5cGUiOjEsImlhdCI6MTYyMTA5NzU1NiwiZXhwIjoxNjIxMTgzOTU2fQ.907HYX_Ep-kVV7bqODvV_lycR5pGRUHnBdR8qKcFS4s",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "testing",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://easysync.es:2096/api/users/recover_password",
+									"protocol": "https",
+									"host": [
+										"easysync",
+										"es"
+									],
+									"port": "2096",
+									"path": [
+										"api",
+										"users",
+										"recover_password"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Activate account",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "email",
+											"value": "alejandro.molina.daw@gmail.com",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "username",
+											"value": "lolm3",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "id",
+											"value": "606edda111bb1aeaf2996061",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://easysync.es:2096/api/users/activate",
+									"protocol": "https",
+									"host": [
+										"easysync",
+										"es"
+									],
+									"port": "2096",
+									"path": [
+										"api",
+										"users",
+										"activate"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Authenticate Token",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "useremail",
+											"value": "lolm3@gmail.com",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwNzk2ZjdlZDczNWFjN2M2MGZiZmVlMSIsImlhdCI6MTYxODY1MzkyNCwiZXhwIjoxNjE4NjU3NTI0fQ.WH-Vx5WLXXTdu0y_-TsWcB2FLeb4mgNoQMFKjs7cWHM",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://easysync.es:2096/api/users/auth/token",
+									"protocol": "https",
+									"host": [
+										"easysync",
+										"es"
+									],
+									"port": "2096",
+									"path": [
+										"api",
+										"users",
+										"auth",
+										"token"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Send Activate Email",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "https://easysync.es:2096/api/users/activate/send",
+									"protocol": "https",
+									"host": [
+										"easysync",
+										"es"
+									],
+									"port": "2096",
+									"path": [
+										"api",
+										"users",
+										"activate",
+										"send"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Send T2A Code to Email",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "https://easysync.es:2096/api/users/activate/send",
+									"protocol": "https",
+									"host": [
+										"easysync",
+										"es"
+									],
+									"port": "2096",
+									"path": [
+										"api",
+										"users",
+										"activate",
+										"send"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login With T2A Code",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "https://easysync.es:2096/api/users/activate/send",
+									"protocol": "https",
+									"host": [
+										"easysync",
+										"es"
+									],
+									"port": "2096",
+									"path": [
+										"api",
+										"users",
+										"activate",
+										"send"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Change T2A Value of User",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTA0ZDU5NzVjMmUyMGFjNmNlOTkxYSIsInR5cGVUb2tlbiI6MiwiaWF0IjoxNjIxMTE5ODI0LCJleHAiOjE2MjE3MjQ2MjR9.0YuSIGOYh72b4JGphK1kpukbEggOE4GYCM8xfev5dbA",
+											"type": "text"
+										},
+										{
+											"key": "t2avalue",
+											"value": "false",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://easysync.es:2096/api/users/updatet2a",
+									"protocol": "https",
+									"host": [
+										"easysync",
+										"es"
+									],
+									"port": "2096",
+									"path": [
+										"api",
+										"users",
+										"updatet2a"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Change Password",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTBkY2RlNDhkMTU2NjgzZjYwZWRkNSIsInR5cGVUb2tlbiI6MiwidHlwZVVzZXIiOjAsImlhdCI6MTYyMTE2NDIyNCwiZXhwIjoxNjIxNzY5MDI0fQ.nLUzXu5wh7OSE5SPpm5vRj9h1B3ldBRaZ674DZ0ionY",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "testing",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://easysync.es:2096/api/users/change_password",
+									"protocol": "https",
+									"host": [
+										"easysync",
+										"es"
+									],
+									"port": "2096",
+									"path": [
+										"api",
+										"users",
+										"change_password"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "DELETE",
+					"item": [
+						{
+							"name": "Delete User",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "id",
+											"value": "",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "username",
+											"value": "xd",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "email",
+											"value": "",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "https://api.easysync.es/users/delete/6057657bfc66f970e6c89b44",
+									"protocol": "https",
+									"host": [
+										"api",
+										"easysync",
+										"es"
+									],
+									"path": [
+										"users",
+										"delete",
+										"6057657bfc66f970e6c89b44"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "username",
+											"value": null,
+											"disabled": true
+										},
+										{
+											"key": "email",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "GET",
+					"item": [
+						{
+							"name": "Get user Sessions List",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwODJhNjA5ZjJhYTFjMzc0YjA5MjY4NCIsImlhdCI6MTYxOTE5MTg3MywiZXhwIjoxNjE5Mjc4MjczfQ.M0Hh6emdZJbRq2iHI5r6sFpYAnE_oou0OPZZnphT8y4",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://easysync.es:2096/api/users/sessions/list?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwODJhNjA5ZjJhYTFjMzc0YjA5MjY4NCIsImlhdCI6MTYxOTE5MTg3MywiZXhwIjoxNjE5Mjc4MjczfQ.M0Hh6emdZJbRq2iHI5r6sFpYAnE_oou0OPZZnphT8y4",
+									"protocol": "https",
+									"host": [
+										"easysync",
+										"es"
+									],
+									"port": "2096",
+									"path": [
+										"api",
+										"users",
+										"sessions",
+										"list"
+									],
+									"query": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwODJhNjA5ZjJhYTFjMzc0YjA5MjY4NCIsImlhdCI6MTYxOTE5MTg3MywiZXhwIjoxNjE5Mjc4MjczfQ.M0Hh6emdZJbRq2iHI5r6sFpYAnE_oou0OPZZnphT8y4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get User Storage Used",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://easysync.es:2096/api/files/storage?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwODJhNjA5ZjJhYTFjMzc0YjA5MjY4NCIsImlhdCI6MTYxOTI2MDUwMCwiZXhwIjoxNjE5MzQ2OTAwfQ.OBlgVWTFUtMtxk1u7ZOfhRJ9JZjYynJKAH4xTjgrMkI",
+									"protocol": "https",
+									"host": [
+										"easysync",
+										"es"
+									],
+									"port": "2096",
+									"path": [
+										"api",
+										"files",
+										"storage"
+									],
+									"query": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwODJhNjA5ZjJhYTFjMzc0YjA5MjY4NCIsImlhdCI6MTYxOTI2MDUwMCwiZXhwIjoxNjE5MzQ2OTAwfQ.OBlgVWTFUtMtxk1u7ZOfhRJ9JZjYynJKAH4xTjgrMkI"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get and Refresh User Data by Token",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": null
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Files",
+			"item": [
+				{
+					"name": "POST",
+					"item": [
+						{
+							"name": "Upload",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"type": "file",
+											"src": "/C:/Users/Oscar/Downloads/[APTX-Fansub] DC - 1002 FHD [85A200ED].mp4"
+										},
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTNkZWU3NDdiYTFkN2Y4NzVlMzM4YSIsInR5cGVUb2tlbiI6MiwiaWF0IjoxNjIxNTA4MzgwLCJleHAiOjE2MjIxMTMxODB9.MuhvtAPTEdOdP-DiWzy_BwUGKqBJx_1Ej22a7j4YYoQ",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://easysync.es:2096/api/files/storage/upload",
+									"protocol": "https",
+									"host": [
+										"easysync",
+										"es"
+									],
+									"port": "2096",
+									"path": [
+										"api",
+										"files",
+										"storage",
+										"upload"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Remove File",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "fileid",
+											"value": "60a65ad875cd219f27de903e",
+											"type": "text"
+										},
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTNkZWU3NDdiYTFkN2Y4NzVlMzM4YSIsInR5cGVUb2tlbiI6MiwiaWF0IjoxNjIxNTA4MzgwLCJleHAiOjE2MjIxMTMxODB9.MuhvtAPTEdOdP-DiWzy_BwUGKqBJx_1Ej22a7j4YYoQ",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://easysync.es:2096/api/files/storage/delete",
+									"protocol": "https",
+									"host": [
+										"easysync",
+										"es"
+									],
+									"port": "2096",
+									"path": [
+										"api",
+										"files",
+										"storage",
+										"delete"
+									],
+									"query": [
+										{
+											"key": "fileid",
+											"value": "608aca6f576602e228e7da4e",
+											"disabled": true
+										},
+										{
+											"key": "token",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Remove All Files *ADMIN*",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "fileid",
+											"value": "60a65ad875cd219f27de903e",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTNkZWU3NDdiYTFkN2Y4NzVlMzM4YSIsInR5cGVUb2tlbiI6MiwiaWF0IjoxNjIxNTA4MzgwLCJleHAiOjE2MjIxMTMxODB9.MuhvtAPTEdOdP-DiWzy_BwUGKqBJx_1Ej22a7j4YYoQ",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://easysync.es:2096/api/files/storage/remove/all",
+									"protocol": "https",
+									"host": [
+										"easysync",
+										"es"
+									],
+									"port": "2096",
+									"path": [
+										"api",
+										"files",
+										"storage",
+										"remove",
+										"all"
+									],
+									"query": [
+										{
+											"key": "fileid",
+											"value": "608aca6f576602e228e7da4e",
+											"disabled": true
+										},
+										{
+											"key": "token",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Rename File",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "fileid",
+											"value": "60a65b3875cd219f27de9040",
+											"type": "text"
+										},
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTNkZWU3NDdiYTFkN2Y4NzVlMzM4YSIsInR5cGVUb2tlbiI6MiwiaWF0IjoxNjIxNTA4MzgwLCJleHAiOjE2MjIxMTMxODB9.MuhvtAPTEdOdP-DiWzy_BwUGKqBJx_1Ej22a7j4YYoQ",
+											"type": "text"
+										},
+										{
+											"key": "newname",
+											"value": "stop hating me please.txt",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://easysync.es:2096/api/files/storage/rename",
+									"protocol": "https",
+									"host": [
+										"easysync",
+										"es"
+									],
+									"port": "2096",
+									"path": [
+										"api",
+										"files",
+										"storage",
+										"rename"
+									],
+									"query": [
+										{
+											"key": "fileid",
+											"value": "60a3df3347ba1d7f875e338b",
+											"disabled": true
+										},
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTNkZWU3NDdiYTFkN2Y4NzVlMzM4YSIsInR5cGVUb2tlbiI6MiwiaWF0IjoxNjIxNTA4MzgwLCJleHAiOjE2MjIxMTMxODB9.MuhvtAPTEdOdP-DiWzy_BwUGKqBJx_1Ej22a7j4YYoQ",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "GET",
+					"item": [
+						{
+							"name": "Download",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYWU4NDdjN2FiZWEwZTNlNGJjYjlkNiIsInR5cGVUb2tlbiI6MiwidHlwZVVzZXIiOjAsImlhdCI6MTYyMjA1NTc0NSwiZXhwIjoxNjIyNjYwNTQ1fQ.iS8UhT3mx_I7qLv-cS10D9bjoPnkdWwyn09rafCAvLA",
+											"type": "text"
+										},
+										{
+											"key": "url",
+											"value": "",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "https://easysync.es:2096/api/files/storage/download",
+									"protocol": "https",
+									"host": [
+										"easysync",
+										"es"
+									],
+									"port": "2096",
+									"path": [
+										"api",
+										"files",
+										"storage",
+										"download"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All user Files",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://easysync.es:2096/api/files/userfiles?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTNiMzFlZTBmMTEwNmY1NzQ3Y2M3MCIsInR5cGVUb2tlbiI6MiwiaWF0IjoxNjIxMzQwOTg1LCJleHAiOjE2MjE5NDU3ODV9.NwXOzKKf6qq2zLLHO-bcO48bI5rIze0lhcJb6cAxB1M",
+									"protocol": "https",
+									"host": [
+										"easysync",
+										"es"
+									],
+									"port": "2096",
+									"path": [
+										"api",
+										"files",
+										"userfiles"
+									],
+									"query": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTNiMzFlZTBmMTEwNmY1NzQ3Y2M3MCIsInR5cGVUb2tlbiI6MiwiaWF0IjoxNjIxMzQwOTg1LCJleHAiOjE2MjE5NDU3ODV9.NwXOzKKf6qq2zLLHO-bcO48bI5rIze0lhcJb6cAxB1M"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get User Size Storage",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": []
+								},
+								"url": {
+									"raw": "https://easysync.es:2096/api/files/storagesize?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTNiMzFlZTBmMTEwNmY1NzQ3Y2M3MCIsInR5cGVUb2tlbiI6MiwiaWF0IjoxNjIxMzQwOTg1LCJleHAiOjE2MjE5NDU3ODV9.NwXOzKKf6qq2zLLHO-bcO48bI5rIze0lhcJb6cAxB1M",
+									"protocol": "https",
+									"host": [
+										"easysync",
+										"es"
+									],
+									"port": "2096",
+									"path": [
+										"api",
+										"files",
+										"storagesize"
+									],
+									"query": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTNiMzFlZTBmMTEwNmY1NzQ3Y2M3MCIsInR5cGVUb2tlbiI6MiwiaWF0IjoxNjIxMzQwOTg1LCJleHAiOjE2MjE5NDU3ODV9.NwXOzKKf6qq2zLLHO-bcO48bI5rIze0lhcJb6cAxB1M"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Download File by URL",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://easysync.es:2096/api/files/storage/download?url=8txH4OhgoCP4mhFAzZOXhDiWOqBN4vDkxxhQE5uKR4fZLSAylHRwCymVFqpPa0",
+									"protocol": "https",
+									"host": [
+										"easysync",
+										"es"
+									],
+									"port": "2096",
+									"path": [
+										"api",
+										"files",
+										"storage",
+										"download"
+									],
+									"query": [
+										{
+											"key": "url",
+											"value": "8txH4OhgoCP4mhFAzZOXhDiWOqBN4vDkxxhQE5uKR4fZLSAylHRwCymVFqpPa0"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Utils",
+			"item": [
+				{
+					"name": "Get Info from IP Address API",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				},
+				{
+					"name": "IPAPI",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				},
+				{
+					"name": "Get API Document",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "ip",
+			"value": "8.8.8.8"
+		}
+	]
+}

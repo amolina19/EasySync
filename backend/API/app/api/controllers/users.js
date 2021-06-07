@@ -9,6 +9,8 @@ const email = require('../../../config/mail');
 const easyCrypt = require('../utils/crypto');
 const { generateKeyPair } = require('crypto');
 const CryptoJS = require('crypto-js');
+const filesModel = require('../models/files');
+const keysModel = require('../models/keys');
 
 
 function encrypt(msg, pass) {
@@ -108,7 +110,7 @@ function checkUri(request){
     return false;
 }
 
-function getIPInfo(ip){
+function getIPInfo(ip,device_os,device_browser,deviceuuid,user){
     
         let array = ip.split(':');
         let remoteIP = array[array.length - 1];
@@ -116,7 +118,26 @@ function getIPInfo(ip){
         //Pending to REQUESTED.
         request(requestTo, function (error, response, body) {
             if (!error && response.statusCode == 200) {
-                console.log(body)
+                console.log("BODY",body);
+                body = JSON.parse(body);
+
+                sessionModel.findOne({deviceuuid:deviceuuid},function(err,result){
+                    if(err){
+                        console.log(err);
+                    }else{
+                        if(result === null){
+                            sessionModel.create({browser:device_browser,os:device_os,ip:body.ip,country:body.country,date:new Date(),org:body.org,latitude:body.latitude,longitude:body.longitude,country_name:body.country_name,country_code:body.country_code,city:body.city,region:body.region,region_code:body.region_code,postal:body.postal,deviceuuid:deviceuuid,user_id:user.id},function(err,result){
+                                if(err){
+                                    console.log(err);
+                                }else{
+                                    email.sendmailnewSession(user,device_os,device_browser,body);
+                                    console.log(result);
+                                }
+                            });
+                        }
+                    }   
+                })
+                
            }
             else {
                 console.log("Error "+response.statusCode)
@@ -127,6 +148,8 @@ function getIPInfo(ip){
 module.exports = {
 
     register: function(req, res, next){
+
+        console.log(req.body);
 
         if(checkUri(req)){
 
@@ -146,8 +169,8 @@ module.exports = {
                             passphrase: process.env.PRIVATE_KEY_PASSWORD
                         }
                         }, (err, publicKey, privateKey) => {
-                            console.log('PUBLIC KEY',publicKey);
-                            console.log('PRIVATE KEY',privateKey);
+                            //console.log('PUBLIC KEY',publicKey);
+                            //console.log('PRIVATE KEY',privateKey);
                             let privateEncryped = encrypt(privateKey,easyCrypt.easysync.getPBKDF2Hex(req.body.password));
                             
 
@@ -157,7 +180,7 @@ module.exports = {
                             //userModel.updateOne({_id:user._id},{$set:{"public_key":publicKey}},function(err){});
                             //userModel.updateOne({_id:user._id},{$set:{"private_key":privateEncryped}},function(err){});
 
-                            userModel.create({username: req.body.username, email: req.body.email, password: req.body.password,activated:false,created_at: new Date(),private_key:privateEncryped,public_key:publicKey}, function(err,user){
+                            userModel.create({username: req.body.username, name:req.body.name, email: req.body.email, password: req.body.password,activated:false,created_at: new Date(),private_key:privateEncryped,public_key:publicKey}, function(err,user){
                                 if(err){
                                     next(err);
                                 }else{
@@ -217,11 +240,11 @@ module.exports = {
                                     //sessionModel.create({},function(err){});
                                     //console.log(derivedKey);
                                     console.log(user.username+" Login on "+ new Date());
-                                    if(req.body.device === undefined){
-                                        let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
-                                        console.log(ip);
-                                        getIPInfo(ip);
-                                    }
+                                    
+                                    let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+                                    console.log(ip);
+                                    getIPInfo(ip,req.body.device_os,req.body.device_browser,req.body.deviceuuid,user);
+                                    
                                    
                                     let privateKeyDecrypted = decrypt(user.private_key,easyCrypt.easysync.getPBKDF2Hex(req.body.password));
                                     const tokenKeys = jwt.sign({id:user._id,private_key:privateKeyDecrypted,public_key:user.public_key,pbkdf2:pbkdf2Key},req.app.get('secretKey'));
@@ -257,9 +280,20 @@ module.exports = {
                 }
 
                 if(decoded.typeToken === typeToken.authentication && decoded.typeUser === typeUser.user){
-                    userModel.deleteOne({_id:decoded.id},function(err){
-                        if(!err){
-                            res.status(200).json({status:"ok",message:"Usuario eliminado"});
+                    userModel.deleteOne({_id:decoded.id},function(err2){
+                        if(!err2){
+                            
+                            filesModel.deleteOne({_id:decoded.id},function(err3,result){
+                                if(!err){
+                                    keysModel.deleteOne({shared_id:decoded.id},function(err3,result2){
+                                        if(!err3){
+                                            res.status(200).json({status:"ok",message:"Usuario eliminado"});
+                                        }else{
+                                            res.status(400).json({status:"Error",message:"Problema eliminando usuario, puede que no exista"}); 
+                                        }
+                                    });
+                                }
+                            });        
                         }else{
                             res.status(400).json({status:"Error",message:"Problema eliminando usuario, puede que no exista"}); 
                         }
@@ -286,9 +320,7 @@ module.exports = {
                 }else{
                     res.status(400).json({status:"Error",message:"El usuario o email que has proporcionado no existe."});
                 }
-            });
-            
-            
+            });     
         }else{
             res.status(301).json({status:"Error",message:process.env.USE_ROUTE});
         }
@@ -420,6 +452,8 @@ module.exports = {
             res.status(301).json({status:"Error",message:process.env.USE_ROUTE});
         }
     },T2A_Login: function(req,res){
+
+        console.log(req.body);
         if(checkUri(req)){
             console.log(req.body);
             if(req.body.code !== null || req.body.token !== null){
@@ -428,6 +462,8 @@ module.exports = {
                         return res.status(401).send({status:"Error",message:process.env.UNATHORIZED});
                     }else{
                         if(decoded.typeToken === typeToken.t2a_authentication){
+
+                            console.log(decoded);
                             userModel.findOne({_id:decoded.id}, function(err,user){
 
                                 if(user.t2a_code === undefined){
@@ -443,6 +479,9 @@ module.exports = {
                                     userModel.updateOne({email:user.email},{$set:{"t2a_code":null}},function(err,userLoged){
                                         if(!err){
                                             userModel.findOne({_id:user.id}, function(err,userLoged){
+                                                let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+                                                console.log(ip);
+                                                getIPInfo(ip,req.body.device_os,req.body.device_browser,req.body.deviceuuid,userLoged);
                                                 //let derivedKey = easyCrypt.easysync.getPBKDF2Hex(req.body.password);
                                                 //res.status(200).json({status:"ok",message:"User authenticated", user:userLoged,token:token,pbkdf2:derivedKey});
                                                 res.status(200).json({status:"ok",message:"Usuario autenticado", user:userLoged,token:token});
@@ -522,9 +561,8 @@ module.exports = {
         }else{
             res.status(301).json({status:"Error",message:process.env.USE_ROUTE});
         }
-    },eliminate_account: function(req,res){
+    },getUserSessions:function(req,res){
         if(checkUri(req)){
-
             if(req.body.token !== null){
                 jwt.verify(req.body.token,req.app.get('secretKey'),(err, decoded) =>{
                     if(err){
@@ -532,16 +570,20 @@ module.exports = {
                     }else{
                         if(decoded.typeToken === typeToken.authentication){
                             
-                            userModel.deleteOne({_id:decoded.id},function(err){
-                                if(!err){
-                                    res.status(200).json({status:"ok",message:"Cuenta de usuario eliminada correctamente."});
+                            sessionModel.find({user_id:decoded.id},function(err,result){
+                                if(err){
+                                    console.log(err);
+                                }else{
+                                    res.status(200).json({status:"Ok",result:result});
                                 }
-                            });
+                            })
+                        }else{
+                            res.status(401).json({status:"Error",message:"Error de autenticación."});
                         }
                     }
                 });
             }else{
-                res.status(401).json({status:"Error",message:"Token expired or value is null or not expected."});
+                res.status(401).json({status:"Error",message:"Token no válido."});
             }
         }else{
             res.status(301).json({status:"Error",message:process.env.USE_ROUTE});
