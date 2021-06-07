@@ -75,6 +75,8 @@ import { FileExplorerComponent } from './file-explorer/file-explorer.component';
 import { DownloadComponent } from './download/download.component';
 import { ActivateComponent } from './activate/activate.component';
 import { RecoverPasswordComponent } from './recover-password/recover-password.component';
+import { RegisterDialogComponent } from './register/modals/register-dialog/register-dialog.component';
+import { DeleteDialogComponent } from './profile/modals/delete-dialog/delete-dialog.component';
 
 
 
@@ -91,7 +93,9 @@ import { RecoverPasswordComponent } from './recover-password/recover-password.co
     DriveComponent,
     DownloadComponent,
     ActivateComponent,
-    RecoverPasswordComponent
+    RecoverPasswordComponent,
+    RegisterDialogComponent,
+    DeleteDialogComponent
   ],
   imports: [
     MatFormFieldModule,

@@ -37,6 +37,7 @@
           </mat-panel-title>
           </mat-expansion-panel-header>
             <mat-card class="mt-2 text-break"><b>Usuario:      </b>{{currentUser.username}}</mat-card>
+            <mat-card class="mt-2 text-break"><b>Nombre:      </b>{{currentUser.name}}</mat-card>
             <mat-card class="mt-2 text-break"><b>Email:        </b> {{currentUser.email}}</mat-card>
             <mat-card class="mt-2 text-break"><b>Fecha de creación:        </b> {{createdDateString}}</mat-card>
             <mat-card class="mt-2 text-break"><b>Último inicio de sesión:        </b>{{lastLoginDateString}}</mat-card>
@@ -51,6 +52,8 @@
           <mat-icon color="warn">delete_outline</mat-icon> <div class="ml-2">Eliminar Cuenta</div>
           </mat-panel-title>
           </mat-expansion-panel-header>
+          <mat-card class="mt-2 text-break">Eliminar la cuenta del usuario y todo sus archivos.</mat-card>
+          <button class="mt-3 ml-2" mat-raised-button color="warn" (click)="sureDelete();">Eliminar cuenta</button>
           </mat-expansion-panel>
       </div>
       

@@ -6,7 +6,7 @@ md-sidenav {
 } 
 
 mat-sidenav-content{
-    height: 95vh !important;
+    height: 100vh !important;
     width: 100vw !important;
 }
 

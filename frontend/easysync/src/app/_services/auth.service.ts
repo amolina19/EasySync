@@ -38,17 +38,19 @@ export class AuthService {
     return this.http.post(AUTH_API+ 'token',body.toString(),httpOptions);
   }
 
-  loginByT2A(token:string,code:string){
+  loginByT2A(token:string,code:string,password:string){
     let body = new URLSearchParams();
     body.set('token',token);
     body.set('code',code);
+    body.set('password',password);
     return this.http.post(AUTH_API+ 't2a/login',body.toString(),httpOptions);
   }
 
-  register(user: { username: any; email: any; password: any; }): Observable<any>{
+  register(user: { username: any; name:any, email: any; password: any; }): Observable<any>{
 
     let body = new URLSearchParams();
     body.set('username', user.username);
+    body.set('name', user.name);
     body.set('password', user.password);
     body.set('email', user.email);
     return this.http.post(AUTH_API+'register',body.toString(),httpOptions);
@@ -97,6 +99,12 @@ export class AuthService {
     let body = new URLSearchParams();
     body.set('token', token);
     return this.http.post(USERS_API+'activate',body.toString(),httpOptions);
+  }
+
+  delete(){
+    let body = new URLSearchParams();
+    body.set('token',this.tokenService.getToken());
+    return this.http.post(USERS_API+'delete',body.toString(),httpOptions);
   }
   
 }

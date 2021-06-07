@@ -85,7 +85,7 @@ export class LoginComponent implements OnInit {
 
   onSubmitT2A(){
     this.appComponent.progressBar = true;
-    this.authService.loginByT2A(this.tokenStorage.getTokenT2A(),this.form.t2acode).subscribe(
+    this.authService.loginByT2A(this.tokenStorage.getTokenT2A(),this.form.t2acode,this.form.password).subscribe(
       data => {
         //console.log(data);
         this.t2aLogin = false;

@@ -1,0 +1,24 @@
+<h2 mat-dialog-title>Registrarse</h2>
+<mat-dialog-content class="mat-typography">
+  <h3>Cuenta de Usuario</h3>
+  <p>La cuenta de usuario que crea puede ser removida o modificada en cualquier momento. No se tiene acceso a su contraseña ni claves que genere el usuario, guarde en todo momento su contraseña y su clave maestra, de lo contrario no se podrá recuperar sus archivos y consiguiente su eliminación.</p>
+
+  <h3>Archivos</h3>
+  <p>Todos los archivos que suba el usuario estarán encripatadas con AES, su clave privada RSA y su contraseña derivada PBKDF2, todos sus archivos y claves solo se pueden descrifrar utilizando su clave maestra. El desarrollador solo tiene acceso a los archivos encriptados, nunca sabrá su contenido.</p>
+
+  <h3>Datos del Usuario</h3>
+  <p>No utilizamos cookies para recoger datos del navegador, unicamente solo se recogerán datos para comprobar la versión del navegador, el Sistema Operativo, su dirección IP, ISP y geolocalización al iniciar sesión que luego puede consultar en su perfil. Las claves como tokens de autenticación y información del usuario se almacenarán en el navegador del usuario.</p>
+
+  <h3>Eliminación del usuario</h3>
+  <p>Si el propio usuario decide eliminar su cuenta, se borrarán todos los datos del usuario, incluido sus clave privadas RSA encriptadas y AES de sus archivos como los propios archivos.
+    infrastructure that supports Google's largest applications.</p>
+    
+  <h3>Política de privacidad y aviso legal</h3>
+
+  <p>A través de este sitio web no se recaban datos de carácter personal de las personas usuarias sin su conocimiento, ni se ceden a terceros.</p>
+
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancelar</button>
+  <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Aceptar</button>
+</mat-dialog-actions>

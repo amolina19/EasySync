@@ -70,7 +70,7 @@ export class DownloadComponent implements OnInit {
         //console.log(dataMap);
         console.log(data);
       },err =>{
-        //this.errorNotFound = true;
+        this.errorNotFound = true;
         this.progressBar = false;
       }
     )

@@ -8,6 +8,9 @@ import {MatSnackBar,MatSnackBarHorizontalPosition,MatSnackBarVerticalPosition,} 
 import { FormControl, Validators } from '@angular/forms';
 import { AppComponent } from '../app.component';
 import dateFormat from 'dateformat';
+import { MatDialog } from '@angular/material/dialog';
+import { RegisterDialogComponent } from '../register/modals/register-dialog/register-dialog.component';
+import { DeleteDialogComponent } from '../profile/modals/delete-dialog/delete-dialog.component';
 
 
 @Component({
@@ -77,7 +80,7 @@ export class ProfileComponent implements OnInit {
   }
   
 
-  constructor(private router:Router,private authService:AuthService,private tokenService:TokenStorageService,private userService:UserService,private snackBar: MatSnackBar,private appComponent:AppComponent) { }
+  constructor(private router:Router,private authService:AuthService,private tokenService:TokenStorageService,private userService:UserService,private snackBar: MatSnackBar,private appComponent:AppComponent, private dialog:MatDialog) { }
 
   ngOnInit(): void {
 
@@ -240,6 +243,36 @@ export class ProfileComponent implements OnInit {
         this.userStorageTotal = this.appComponent.convertBytesSize(Number(user.storage_limit));
         this.userStorageUsed = this.appComponent.convertBytesSize(Number.parseInt(data.result));
       });
+  }
+
+  sureDelete():void{
+    const dialogRef = this.dialog.open(DeleteDialogComponent);
+
+    this.progressBar = true;
+    dialogRef.afterClosed().subscribe(result => {
+      if(result === undefined){
+          this.authService.delete().subscribe(
+          data =>{
+
+            let dataMap = new Map(Object.entries(data));
+
+            this.appComponent.logout();
+            this.snackBar.open(dataMap.get('message'), 'Cerrar', {
+              horizontalPosition: this.horizontalPosition,
+              verticalPosition: this.verticalPosition,
+              duration: 5 * 1000
+            });
+          },err =>{
+            this.snackBar.open(err.message, 'Cerrar', {
+              horizontalPosition: this.horizontalPosition,
+              verticalPosition: this.verticalPosition,
+              duration: 5 * 1000
+            });
+            this.progressBar = false;
+          });
+      }
+      this.progressBar = false;
+    });
   }
 
 }
