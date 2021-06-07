@@ -1,0 +1,30 @@
+<div class="container">
+    <div *ngFor="let a of API_DOCUMENT.item">
+
+        <mat-card class="mt-2">
+            <div class="text-uppercase font-weight-bold">{{a.name}}</div>
+            <div *ngFor="let b of a.item">
+
+                <div *ngFor="let c of b.item">
+    
+                    <div class="row mt-2">
+    
+                        <mat-expansion-panel (opened)="panelOpenState = false"
+                            (closed)="panelOpenState = true">
+                            <mat-expansion-panel-header>
+                            <mat-panel-title>
+                            <div *ngIf="b.name === 'POST'" class="ml-2"><div class="orange">{{b.name}}</div> {{c.name}}</div>
+                            <div *ngIf="b.name === 'GET'" class="ml-2"><div class="green">{{b.name}}</div> {{c.name}}</div>
+                            <div *ngIf="b.name === 'DELETE'" class="ml-2"><div class="red">{{b.name}}</div> {{c.name}}</div>
+                            </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div>Mas información sobre las API <a href="https://documenter.getpostman.com/view/14720883/TzJyauQe">aquí</a></div>
+                        </mat-expansion-panel>
+                    </div>
+                </div>
+            </div>
+        </mat-card>
+    </div>
+</div>
+
+        

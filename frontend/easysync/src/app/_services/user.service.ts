@@ -71,10 +71,6 @@ export class UserService {
     return fixDate.toString();
   }
 
-  getAPI(){
-    return this.http.get(this.API_DOCUMENTATION);
-  }
-
   getUserStorageSize(): Observable<any>{
     let token = this.tokenStorageService.getToken();
     //console.log(token);
@@ -120,33 +116,15 @@ export class UserService {
     return this.http.post(this.API_FILES + 'storage/move',body.toString(), httpOptions);
   }
 
-  moveToTrash(elements:any,value):Observable<any>{
+  moveToTrash(elements:any,value:any,drive:any):Observable<any>{
     let token = this.tokenStorageService.getToken();
     let body = new URLSearchParams();
     body.set('token',token);
     body.set('elements',elements);
     body.set('trash',value);
+    body.set('drive',drive);
     return this.http.post(this.API_FILES + 'storage/trash',body.toString(), httpOptions);
   }
-
-  /*
-  downloadByUrl(url:any):Observable<any>{
-    //let token = this.tokenStorageService.getToken();
-    //let body = new URLSearchParams();
-    //body.set('token',token);
-    //body.set('url',url);
-    return this.http.get(this.API_FILES + 'storage/download?url='+url,{ responseType: 'blob',reportProgress: true, observe: 'events', });
-  }*/
-
-  /*
-  downloadByUrl(url:any,password:any){
-    //let token = this.tokenStorageService.getToken();
-    let body = new URLSearchParams();
-    //body.set('token',token);
-    body.set('url',url);
-    body.set('password',password);
-    return this.http.post(this.API_FILES + 'download',body.toString(), httpOptions);
-  }*/
 
   getFileToDownload(url:any,password:any){
   //let token = this.tokenStorageService.getToken();
@@ -176,6 +154,33 @@ export class UserService {
     body.set('idfile',idfile);
     body.set('keys',this.tokenStorageService.getKeys());
     return this.http.post(this.API_FILES + 'storage/deleteurl/',body.toString(), httpOptions);
+  }
+
+  shareTo(idfile:any,useremail:any){
+    let body = new URLSearchParams();
+    body.set('idfile',idfile);
+    body.set('keys',this.tokenStorageService.getKeys());
+    body.set('useremail',useremail);
+    body.set('token',this.tokenStorageService.getToken());
+    return this.http.post(this.API_FILES + 'storage/shareto',body.toString(), httpOptions);
+  }
+
+  stopShare(idfile:any){
+    let body = new URLSearchParams();
+    body.set('idfile',idfile);
+    body.set('keys',this.tokenStorageService.getKeys());
+    body.set('token',this.tokenStorageService.getToken());
+    return this.http.post(this.API_FILES + 'storage/shareto',body.toString(), httpOptions);
+  }
+
+  getAPI(){
+    return this.http.get(this.API_FILES + 'documentation');
+  }
+
+  getSessions(){
+    let body = new URLSearchParams();
+    body.set('token',this.tokenStorageService.getToken());
+    return this.http.post(this.API_USER + 'sessions',body.toString(), httpOptions);
   }
 
 

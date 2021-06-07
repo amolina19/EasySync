@@ -47,7 +47,7 @@
           </button></a>
         </li>
         <li class="nav-item">
-          <a href="/disconnect" class="nav-link mr-5" data-toggle="collapse" data-target=".navbar-collapse.show"><button  mat-icon-button color="warn" (click)="logout()"><mat-icon>exit_to_app</mat-icon><span class="ml-1">Desconectar</span></button></a>
+          <a href="/disconnect" class="nav-link mr-5 ml-md-4 ml-0" data-toggle="collapse" data-target=".navbar-collapse.show"><button  mat-icon-button color="warn" (click)="logout()"><mat-icon>exit_to_app</mat-icon><span class="ml-1">Desconectar</span></button></a>
         </li>
       </ul>
     </div>
@@ -58,7 +58,6 @@
 </div>
 
 <router-outlet></router-outlet>
-<div class="container-fluid">
 <div class="footer">
 
   <mat-card *ngIf="download$ | async as download">

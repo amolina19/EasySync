@@ -16,23 +16,7 @@
     <mat-icon class="pointer ml-3 mr-3" (click)="shortBySize()">format_list_bulleted</mat-icon>
     
 </mat-toolbar>
-  <!--
-  <div class="container" fxFlex fxLayout="row" fxLayoutAlign="space-between stretch">
-    <div class="content" fxFlex fxLayout="row">
-      <mat-grid-list cols="8" rowHeight="100px" fxFlex>
-        <mat-grid-tile *ngFor="let element of fileElements" class=file-or-folder>
-          <span [matMenuTriggerFor]="rootMenu" [matMenuTriggerData]="{element: element}" #menuTrigger="matMenuTrigger"></span>
-          <div fxLayout="column" fxLayoutAlign="space-between center" (click)="navigate(element)" (contextmenu)="openMenu($event, menuTrigger)">
-            <mat-icon color="warn" class="file-or-folder-icon pointer" *ngIf="element.isFolder">folder</mat-icon>
-            <mat-icon color="primary" class="file-or-folder-icon pointer" *ngIf="!element.isFolder">insert_drive_file</mat-icon>
-            <span>{{element.name}}</span>
-            <span>{{element.size}}</span>
-          </div>
-        </mat-grid-tile>
-      </mat-grid-list>
-    </div>
-  </div>
--->
+
   <mat-progress-bar color="warn" mode="indeterminate" *ngIf="appComponent.isGettinFiles"></mat-progress-bar>
   <div class="container-fluid border-top border-warning" fxFlex fxLayout="row">
     
@@ -43,8 +27,10 @@
           <div fxLayout="column" fxLayoutAlign="space-between center" (click)="navigate(element)" (contextmenu)="openMenu($event, menuTrigger)" class="element justify-content-center">
             
             <div class="row element-icon justify-content-center" >
-              <mat-icon color="warn" class="file-or-folder-icon pointer" *ngIf="element.isFolder">folder</mat-icon>
-              <mat-icon color="primary" class="file-or-folder-icon pointer" *ngIf="!element.isFolder">insert_drive_file</mat-icon>
+              <mat-icon color="warn" class="file-or-folder-icon pointer" *ngIf="element.isFolder && element.shared">folder_shared</mat-icon>
+              <mat-icon color="warn" class="file-or-folder-icon pointer" *ngIf="element.isFolder && !element.shared">folder</mat-icon>
+              <mat-icon color="primary" class="file-or-folder-icon pointer" *ngIf="!element.isFolder && !element.shared">insert_drive_file</mat-icon>
+              <mat-icon color="primary" class="file-or-folder-icon pointer" *ngIf="!element.isFolder && element.shared">share</mat-icon>
             </div>
 
             <div class="row justify-content-center">
@@ -93,15 +79,10 @@
         <span>Eliminar</span>
       </button>
 
-      <button *ngIf="appComponent.tusarchivos || appComponent.papelera" (click)="openShareDialog(element)" mat-menu-item>
-        <mat-icon>share</mat-icon>
-        <span>Compartir</span>
-      </button>
-
-      <button *ngIf="appComponent.tusarchivos || appComponent.papelera" mat-menu-item (click)="generateURL(element)">
+      <button *ngIf="!element.isFolder" mat-menu-item (click)="generateURL(element)">
         <mat-icon>lock</mat-icon>
         <span *ngIf="!element.shared">Obtener URL</span>
-        <span *ngIf="element.shared">Compartir URL</span>
+        <span *ngIf="element.shared">Administrar URL</span>
 
       </button>
       

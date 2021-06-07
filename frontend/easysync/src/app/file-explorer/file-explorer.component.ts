@@ -44,7 +44,7 @@ export class FileExplorerComponent implements OnInit{
   ngOnInit():void{
     this.screenWidth = window.innerWidth;
     this.screenHeight = window.innerHeight;
-    document.getElementById('upload').setAttribute('style',"opacity: 0.0; position: absolute; left: "+(this.screenWidth-Number.parseInt("100"))+"px;overflow:invisible");
+    document.getElementById('upload').setAttribute('style',"opacity: 0.0; position: absolute; left: 100px;overflow:invisible");
 
     let user = this.tokenStorage.getUser();
     
@@ -113,7 +113,6 @@ export class FileExplorerComponent implements OnInit{
   }
 
   generateUpload():void{
-    let upload = 
     document.getElementById('upload').removeAttribute('disabled');
     document.getElementById('upload').click();
     document.getElementById('upload').setAttribute('disabled',"true");
@@ -128,6 +127,7 @@ export class FileExplorerComponent implements OnInit{
   }
 
   uploadFile(file:any){
+    this.appComponent.uploadPost = null;
     const formData = new FormData();
     formData.append('token',this.tokenStorage.getToken());
     formData.append('file', file);
@@ -139,9 +139,6 @@ export class FileExplorerComponent implements OnInit{
     }else{
       formData.append('path', this.path);
     }
-    
-
-    console.log(file);
 
     this.appComponent.uploadPost = this.httpClient.post<any>(this.userService.API_FILES+"storage/upload", formData,{reportProgress: true, observe: "events"}).subscribe(
       
@@ -259,7 +256,7 @@ export class FileExplorerComponent implements OnInit{
     let dialogRef = this.dialog.open(DeleteDialogComponent,{data:{element}});
     dialogRef.afterClosed().subscribe(res => {
       if(res === undefined){
-          this.userService.moveToTrash(this.fileService.getItems(element.id),true).subscribe( data=>{
+          this.userService.moveToTrash(this.fileService.getItems(element.id),true,this.driveComponent.getActualDrive()).subscribe( data=>{
           this.driveComponent.updateFiles(this.driveComponent.getActualDrive());
           this.snackBar.open(data.message, 'Cerrar', {
             horizontalPosition: this.horizontalPosition,
@@ -282,7 +279,7 @@ export class FileExplorerComponent implements OnInit{
     let dialogRef = this.dialog.open(DeleteDialogComponent,{data:{element}});
     dialogRef.afterClosed().subscribe(res => {
       if(res === undefined){
-          this.userService.moveToTrash(this.fileService.getItems(element.id),false).subscribe( data=>{
+          this.userService.moveToTrash(this.fileService.getItems(element.id),false,this.driveComponent.getActualDrive()).subscribe( data=>{
           this.driveComponent.updateFiles(this.driveComponent.getActualDrive());
           this.snackBar.open(data.message, 'Cerrar', {
             horizontalPosition: this.horizontalPosition,
@@ -305,7 +302,21 @@ export class FileExplorerComponent implements OnInit{
     let dialogRef = this.dialog.open(ShareComponent,{data:{element}});
     dialogRef.afterClosed().subscribe(res => {
       if (res) {
-        //this.folderAdded.emit({ name: res });
+        this.userService.shareTo(element.id,res).subscribe(
+          data =>{
+            let dataMap = new Map(Object.entries(data));
+            this.snackBar.open(dataMap.get('message'), 'Cerrar', {
+              horizontalPosition: this.horizontalPosition,
+              verticalPosition: this.verticalPosition,
+              duration: 5 * 1000
+            });
+        },err =>{
+          this.snackBar.open(err.message, 'Cerrar', {
+            horizontalPosition: this.horizontalPosition,
+            verticalPosition: this.verticalPosition,
+            duration: 5 * 1000
+          });
+        });
       }
     });
   }
@@ -316,6 +327,18 @@ export class FileExplorerComponent implements OnInit{
       if (res) {
         //this.folderAdded.emit({ name: res });
       }
+    });
+  }
+
+  shareTo(element:FileElement){
+    let dialogRef = this.dialog.open(ShareComponent,{data:{element}});
+    
+  }
+
+  stopShare(element:FileElement){
+    let dialogRef = this.dialog.open(GenerateUrlComponent,{data:{element}});
+    dialogRef.afterClosed().subscribe(res => {
+      
     });
   }
 

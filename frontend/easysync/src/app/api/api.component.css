@@ -1,0 +1,15 @@
+.orange{
+    color: orange;
+}
+
+.green{
+    color: green;
+}
+
+.red{
+    color: red;
+}
+
+mat-expansion-panel{
+    width: 100vw;
+}

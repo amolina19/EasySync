@@ -10,10 +10,19 @@ export class ApiComponent implements OnInit {
 
   constructor(private userService: UserService) { }
 
-  API_DOCUMENT:string;
+  API_DOCUMENT:any = [];
+  panelOpenState:boolean = false;
+
+
+
 
   ngOnInit(): void {
-    console.log(this.API_DOCUMENT); 
+
+    this.userService.getAPI().subscribe(data => {
+      this.API_DOCUMENT = data;
+      console.log(this.API_DOCUMENT); 
+    });
+    
   }
 
 }

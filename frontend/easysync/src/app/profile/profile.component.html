@@ -37,6 +37,7 @@
           </mat-panel-title>
           </mat-expansion-panel-header>
             <mat-card class="mt-2 text-break"><b>Usuario:      </b>{{currentUser.username}}</mat-card>
+            <mat-card class="mt-2 text-break"><b>Nombre:      </b>{{currentUser.name}}</mat-card>
             <mat-card class="mt-2 text-break"><b>Email:        </b> {{currentUser.email}}</mat-card>
             <mat-card class="mt-2 text-break"><b>Fecha de creación:        </b> {{createdDateString}}</mat-card>
             <mat-card class="mt-2 text-break"><b>Último inicio de sesión:        </b>{{lastLoginDateString}}</mat-card>
@@ -51,6 +52,8 @@
           <mat-icon color="warn">delete_outline</mat-icon> <div class="ml-2">Eliminar Cuenta</div>
           </mat-panel-title>
           </mat-expansion-panel-header>
+          <mat-card class="mt-2 text-break">Eliminar la cuenta del usuario y todo sus archivos.</mat-card>
+          <button class="mt-3 ml-2" mat-raised-button color="warn" (click)="sureDelete();">Eliminar cuenta</button>
           </mat-expansion-panel>
       </div>
       
@@ -240,6 +243,57 @@
           <mat-icon color="primary">devices_other</mat-icon> <div class="ml-2">Historial de Sesiones</div>
           </mat-panel-title>
           </mat-expansion-panel-header>
+
+          <div class="row">
+            <div *ngFor="let session of sessions">
+              <mat-card class="ml-2 mt-2">
+                <mat-list>
+                  <div class="row ml-2">
+                      <span class="pr-4 text-break "> <b>Sistema Operativo :</b> {{session.os}} </span>
+                  </div>
+      
+                  <div class="row ml-2">
+                      <span class="pr-4 text-break"> <b>Navegador :</b> {{session.browser}} </span>
+                  </div>
+      
+                  <div class="row ml-2">
+                      <span class="pr-4 text-break"><b>IP:</b>  {{session.ip}} </span>
+                  </div>
+      
+                  <div class="row ml-2">
+                      <span class="pr-4 text-break"> <b>Pais:</b> {{session.country_name}} </span>
+                  </div>
+      
+                  <div class="row ml-2">
+                      <span class="pr-4 text-break"> <b>ISP :</b> {{session.org}} </span>
+                  </div>
+      
+                  <div class="row ml-2">
+                      <span class="pr-4 text-break"> <b>Latitud:</b> {{session.latitude}} </span>
+                  </div>
+      
+                  <div class="row ml-2">
+                      <span class="pr-4 text-break"> <b>Longitud :</b> {{session.longitude}} </span>
+                  </div>
+      
+                  <div class="row ml-2">
+                      <span class="pr-4 text-break"><b>Region :</b>  {{session.region}} </span>
+                  </div> 
+
+                  <div class="row ml-2">
+                    <span class="pr-4 text-break"><b>Cod Postal :</b>  {{session.postal}} </span>
+                  </div> 
+                  <div class="row ml-2">
+                    <span class="pr-4 text-break"><b>Ciudad :</b>  {{session.city}} </span>
+                  </div>
+                  
+                  <div class="row ml-2">
+                    <span class="pr-4 text-break"><b>Fecha :</b>  {{getDateSession(session.date)}} </span>
+                  </div> 
+                </mat-list>
+              </mat-card>
+            </div>
+          </div>
           </mat-expansion-panel>
       </div>
 

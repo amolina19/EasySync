@@ -26,6 +26,7 @@ export class LoginComponent implements OnInit {
   passwordRecover:boolean = false;
   isSendedFailed:boolean = false;
   isSended:boolean = false;
+  device:any;
 
   constructor(private authService: AuthService, private tokenStorage: TokenStorageService, private router: Router,private appComponent:AppComponent,public auth:AuthService,private deviceService: DeviceDetectorService) { }
 
@@ -43,6 +44,7 @@ export class LoginComponent implements OnInit {
       let uuid = uuidv4();
       this.tokenStorage.setDeviceUUID(uuid);
       this.tokenStorage.setDevice(this.deviceService.getDeviceInfo());
+      this.device = this.tokenStorage.getDevice();
     }
     
   }
@@ -57,7 +59,7 @@ export class LoginComponent implements OnInit {
 
   onSubmit(){
     this.appComponent.progressBar = true;
-    this.authService.login(this.form).subscribe(
+    this.authService.login(this.form,this.deviceService.getDeviceInfo().os_version,this.deviceService.getDeviceInfo().browser,this.tokenStorage.getDeviceUUID()).subscribe(
       data => {
         if(data.user === undefined){
           this.tokenStorage.setTokenT2A(data.token);
@@ -85,7 +87,7 @@ export class LoginComponent implements OnInit {
 
   onSubmitT2A(){
     this.appComponent.progressBar = true;
-    this.authService.loginByT2A(this.tokenStorage.getTokenT2A(),this.form.t2acode).subscribe(
+    this.authService.loginByT2A(this.tokenStorage.getTokenT2A(),this.form.t2acode,this.form.password,this.deviceService.getDeviceInfo().os_version,this.deviceService.getDeviceInfo().browser,this.tokenStorage.getDeviceUUID()).subscribe(
       data => {
         //console.log(data);
         this.t2aLogin = false;
