@@ -113,7 +113,6 @@ export class FileExplorerComponent implements OnInit{
   }
 
   generateUpload():void{
-    let upload = 
     document.getElementById('upload').removeAttribute('disabled');
     document.getElementById('upload').click();
     document.getElementById('upload').setAttribute('disabled',"true");
@@ -128,6 +127,7 @@ export class FileExplorerComponent implements OnInit{
   }
 
   uploadFile(file:any){
+    this.appComponent.uploadPost = null;
     const formData = new FormData();
     formData.append('token',this.tokenStorage.getToken());
     formData.append('file', file);
@@ -139,9 +139,6 @@ export class FileExplorerComponent implements OnInit{
     }else{
       formData.append('path', this.path);
     }
-    
-
-    console.log(file);
 
     this.appComponent.uploadPost = this.httpClient.post<any>(this.userService.API_FILES+"storage/upload", formData,{reportProgress: true, observe: "events"}).subscribe(
       
@@ -259,7 +256,7 @@ export class FileExplorerComponent implements OnInit{
     let dialogRef = this.dialog.open(DeleteDialogComponent,{data:{element}});
     dialogRef.afterClosed().subscribe(res => {
       if(res === undefined){
-          this.userService.moveToTrash(this.fileService.getItems(element.id),true).subscribe( data=>{
+          this.userService.moveToTrash(this.fileService.getItems(element.id),true,this.driveComponent.getActualDrive()).subscribe( data=>{
           this.driveComponent.updateFiles(this.driveComponent.getActualDrive());
           this.snackBar.open(data.message, 'Cerrar', {
             horizontalPosition: this.horizontalPosition,
@@ -282,7 +279,7 @@ export class FileExplorerComponent implements OnInit{
     let dialogRef = this.dialog.open(DeleteDialogComponent,{data:{element}});
     dialogRef.afterClosed().subscribe(res => {
       if(res === undefined){
-          this.userService.moveToTrash(this.fileService.getItems(element.id),false).subscribe( data=>{
+          this.userService.moveToTrash(this.fileService.getItems(element.id),false,this.driveComponent.getActualDrive()).subscribe( data=>{
           this.driveComponent.updateFiles(this.driveComponent.getActualDrive());
           this.snackBar.open(data.message, 'Cerrar', {
             horizontalPosition: this.horizontalPosition,

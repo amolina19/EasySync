@@ -4,8 +4,20 @@
 
 
     <div class="row justify-content-center mb-5">
-      <div class="col-sx-1 col-md-3">
+      <div *ngIf="!decrpytingFile && !downloadingFile && !errorNotFound" class=" col-sx-1 col-md-3">
         <img class="img-fluid" src="./../../assets/img/file/file-download.svg">
+      </div>
+
+      <div *ngIf="decrpytingFile && !downloadingFile && !errorNotFound && passwordMatch" class="col-sx-1 col-md-3">
+        <img *ngIf="decrpytingFile && !errorNotFound" class="img-fluid" src="./../../assets/img/file/file-decrypting.svg">
+      </div>
+
+      <div *ngIf="!decrpytingFile && downloadingFile && !errorNotFound && passwordMatch"class="col-sx-1 col-md-3">
+        <img class="img-fluid" src="./../../assets/img/file/file-downloading.svg">
+      </div>
+
+      <div *ngIf="!decrpytingFile && !downloadingFile && errorNotFound && !passwordMatch" class="col-sx-1 col-md-3">
+        <img class="img-fluid" src="./../../assets/img/file/file-notfound.svg">
       </div>
 
       <!--
@@ -32,7 +44,7 @@
             <div class="col-md-10">
                 <div class="mt-5 mb-2 col-md-6 text-break font-weight-bold">{{name}}</div>
                 <div class="mb-3 col-md-6" ><div class="text-uppercase b">{{size}}</div></div>
-                <div class="col-md-2"><button mat-raised-button color="primary" (click)="download();" class="mr-3">Descargar</button></div>
+                <div class="col-md-2" *ngIf="!errorNotFound"><button mat-raised-button color="primary" (click)="download();" class="mr-3">Descargar</button></div>
                 <!--
                 <div>
                   <button mat-raised-button color="primary" (click)="download();" class="mr-3">Cancelar</button>
@@ -42,8 +54,10 @@
                 <div class="mt-3 col-md-10" *ngIf="!passwordMatch"> 
                     <!--*ngIf="!auth.isLoggedIn"-->
 
-                    <mat-hint class="red">{{errorString}}</mat-hint>
-                  <form
+                    <mat-hint class="red" *ngIf="!codeEntered">{{errorString}}</mat-hint>
+                    <mat-hint class="red" *ngIf="errorNotFound">No se ha podido encontrar el archivo o ha sido eliminado.</mat-hint>
+                    
+                  <form *ngIf="!errorNotFound"
                       
                       name="form"
                       (ngSubmit)="f.form.valid && download();"
@@ -52,9 +66,9 @@
                       >
                       <mat-form-field class="full">
                           <mat-label>Código de descifrado</mat-label>
-                          <input matInput #message maxlength="32" placeholder="Ejemplo 1A82DBCA94LKGKDE9Ñ294LERKFDLSA854DR92LAS932" matInput type="text" oninput="this.value = this.value.toUpperCase();"
-                          name="t2acode"
-                          [(ngModel)]="form.download"
+                          <input matInput #message maxlength="32" placeholder="Ejemplo zaYRDOp6guCSyntHDdo3l1cSy5FzthiosltaRfUJ01itBkWBJe8ymrZVWS0xVW" matInput type="text"
+                          name="password"
+                          [(ngModel)]="form.password"
                           (keyup.enter)="download();"
                           required
                           minlength="0"

@@ -116,12 +116,13 @@ export class UserService {
     return this.http.post(this.API_FILES + 'storage/move',body.toString(), httpOptions);
   }
 
-  moveToTrash(elements:any,value):Observable<any>{
+  moveToTrash(elements:any,value:any,drive:any):Observable<any>{
     let token = this.tokenStorageService.getToken();
     let body = new URLSearchParams();
     body.set('token',token);
     body.set('elements',elements);
     body.set('trash',value);
+    body.set('drive',drive);
     return this.http.post(this.API_FILES + 'storage/trash',body.toString(), httpOptions);
   }
 
@@ -174,6 +175,12 @@ export class UserService {
 
   getAPI(){
     return this.http.get(this.API_FILES + 'documentation');
+  }
+
+  getSessions(){
+    let body = new URLSearchParams();
+    body.set('token',this.tokenStorageService.getToken());
+    return this.http.post(this.API_USER + 'sessions',body.toString(), httpOptions);
   }
 
 

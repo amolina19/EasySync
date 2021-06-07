@@ -243,6 +243,57 @@
           <mat-icon color="primary">devices_other</mat-icon> <div class="ml-2">Historial de Sesiones</div>
           </mat-panel-title>
           </mat-expansion-panel-header>
+
+          <div class="row">
+            <div *ngFor="let session of sessions">
+              <mat-card class="ml-2 mt-2">
+                <mat-list>
+                  <div class="row ml-2">
+                      <span class="pr-4 text-break "> <b>Sistema Operativo :</b> {{session.os}} </span>
+                  </div>
+      
+                  <div class="row ml-2">
+                      <span class="pr-4 text-break"> <b>Navegador :</b> {{session.browser}} </span>
+                  </div>
+      
+                  <div class="row ml-2">
+                      <span class="pr-4 text-break"><b>IP:</b>  {{session.ip}} </span>
+                  </div>
+      
+                  <div class="row ml-2">
+                      <span class="pr-4 text-break"> <b>Pais:</b> {{session.country_name}} </span>
+                  </div>
+      
+                  <div class="row ml-2">
+                      <span class="pr-4 text-break"> <b>ISP :</b> {{session.org}} </span>
+                  </div>
+      
+                  <div class="row ml-2">
+                      <span class="pr-4 text-break"> <b>Latitud:</b> {{session.latitude}} </span>
+                  </div>
+      
+                  <div class="row ml-2">
+                      <span class="pr-4 text-break"> <b>Longitud :</b> {{session.longitude}} </span>
+                  </div>
+      
+                  <div class="row ml-2">
+                      <span class="pr-4 text-break"><b>Region :</b>  {{session.region}} </span>
+                  </div> 
+
+                  <div class="row ml-2">
+                    <span class="pr-4 text-break"><b>Cod Postal :</b>  {{session.postal}} </span>
+                  </div> 
+                  <div class="row ml-2">
+                    <span class="pr-4 text-break"><b>Ciudad :</b>  {{session.city}} </span>
+                  </div>
+                  
+                  <div class="row ml-2">
+                    <span class="pr-4 text-break"><b>Fecha :</b>  {{getDateSession(session.date)}} </span>
+                  </div> 
+                </mat-list>
+              </mat-card>
+            </div>
+          </div>
           </mat-expansion-panel>
       </div>
 

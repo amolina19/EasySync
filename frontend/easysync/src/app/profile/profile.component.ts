@@ -39,6 +39,8 @@ export class ProfileComponent implements OnInit {
   hide:boolean = true;
   form: any = {};
 
+  sessions:any;
+
   progressBarStorage:number;
   userStorageTotal:string;
   userStorageUsed:string;
@@ -133,6 +135,15 @@ export class ProfileComponent implements OnInit {
     if(!this.tokenService.userExits()){
       this.router.navigate(['/login']);
     }
+
+    this.userService.getSessions().subscribe(
+      data =>{
+        let dataMap = new Map(Object.entries(data));
+        this.sessions = dataMap.get('result');
+      },err =>{
+        
+      }
+    )
      
     //this.authService.updateUserInfo();
     this.currentUser = this.tokenService.getUser();
@@ -176,6 +187,10 @@ export class ProfileComponent implements OnInit {
         duration: 5 * 1000
       });
     }
+  }
+
+  getDateSession(date:any){
+    return dateFormat(new Date(date),'dddd dd mmmm yyyy HH:MM:ss');
   }
 
   

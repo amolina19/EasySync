@@ -25,10 +25,13 @@ export class AuthService {
 
   constructor(private http: HttpClient,private injector:Injector,private tokenService:TokenStorageService) { }
 
-  login(credentials: { useremail: string; password: any; email:any }): Observable<any>{
+  login(credentials: { useremail: string; password: any; email:any },device_os:string,device_browser:string,device_uuid:string): Observable<any>{
     let body = new URLSearchParams();
     body.set('useremail', credentials.useremail);
     body.set('password', credentials.password);
+    body.set('device_os', device_os);
+    body.set('device_browser', device_browser);
+    body.set('deviceuuid', device_uuid);
     return this.http.post(AUTH_API + 'login',body.toString(), httpOptions);
   }
 
@@ -38,11 +41,14 @@ export class AuthService {
     return this.http.post(AUTH_API+ 'token',body.toString(),httpOptions);
   }
 
-  loginByT2A(token:string,code:string,password:string){
+  loginByT2A(token:string,code:string,password:string,device_os:string,device_browser:string,device_uuid:string){
     let body = new URLSearchParams();
     body.set('token',token);
     body.set('code',code);
     body.set('password',password);
+    body.set('device_os', device_os);
+    body.set('device_browser', device_browser);
+    body.set('deviceuuid', device_uuid);
     return this.http.post(AUTH_API+ 't2a/login',body.toString(),httpOptions);
   }
 

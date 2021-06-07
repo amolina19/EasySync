@@ -18,6 +18,8 @@ export class DownloadComponent implements OnInit {
   passwordMatch:boolean = false;
   decrpytingFile:boolean = false;
   downloadingFile:boolean = false;
+  codeEntered:boolean=false;
+  passwordValue:boolean = false;
 
   errorString:string;
 
@@ -40,6 +42,7 @@ export class DownloadComponent implements OnInit {
   downloadSizeNumber:number;
   downloadFinished:boolean = false;
   downloadIsFolder:boolean;
+  
 
   constructor(private route: ActivatedRoute,private userService: UserService,private downloads: DownloadService) { }
 
@@ -59,12 +62,13 @@ export class DownloadComponent implements OnInit {
         this.file = dataMap.get('result');
         this.name = this.file.name;
         this.size = this.convertBytesSize(this.file.size);
-        let passwordValue = dataMap.get('password');
-        if(passwordValue === true){
+        this.passwordValue = dataMap.get('password');
+        if(this.passwordValue === true){
           this.passwordMatch = true;
         }else{
           this.errorString = dataMap.get('message');
           this.passwordMatch = false;
+          
         }
         //this.errorNotFound = true;
         //console.log(dataMap);
@@ -72,17 +76,31 @@ export class DownloadComponent implements OnInit {
       },err =>{
         this.errorNotFound = true;
         this.progressBar = false;
+        this.passwordMatch = false;
+        this.downloadingFile = false;
+        this.decrpytingFile = false;
       }
     )
   }
 
   setDownload(url: string,filename:string) {
     this.download$ = this.downloads.download(url,filename);
+    this.errorNotFound = false;
+    this.passwordMatch = true;
+    this.downloadingFile = true;
+    this.decrpytingFile = false;
   }
 
   download(){
     this.downloadName = this.file.name;
-    this.downloadIDFile = this.userService.API_FILES+"download?url="+this.url+"&&password="+this.password;
+
+    if(!this.passwordValue){
+      this.codeEntered = true;
+      this.downloadIDFile = this.userService.API_FILES+"download?url="+this.url+"&&password="+this.form.password;
+    }else{
+      this.downloadIDFile = this.userService.API_FILES+"download?url="+this.url+"&&password="+this.password;
+    }
+    
     this.downloadSize = this.convertBytesSize(this.file.size);
     this.downloadSizeNumber = Number.parseInt(this.file.size);
     if(this.file.isFolder){
@@ -90,6 +108,10 @@ export class DownloadComponent implements OnInit {
     }else{
       this.downloadIsFolder = false;
     }
+    this.errorNotFound = false;
+    this.passwordMatch = true;
+    this.downloadingFile = true;
+    this.decrpytingFile = false;
     this.setDownload(this.downloadIDFile,this.downloadName);
   }
 
