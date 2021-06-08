@@ -16,6 +16,7 @@ import { HttpClient, HttpEventType } from '@angular/common/http';
 import { OnInit } from '@angular/core';
 import { ShareComponent } from './modals/share/share.component';
 import { GenerateUrlComponent } from './modals/generate-url/generate-url.component';
+import { Console } from 'console';
 
 @Component({
   selector: 'file-explorer',
@@ -127,49 +128,69 @@ export class FileExplorerComponent implements OnInit{
   }
 
   uploadFile(file:any){
-    this.appComponent.uploadPost = null;
-    const formData = new FormData();
-    formData.append('token',this.tokenStorage.getToken());
-    formData.append('file', file);
-    formData.append('keys', this.tokenStorage.getKeys());
-    formData.append('parent', this.driveComponent.parentID);
 
-    if(this.path === undefined){
-      formData.append('path', "");
-    }else{
-      formData.append('path', this.path);
-    }
 
-    this.appComponent.uploadPost = this.httpClient.post<any>(this.userService.API_FILES+"storage/upload", formData,{reportProgress: true, observe: "events"}).subscribe(
-      
-      event => {
-        this.appComponent.upload = true;
-        this.appComponent.uploadName = file.name;
-        this.appComponent.uploadSize = this.appComponent.convertBytesSize(file.size);
-        this.appComponent.uploadState = "UPLOADING";
-        
-        if (event.type === HttpEventType.DownloadProgress) {
-            //console.log("download progress"); 
-        }
-        if (event.type === HttpEventType.Response) {
-          this.appComponent.uploadState = "DONE";
-          this.appComponent.uploadFinished = true;
-          this.snackBar.open("El archivo "+file.name+" se subio correctamente", 'Cerrar', {
-            horizontalPosition: this.horizontalPosition,
-            verticalPosition: this.verticalPosition,
-            duration: 5 * 1000
-          });
-          this.driveComponent.updateFiles(0);
-          this.path = this.driveComponent.path;
-        }
 
-        if (event.type === HttpEventType.UploadProgress) {
-          this.appComponent.uploadProgress = Number.parseInt(""+(event.loaded*100)/event.total);
-          this.appComponent.uploaded = this.appComponent.convertBytesSize(event.loaded);
-          //console.log(this.appComponent.uploaded);
+    this.userService.getUserStorageSize().subscribe(data =>{
+
+      console.log("SIZE",(Number.parseInt(data.result) + Number.parseInt(file.size)));
+      console.log("USER SIZE",this.tokenStorage.getUser().storage_limit);
+      if((Number.parseInt(data.result) + Number.parseInt(file.size)) <= this.tokenStorage.getUser().storage_limit){
+        console.log("ENTRA AQUI 2");
+        this.appComponent.uploadPost = null;
+        const formData = new FormData();
+        formData.append('token',this.tokenStorage.getToken());
+        formData.append('file', file);
+        formData.append('keys', this.tokenStorage.getKeys());
+        formData.append('parent', this.driveComponent.parentID);
+    
+        if(this.path === undefined){
+          formData.append('path', "");
+        }else{
+          formData.append('path', this.path);
         }
+    
+        this.appComponent.uploadPost = this.httpClient.post<any>(this.userService.API_FILES+"storage/upload", formData,{reportProgress: true, observe: "events"}).subscribe(
+          
+          event => {
+            this.appComponent.upload = true;
+            this.appComponent.uploadName = file.name;
+            this.appComponent.uploadSize = this.appComponent.convertBytesSize(file.size);
+            this.appComponent.uploadState = "UPLOADING";
+            
+            if (event.type === HttpEventType.DownloadProgress) {
+                //console.log("download progress"); 
+            }
+            if (event.type === HttpEventType.Response) {
+              this.appComponent.uploadState = "DONE";
+              this.appComponent.uploadFinished = true;
+              this.snackBar.open("El archivo "+file.name+" se subio correctamente", 'Cerrar', {
+                horizontalPosition: this.horizontalPosition,
+                verticalPosition: this.verticalPosition,
+                duration: 5 * 1000
+              });
+              this.driveComponent.updateFiles(0);
+              this.path = this.driveComponent.path;
+            }
+    
+            if (event.type === HttpEventType.UploadProgress) {
+              this.appComponent.uploadProgress = Number.parseInt(""+(event.loaded*100)/event.total);
+              this.appComponent.uploaded = this.appComponent.convertBytesSize(event.loaded);
+              //console.log(this.appComponent.uploaded);
+            }
+          }
+        );
+      }else{
+        console.log("ENTRA AQUI");
+        this.snackBar.open("Limite de almacenamiento alcanzado", 'Cerrar', {
+          horizontalPosition: this.horizontalPosition,
+          verticalPosition: this.verticalPosition,
+          duration: 5 * 1000
+        });
       }
-    );
+    })
+
+    
   }
 
   openNewFolderDialog() {

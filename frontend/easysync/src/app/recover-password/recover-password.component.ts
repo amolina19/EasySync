@@ -17,6 +17,9 @@ export class RecoverPasswordComponent implements OnInit {
   form: any = {};
   passwordNotMatch:boolean = false;
   verificationKeyNotMatch:boolean = false;
+  recoveredSuccess:boolean = false;
+  successMessage:any;
+  errorMessage:any;
   constructor(private authService: AuthService,private route: ActivatedRoute,private tokenStorage:TokenStorageService,private router:Router,private appComponent:AppComponent) { }
 
   ngOnInit(): void {
@@ -27,6 +30,8 @@ export class RecoverPasswordComponent implements OnInit {
     if(this.tokenStorage.userExits()){
       this.router.navigate(['/home']);
     }
+
+    console.log(this.errorMessage);
   }
 
   onSubmitNewPassword(){
@@ -34,6 +39,7 @@ export class RecoverPasswordComponent implements OnInit {
 
     if(this.form.newpassword !== this.form.password){
       this.passwordNotMatch = true;
+      this.appComponent.progressBar = false;
     }else{
       this.passwordNotMatch = false;
       this.authService.recover_password(this.token,this.form.password,this.form.pbkf2).subscribe(
@@ -43,11 +49,16 @@ export class RecoverPasswordComponent implements OnInit {
           let dataMap = new Map(Object.entries(data));
           console.log(dataMap.get('message'));
           this.appComponent.progressBar = false;
+          this.recoveredSuccess = true;
+          this.successMessage = dataMap.get('message');
       }, err=>{
-        this.appComponent.progressBar = false;
+          this.errorMessage = err.message;
+          this.appComponent.progressBar = false;
+          this.recoveredSuccess = false;
           this.verificationKeyNotMatch = true;
       });
     }
+    
     
   }
 
