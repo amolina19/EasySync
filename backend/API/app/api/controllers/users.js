@@ -448,8 +448,6 @@ module.exports = {
             res.status(301).json({status:"Error",message:process.env.USE_ROUTE});
         }
     },recover_password: function(req,res){
-
-        //CONSOLE.LOG("BODY",req.body)
         if(checkUri(req)){
 
             if(req.body.token !== undefined){
@@ -467,7 +465,6 @@ module.exports = {
                                     }else{
                                         let decrypted_key = decrypt(user.private_key,PBKDF2KEY);
                                         let password = bcrypt.hashSync(req.body.password, 10);
-                                        console.log(password);
 
                                         if(decrypted_key.includes('BEGIN ENCRYPTED PRIVATE KEY') && decrypted_key.includes('END ENCRYPTED PRIVATE KEY')){
                                             let privateEncryped = encrypt(decrypted_key,easyCrypt.easysync.getPBKDF2Hex(req.body.password));
@@ -486,27 +483,52 @@ module.exports = {
                                         
                                         //let privateEncrypedSave = encrypt(decrypted_key,easyCrypt.easysync.getPBKDF2Hex(req.body.password));
                                     }
-                                })
-                                /*
-                                userModel.updateOne({_id:decoded.id},{$set:{"password":password}},function(err){
-                                    if(!err){
-                                        res.status(201).json({status:"ok",message:"Contraseña actualizada"});
-                                    }else{
-                                        res.status(401).json({status:"Error",message:"Ocurrio un problema cuando se actualizaba la contraseña"});
-                                    }
-                                });*/
+                                });
                             }else{
-                                /*
-                                userModel.updateOne({_id:decoded.id},{$set:{"password":password}},function(err){
-                                    if(!err){
-                                        res.status(201).json({status:"ok",message:"Contraseña actualizada"});
+                                
+                                filesModel.deleteMany({ower_id:decoded.id},function(err,resultFiles){
+                                    if(err){
+                                        console.log(err);
                                     }else{
-                                        res.status(401).json({status:"Error",message:"Ocurrio un problema cuando se actualizaba la contraseña"});
+                                        
+                                        keysModel.deleteMany({owner_id:decoded.id},function(err,resultKeys){
+
+                                            if(err){
+                                                console.log(err);
+                                            }else{
+
+                                                generateKeyPair('rsa', {
+                                                    modulusLength: 4096,
+                                                    publicKeyEncoding: {
+                                                        type: 'spki',
+                                                        format: 'pem'
+                                                    },
+                                                    privateKeyEncoding: {
+                                                        type: 'pkcs8',
+                                                        format: 'pem',
+                                                        cipher: 'aes-256-cbc',
+                                                        passphrase: process.env.PRIVATE_KEY_PASSWORD
+                                                    }
+                                                    }, (err, publicKey, privateKey) => {
+                                                        let privateEncryped = encrypt(privateKey,easyCrypt.easysync.getPBKDF2Hex(req.body.password));
+                                                        let password = bcrypt.hashSync(req.body.password, 10);
+                                                        cleanStorageUser(decoded.id);
+                                                        userModel.updateOne({_id:decoded.id},{$set:{"password":password,"private_key":privateEncryped,"public_key":publicKey}},function(err){
+                                                            if(!err){
+                                                                res.status(201).json({status:"ok",message:"Contraseña actualizada"});
+                                                            }else{
+                                                                res.status(401).json({status:"Error",message:"Ocurrio un problema cuando se actualizaba la contraseña"});
+                                                            }
+                                                        });
+                                                        
+                                                    });
+                                                  
+                                            }
+
+                                        });
                                     }
-                                });*/
-                            }
-                            
-                            
+                                });
+                            }  
                         }
                     }
                 });

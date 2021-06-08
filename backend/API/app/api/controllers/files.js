@@ -135,6 +135,24 @@ function removeDirectory(path){
 
 }
 
+function cleanStorageUser(userID){
+    let commandLine = "rm -r "+STORAGE+userID+"/*";
+
+    dir = exec(commandLine, function(err, stdout, stderr) {
+        if (err) {
+          console.log("error",err);
+        }
+        console.log(stdout);
+        console.log(stderr);
+      });
+      
+      dir.on('exit', function (code) {
+        console.log('EXIT CODE',code);
+        //res.download("/download/"+id_owner+"/"+name+".zip");
+
+    });
+}
+
 function encryptFile(path,file,filepassword,res,result,user,encryptedFilePassword){
 
     let commandLine = "openssl enc -aes-256-cbc -pass pass:"+filepassword+" -p -in "+path+"/"+file+" -out "+path+"/"+file+".enc";
@@ -648,6 +666,16 @@ module.exports = {
                             }).catch(function(err){
                                 res.status(400).send({status:"Error", err});
                             });
+                        }else{
+                            if(!userStorageExists(decoded.id)){
+                                createUserStorage(decoded.id);
+                                getUserSize(decoded.id).then(function(userSize){
+                                    console.log(userSize.toString());
+                                    res.status(200).send({status:"Ok", result:userSize.toString()});
+                                }).catch(function(err){
+                                    res.status(400).send({status:"Error", err});
+                                });
+                            }
                         }
                     }
                 });
