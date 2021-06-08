@@ -71,11 +71,18 @@ export class AuthService {
   }
 
 
-  recover_password(password:string,pbkdf2key:string): Observable<any>{
+  recover_password(token:string,password:string,pbkdf2key:string): Observable<any>{
     let body = new URLSearchParams();
+    body.set('token', token);
     body.set('password', password);
     body.set('key',pbkdf2key);
     return this.http.post(AUTH_API+'recover_password',body.toString(),httpOptions);
+  }
+
+  send_recover_password(useremail:string): Observable<any>{
+    let body = new URLSearchParams();
+    body.set('useremail', useremail);
+    return this.http.post(AUTH_API+'send_recover_password',body.toString(),httpOptions);
   }
 
   update_email(email:string): Observable<any>{

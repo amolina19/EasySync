@@ -5,19 +5,19 @@
 
     <div class="row justify-content-center mb-5">
       <div *ngIf="!decrpytingFile && !downloadingFile && !errorNotFound" class=" col-sx-1 col-md-3">
-        <img class="img-fluid" src="./../../assets/img/file/file-download.svg">
+        <img  alt="fileimage" class="img-fluid" src="./../../assets/img/file/file-download.svg">
       </div>
 
       <div *ngIf="decrpytingFile && !downloadingFile && !errorNotFound && passwordMatch" class="col-sx-1 col-md-3">
-        <img *ngIf="decrpytingFile && !errorNotFound" class="img-fluid" src="./../../assets/img/file/file-decrypting.svg">
+        <img alt="fileimage" *ngIf="decrpytingFile && !errorNotFound" class="img-fluid" src="./../../assets/img/file/file-decrypting.svg">
       </div>
 
       <div *ngIf="!decrpytingFile && downloadingFile && !errorNotFound && passwordMatch"class="col-sx-1 col-md-3">
-        <img class="img-fluid" src="./../../assets/img/file/file-downloading.svg">
+        <img alt="fileimage" class="img-fluid" src="./../../assets/img/file/file-downloading.svg">
       </div>
 
       <div *ngIf="!decrpytingFile && !downloadingFile && errorNotFound && !passwordMatch" class="col-sx-1 col-md-3">
-        <img class="img-fluid" src="./../../assets/img/file/file-notfound.svg">
+        <img alt="fileimage" class="img-fluid" src="./../../assets/img/file/file-notfound.svg">
       </div>
 
       <!--

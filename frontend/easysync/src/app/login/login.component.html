@@ -1,4 +1,12 @@
-<div class="row mt-5" *ngIf="!t2aLogin && !passwordRecover">
+<div class="row justify-content-center mt-5" *ngIf="!t2aLogin && !passwordRecover">
+  <div class="col-md-2 col-1">
+    <img alt="sign up" class="img-fluid" src="./../../assets/img/home/register.svg">
+  </div>
+</div>
+
+
+
+<div class="row mt-2" *ngIf="!t2aLogin && !passwordRecover">
   <div class="col-md-4"></div>
   <div class="col-md-4">
 
@@ -90,7 +98,7 @@
 
     <div class="row justify-content-center mb-5">
       <div class="col-md-4">
-        <img class="img-fluid" src="./../../assets/img/security.svg">
+        <img alt="security" class="img-fluid" src="./../../assets/img/security.svg">
       </div>
     </div>
   
@@ -150,7 +158,7 @@
     <div class="col-md-6">
       <div class="row justify-content-center mb-5 mt-5">
         <div>
-          <img class="img-fluid orange col-sx-4" src="./../../assets/img/password-reset.svg">
+          <img alt="passwordreset" class="img-fluid orange col-sx-4" src="./../../assets/img/password-reset.svg">
         </div>
       </div>
     
@@ -203,7 +211,7 @@
         </form>
 
         <div class="row justify-content-center mt-3">
-          <button mat-raised-button color="primary" (click)="onSubmitT2A();" class="mr-3">Recuperar Cuenta</button>
+          <button mat-raised-button color="primary" (click)="onSubmitRecover();" class="mr-3">Recuperar Cuenta</button>
           <button mat-raised-button color="warn" (click)="volver();">Volver</button>
         </div>
       </mat-card>

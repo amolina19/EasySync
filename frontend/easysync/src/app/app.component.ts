@@ -57,6 +57,9 @@ export class AppComponent implements OnInit {
     @Inject(DOCUMENT) private document: Document) {}
 
   ngOnInit(): void {
+
+
+
     this.progressBar = true;
 
     if(this.TokenStorageService.getToken() !=null){

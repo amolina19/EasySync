@@ -1,3 +1,74 @@
 <main id="main">
-  [Main content]
+  <div class="container">
+
+    <div class="row mt-5">
+      <mat-card>
+        <div class="row justify-content-center">
+          
+            <div class="col-md-8">
+              <h1 class="mt-md-5 mt-2">Guarda y comparte tus archivos y carpetas y accede a ellos desde cualquier dispositivo móvil, tablet u ordenador. Tus primeros 5 GB de espacio de almacenamiento son gratuitos.</h1>
+            </div>
+            <div class="col-md-2 col-1">
+              <img alt="smartphone" class="img-fluid" src="./../../assets/img/home/smartphone.svg">
+            </div>
+          
+        </div>
+    </mat-card>
+      
+    </div>
+    
+
+    <div class="row mt-5 ">
+      <mat-card>
+        <div class="row justify-content-center">
+          <div class="col-md-2 col-1">
+            <img alt="folder" class="img-fluid" src="./../../assets/img/home/folder.svg">
+          </div>
+          <div class="col-md-8">
+            <h1 class="mt-md-4 mt-2">Con EasySync para ordenadores accedes a los archivos directamente desde tu ordenador, sin riesgo de saturar el espacio del disco duro. Pasarás menos tiempo esperando a que los archivos se sincronicen y podrás dedicarte a tareas realmente productivas.</h1>
+          </div>
+
+        </div>
+        
+      </mat-card>
+      
+    </div>
+
+
+    <div class="row mt-5">
+
+      <mat-card>
+        <div class="row justify-content-center">
+          <div class="col-md-8">
+            <h1 class="mt-md-4 mt-2">Impide el acceso a tus archivos hasta que decidas compartirlos, tus archivos están cifrados con claves controladas por ti. Todos tus datos están cifrados con una clave derivada de tu contraseña; en otras palabras, tu contraseña es tu clave maestra de cifrado. EasySync no tiene acceso ni a tu contraseña ni a tus datos. El uso de una contraseña segura y única permitirá que tus datos estén protegidos contra posibles hackeos y que tu información seguirá siendo solo eso: tuya. EasySync recomienda generar una contraseña segura y única y almacenarla usando un administrador de contraseñas</h1>
+          </div>
+          <div class="col-md-2 col-1">
+            <img alt="security" class="img-fluid" src="./../../assets/img/home/security.svg">
+          </div>
+        </div>
+      </mat-card>
+      
+    </div>
+
+
+    <div class="row mt-5">
+      <mat-card>
+        <div class="row justify-content-center">
+          <div class="col-md-2 col-1">
+            <img alt="sign up" class="img-fluid" src="./../../assets/img/home/register.svg">
+          </div>
+          <div class="col-md-8">
+            <h1 class="mt-md-4 mt-2">Si aún no tienes cuenta puedes crear una nueva cuenta gratuita, si ya tienes cuenta inicia sesión y comienza a sincronizar archivos.</h1>
+            <div class="row justify-content-center" *ngIf="!tokenStorage.userExits();">
+              <a href="#" routerLink="/register" class="mr-3"><button mat-stroked-button color="primary">Registrarse</button></a>
+              <a href="#" routerLink="/login"><button mat-stroked-button color="primary">Iniciar Sesión</button></a>
+            </div>
+          </div>
+
+        </div>
+      </mat-card>
+
+      
+    </div>
+  </div>
 </main>

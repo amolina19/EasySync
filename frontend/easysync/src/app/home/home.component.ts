@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { TokenStorageService } from '../_services/token-storage.service';
 import { UserService } from '../_services/user.service';
 
 @Component({
@@ -10,7 +12,7 @@ export class HomeComponent implements OnInit {
 
   content: string = '';
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService,public tokenStorage: TokenStorageService,router: Router) { }
 
   ngOnInit(): void {
     /*

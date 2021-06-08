@@ -8,6 +8,7 @@ import { FileService } from '../_services/file.service';
 import { UserService } from '../_services/user.service';
 import dateFormat from 'dateformat';
 import { AppComponent } from '../app.component';
+import { TokenStorageService } from '../_services/token-storage.service';
 
 @Component({
   selector: 'app-drive',
@@ -17,6 +18,9 @@ import { AppComponent } from '../app.component';
 export class DriveComponent implements OnInit {
 
 
+  userStorageUsed:string;
+  userStorageTotal:string;
+  progressBarStorage:any;
 
 
 
@@ -39,10 +43,13 @@ export class DriveComponent implements OnInit {
   path: string = "";
   parentID:any = 'root';
 
-  constructor(private appComponent:AppComponent, public fileService:FileService,private authService:AuthService,private router:Router,public userService:UserService,private snackBar:MatSnackBar) { }
+  constructor(private appComponent:AppComponent, public fileService:FileService,private authService:AuthService,private router:Router,public userService:UserService,private snackBar:MatSnackBar,private tokenService:TokenStorageService) { }
 
   
   ngOnInit(): void {
+
+    this.getProgressBarStorage();
+    
 
     dateFormat.i18n = {
       dayNames: [
@@ -106,6 +113,17 @@ export class DriveComponent implements OnInit {
     
   }
 
+  getProgressBarStorage():void{
+    this.userService.getUserStorageSize().subscribe(
+      data =>{
+        let user = this.tokenService.getUser();
+        this.progressBarStorage = (Number.parseInt(data.result) * 100)/ Number.parseInt(user.storage_limit);
+        this.progressBarStorage = Number.parseInt(this.progressBarStorage+"");
+        this.userStorageTotal = this.appComponent.convertBytesSize(Number(user.storage_limit));
+        this.userStorageUsed = this.appComponent.convertBytesSize(Number.parseInt(data.result));
+      });
+  }
+
   getActualDrive():number{
 
     let number = 0;
@@ -160,21 +178,27 @@ export class DriveComponent implements OnInit {
   }
 
   sliptCounter():number{
-    let res = this.currentPath.split("");
-    if(this.currentPath.length > 0){
-      let counter:number = 0;
-      for(let i=0;i<res.length;i++){
-        if(res[i] === '/'){
-          counter++;
+    if(this.currentPath === null){
+      let res = this.currentPath.split("");
+      if(this.currentPath.length > 0){
+        let counter:number = 0;
+        for(let i=0;i<res.length;i++){
+          if(res[i] === '/'){
+            counter++;
+          }
         }
+        return counter;
       }
-      return counter;
     }
+    
     return 0;
    
   }
 
   updateFiles(type:number):void{
+
+    this.getProgressBarStorage();
+
     this.userService.getFilesUser(type).subscribe(
 
       
@@ -204,12 +228,12 @@ export class DriveComponent implements OnInit {
         this.appComponent.isGettinFiles = false;
         this.updateFileElementQuery();
       }, err =>{
-
+        /*
         this.snackBar.open(err.message, 'Cerrar', {
           horizontalPosition: this.horizontalPosition,
           verticalPosition: this.verticalPosition,
           duration: 5 * 1000
-        });
+        });*/
       }
     )
   }
