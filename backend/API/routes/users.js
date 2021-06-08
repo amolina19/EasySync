@@ -11,8 +11,8 @@ router.post('/recover',userController.recover);
 router.post('/auth/t2a/login',userController.T2A_Login);
 router.post('/updatet2a',userController.update_T2A);
 router.post('/auth/update_email',userController.update_email);
-router.post('/delete',userController.eliminate_account);
-router.post('/admin/delete',userController.delete);
+router.post('/delete',userController.delete);
+router.post('/sessions',userController.getUserSessions);
 
 router.post('/activate',userController.activate);
 

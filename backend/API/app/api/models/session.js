@@ -24,12 +24,7 @@ const SessionSchema = new Schema({
         required: true
     }, 
     date :{
-        type: String,
-        trim: true,
-        required: true
-    }, 
-    utc_offset :{
-        type: String,
+        type: Date,
         trim: true,
         required: true
     }, 
@@ -61,7 +56,7 @@ const SessionSchema = new Schema({
     city :{
         type: String,
         trim: true,
-        required: true
+        required: false
     },
     region :{
         type: String,
@@ -78,11 +73,15 @@ const SessionSchema = new Schema({
         trim: true,
         required: true
     },
-    timezone :{
+    deviceuuid :{
         type: String,
         trim: true,
         required: true
-    },     
+    },user_id :{
+        type: String,
+        trim: true,
+        required: true
+    }
 });
 
 module.exports = mongoose.model('Session', SessionSchema);

@@ -1,6 +1,7 @@
 const nodemailer = require("nodemailer");
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
+const bodyParser = require("body-parser");
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
@@ -84,5 +85,18 @@ module.exports = {
             subject: "Código de Autenticación ", // Subject line, // plain text body
             html: email, // html body
         });
-    }
+    },sendmailnewSession: function(user,os,browser,apiinfo){
+
+        
+        let email = "<b>Navegador:&nbsp; </b>"+browser+"<br><b>Sistema Operativo:&nbsp;</b>"+os+"<br><b>IP:&nbsp;</b>"+apiinfo.ip+"<br><b>País:&nbsp;</b>"+apiinfo.country_name+"<br><b>Ciudad:&nbsp;</b>"+apiinfo.city+"<br><b>Region:&nbsp;</b>"+apiinfo.region+"<br><b>ISP:&nbsp;</b>"+apiinfo.org+"<br><b>Código Postal:&nbsp;</b>"+apiinfo.postal+"<br><b>Longitud:&nbsp;</b>"+apiinfo.longitude+"<br><b>Latitud:&nbsp;</b>"+apiinfo.latitude+"<br>"
+        
+
+
+        let info = transporter.sendMail({
+            from: process.env.EMAIL_DOMAIN+' '+process.env.EMAIL_HEADER, // sender address
+            to: user.email, // list of receivers
+            subject: "Has iniciado sesion  desde un nuevo dispositivo "+user.username, // Subject line, // plain text body
+            html: email, // html body
+        });
+    },
 }
