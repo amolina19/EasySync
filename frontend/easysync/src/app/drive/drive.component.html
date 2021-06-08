@@ -13,6 +13,8 @@
         <mat-icon class="float-left mr-1 ml-2 mt-1">restore_from_trash</mat-icon><button mat-button (click)="papeleraDrive()">Papelera</button>
       </div>  
     </div>
+
+    <div class="mt-3 ml-3 mr-3"><b>{{userStorageUsed}}</b> de <b>{{userStorageTotal}}</b> ({{progressBarStorage}} %) de espacio utilizado.</div>
   </mat-sidenav>
 
   <mat-sidenav-content>
