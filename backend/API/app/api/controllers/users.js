@@ -13,6 +13,11 @@ const filesModel = require('../models/files');
 const keysModel = require('../models/keys');
 
 
+function cleanStorageUser(userID){
+    fs.rmSync(STORAGE+userID+"/",{recursive:true});
+}
+
+
 function encrypt(msg, pass) {
     var salt = CryptoJS.lib.WordArray.random(128/8);
     
