@@ -228,12 +228,12 @@ export class DriveComponent implements OnInit {
         this.appComponent.isGettinFiles = false;
         this.updateFileElementQuery();
       }, err =>{
-
+        /*
         this.snackBar.open(err.message, 'Cerrar', {
           horizontalPosition: this.horizontalPosition,
           verticalPosition: this.verticalPosition,
           duration: 5 * 1000
-        });
+        });*/
       }
     )
   }

@@ -59,9 +59,9 @@
           </div>
           <div class="col-md-8">
             <h1 class="mt-md-4 mt-2">Si aún no tienes cuenta puedes crear una nueva cuenta gratuita, si ya tienes cuenta inicia sesión y comienza a sincronizar archivos.</h1>
-            <div class="row justify-content-center">
-              <a href="easysync.es/register" class="mr-3"><button mat-stroked-button color="primary">Registrarse</button></a>
-              <a href="easysync.es/login" ><button mat-stroked-button color="primary">Iniciar Sesión</button></a>
+            <div class="row justify-content-center" *ngIf="!tokenStorage.userExits();">
+              <a href="#" routerLink="/register" class="mr-3"><button mat-stroked-button color="primary">Registrarse</button></a>
+              <a href="#" routerLink="/login"><button mat-stroked-button color="primary">Iniciar Sesión</button></a>
             </div>
           </div>
 

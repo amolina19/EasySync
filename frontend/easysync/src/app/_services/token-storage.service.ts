@@ -26,6 +26,7 @@ export class TokenStorageService {
     window.localStorage.removeItem(TOKEN_KEY);
     window.localStorage.removeItem(USER_KEY);
     window.localStorage.removeItem(PBKDF2_KEY);
+    window.localStorage.removeItem(KEYS);
   }
 
   
