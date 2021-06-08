@@ -62,11 +62,13 @@ module.exports = {
             html: email, // html body
         });
     },
-    sendmailrecoverpassword: function(user,token){
+    sendmailrecoverpassword: function(token,user){
 
         let link = "https://"+process.env.EMAIL_DOMAIN.toLowerCase()+"/recover-password?token="+token;
         let email = "Aquí tienes el link para recuperar tu contraseña </b>"+user.username+"</b>, <a href="+link+">"+link+"</a>";
+
         
+        console.log(email);
         let info = transporter.sendMail({
             from: process.env.EMAIL_DOMAIN+' '+process.env.EMAIL_HEADER, // sender address
             to: user.email, // list of receivers

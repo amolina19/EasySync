@@ -424,9 +424,32 @@ module.exports = {
         }else{
             res.status(301).json({status:"Error",message:process.env.USE_ROUTE});
         }
+    },send_recover_password: function(req,res){
+        if(checkUri(req)){
+            console.log("TESTA");
+            userModel.findOne({$or:[{username:req.body.useremail},{email:req.body.useremail}]}, function(err,user){
+                if(err){
+                    console.log("TESTb");
+                    res.status(401).json({status:"Error",message:"Ocurrió un problema al intentar recuperar la cuenta"});
+                }else{
+                    if(user === null){
+                        console.log("TESTC");
+                        res.status(401).json({status:"Error",message:"La cuenta de usuario o email no existe!"});
+                    }else{
+                        console.log("TESTD"); 
+                        const token = jwt.sign({id:user._id,typeToken:typeToken.recover_password},req.app.get('secretKey'));
+                        email.sendmailrecoverpassword(token,user);
+                        res.status(201).json({status:"OK",message:"Link para recuperar la contraseña se ha enviado al correo de la cuenta!"});
+                    }
+                }
+            });
+            
+        }else{
+            res.status(301).json({status:"Error",message:process.env.USE_ROUTE});
+        }
     },recover_password: function(req,res){
 
-        CONSOLE.LOG("BODY",req.body)
+        //CONSOLE.LOG("BODY",req.body)
         if(checkUri(req)){
 
             if(req.body.token !== undefined){
@@ -435,15 +458,55 @@ module.exports = {
                         return res.status(401).send({status:"Error",message:process.env.UNATHORIZED});
                     }else{
                         if(decoded.typeToken === typeToken.recover_password){
-                            let password = bcrypt.hashSync(req.body.password, 10);
+                            let PBKDF2KEY = req.body.key;
+                            if(PBKDF2KEY !== null && PBKDF2KEY.length === 1024){
+
+                                userModel.findOne({_id:decoded.id},function(err,user){
+                                    if(err){
+                                        console.log(err);
+                                    }else{
+                                        let decrypted_key = decrypt(user.private_key,PBKDF2KEY);
+                                        let password = bcrypt.hashSync(req.body.password, 10);
+                                        console.log(password);
+
+                                        if(decrypted_key.includes('BEGIN ENCRYPTED PRIVATE KEY') && decrypted_key.includes('END ENCRYPTED PRIVATE KEY')){
+                                            let privateEncryped = encrypt(decrypted_key,easyCrypt.easysync.getPBKDF2Hex(req.body.password));
+
+                                            userModel.updateOne({_id:decoded.id},{$set:{"password":password,"private_key":privateEncryped}},function(err){
+                                                if(!err){
+
+                                                    res.status(201).json({status:"ok",message:"Contraseña actualizada"});
+                                                }else{
+                                                    res.status(401).json({status:"Error",message:"Ocurrio un problema cuando se actualizaba la contraseña"});
+                                                }
+                                            });
+                                        }else{
+                                            res.status(401).json({status:"Error",message:"La clave de recuperación no es correcta, no es posible restablecer la contraseña."});
+                                        }
+                                        
+                                        //let privateEncrypedSave = encrypt(decrypted_key,easyCrypt.easysync.getPBKDF2Hex(req.body.password));
+                                    }
+                                })
+                                /*
+                                userModel.updateOne({_id:decoded.id},{$set:{"password":password}},function(err){
+                                    if(!err){
+                                        res.status(201).json({status:"ok",message:"Contraseña actualizada"});
+                                    }else{
+                                        res.status(401).json({status:"Error",message:"Ocurrio un problema cuando se actualizaba la contraseña"});
+                                    }
+                                });*/
+                            }else{
+                                /*
+                                userModel.updateOne({_id:decoded.id},{$set:{"password":password}},function(err){
+                                    if(!err){
+                                        res.status(201).json({status:"ok",message:"Contraseña actualizada"});
+                                    }else{
+                                        res.status(401).json({status:"Error",message:"Ocurrio un problema cuando se actualizaba la contraseña"});
+                                    }
+                                });*/
+                            }
                             
-                            userModel.updateOne({_id:decoded.id},{$set:{"password":password}},function(err){
-                                if(!err){
-                                    res.status(201).json({status:"ok",message:"Contraseña actualizada"});
-                                }else{
-                                    res.status(401).json({status:"Error",message:"Ocurrio un problema cuando se actualizaba la contraseña"});
-                                }
-                            });
+                            
                         }
                     }
                 });
@@ -484,7 +547,10 @@ module.exports = {
                                                 getIPInfo(ip,req.body.device_os,req.body.device_browser,req.body.deviceuuid,userLoged);
                                                 //let derivedKey = easyCrypt.easysync.getPBKDF2Hex(req.body.password);
                                                 //res.status(200).json({status:"ok",message:"User authenticated", user:userLoged,token:token,pbkdf2:derivedKey});
-                                                res.status(200).json({status:"ok",message:"Usuario autenticado", user:userLoged,token:token});
+                                                let pbkdf2Key = easyCrypt.easysync.getPBKDF2Hex(req.body.password);
+                                                let privateKeyDecrypted = decrypt(user.private_key,easyCrypt.easysync.getPBKDF2Hex(req.body.password));
+                                                const tokenKeys = jwt.sign({id:userLoged._id,private_key:privateKeyDecrypted,public_key:userLoged.public_key,pbkdf2:pbkdf2Key},req.app.get('secretKey'));
+                                                res.status(200).json({status:"ok",message:"Usuario autenticado", user:userLoged,token:token,keys:tokenKeys,pbkdf2:pbkdf2Key});
                                             });
                                         }
                                     });

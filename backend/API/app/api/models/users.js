@@ -19,7 +19,7 @@ const typeUser = {
 }
 
 const user_plan = {
-    free : 2147483648,
+    free : 5368709120,
     plus : 10737418240,
     enterprise: 53687091200
 }
