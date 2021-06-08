@@ -491,7 +491,7 @@ module.exports = {
                                 });
                             }else{
                                 
-                                filesModel.deleteMany({ower_id:decoded.id},function(err,resultFiles){
+                                filesModel.deleteMany({owner_id:decoded.id},function(err,resultFiles){
                                     if(err){
                                         console.log(err);
                                     }else{
