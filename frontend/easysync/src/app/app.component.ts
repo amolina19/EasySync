@@ -58,8 +58,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
 
-
-
     this.progressBar = true;
 
     if(this.TokenStorageService.getToken() !=null){

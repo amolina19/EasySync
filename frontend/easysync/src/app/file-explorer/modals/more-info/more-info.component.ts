@@ -93,7 +93,7 @@ export class MoreInfoComponent {
   
   /*
   ngOnInit(): void {
-    console.log(this.data.element);
+    //console.log(this.data.element);
   }
   */
 

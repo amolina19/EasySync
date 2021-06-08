@@ -55,7 +55,7 @@ export class LoginComponent implements OnInit {
 
   onSubmitRecover(){
     this.appComponent.progressBar = true;
-    console.log(this.form.useremail);
+    //console.log(this.form.useremail);
 
     this.authService.send_recover_password(this.form.useremail).subscribe(
       data =>{

@@ -4,7 +4,8 @@
                (closed)="events.push('close!')" class="border-rigth border-warning">
     <div class="container mt-2">
       <div class="row">
-        <mat-icon class="float-left mr-1 ml-2 mt-1" >folder_open</mat-icon><button mat-button (click)="tusArchivosDrive()">Tus archivos</button>
+        <mat-icon class="float-left ml-2 mt-1" >folder_open</mat-icon><button class="mr-5" mat-button (click)="tusArchivosDrive()">Tus archivos</button>
+        <mat-icon class="pl-5 ml-5" *ngIf="opened"(click)="sidenav.toggle()">chevron_left</mat-icon>
       </div>
       <div class="row">
         <mat-icon class="float-left mr-1 ml-2 mt-1" >folder_shared</mat-icon><button mat-button (click)="compartidoDrive()">Compartido</button>
@@ -19,7 +20,6 @@
 
   <mat-sidenav-content>
     <mat-icon *ngIf="!opened"(click)="sidenav.toggle()">chevron_right</mat-icon>
-    <mat-icon *ngIf="opened"(click)="sidenav.toggle()">chevron_left</mat-icon>
     <div class="mt-2 pl-5 pr-5" style="padding: 5px; height: 100%; box-sizing: border-box;">
       <mat-card style="box-sizing: border-box; padding:0">
         <file-explorer

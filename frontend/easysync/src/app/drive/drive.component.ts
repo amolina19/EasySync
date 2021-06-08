@@ -204,7 +204,7 @@ export class DriveComponent implements OnInit {
       
   
       data =>{
-        console.log("TYPE",type);
+        //("TYPE",type);
         this.fileService.clear();
         this.files = data;
         //console.log('DATA',data);
@@ -289,7 +289,7 @@ export class DriveComponent implements OnInit {
       this.parentID = this.currentRoot.id;
       this.updateFileElementQuery();
     }
-    console.log(this.parentID);
+    //console.log(this.parentID);
     this.currentPath = this.popFromPath(this.currentPath);
   }
   
@@ -299,7 +299,7 @@ export class DriveComponent implements OnInit {
     this.currentPath = this.pushToPath(this.currentPath, element.name);
     this.canNavigateUp = true;
     this.parentID = element.id;
-    console.log(this.parentID);
+    //(this.parentID);
   }
 
   pushToPath(path: string, folderName: string) {

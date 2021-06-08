@@ -57,7 +57,7 @@ export class UserService {
   dateToString(date:Date):string{
 
     let fixDate = new Date(date);
-    console.log(fixDate);
+    //console.log(fixDate);
     /*
     let dateSec = fixDate.getSeconds();
     let dateMin = fixDate.getMinutes();
