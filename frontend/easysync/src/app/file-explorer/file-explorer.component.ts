@@ -50,11 +50,11 @@ export class FileExplorerComponent implements OnInit{
     let user = this.tokenStorage.getUser();
     
     this.userId = user._id;
-    console.log(this.userId);
+    //console.log(this.userId);
 
-    console.log('Tus archivos',this.appComponent.tusarchivos);
-    console.log('Compartido',this.appComponent.compartido);
-    console.log('papelera',this.appComponent.papelera);
+    //console.log('Tus archivos',this.appComponent.tusarchivos);
+    //console.log('Compartido',this.appComponent.compartido);
+    //console.log('papelera',this.appComponent.papelera);
 
   }
 
@@ -122,7 +122,7 @@ export class FileExplorerComponent implements OnInit{
 
   onFileSelect(event) {
     if (event.target.files.length > 0) {
-      console.log(event.target.files);
+      //console.log(event.target.files);
       this.uploadFile(event.target.files[0]);
     }
   }
@@ -133,10 +133,10 @@ export class FileExplorerComponent implements OnInit{
 
     this.userService.getUserStorageSize().subscribe(data =>{
 
-      console.log("SIZE",(Number.parseInt(data.result) + Number.parseInt(file.size)));
-      console.log("USER SIZE",this.tokenStorage.getUser().storage_limit);
+      //console.log("SIZE",(Number.parseInt(data.result) + Number.parseInt(file.size)));
+      //console.log("USER SIZE",this.tokenStorage.getUser().storage_limit);
       if((Number.parseInt(data.result) + Number.parseInt(file.size)) <= this.tokenStorage.getUser().storage_limit){
-        console.log("ENTRA AQUI 2");
+        //console.log("ENTRA AQUI 2");
         this.appComponent.uploadPost = null;
         const formData = new FormData();
         formData.append('token',this.tokenStorage.getToken());
@@ -181,7 +181,7 @@ export class FileExplorerComponent implements OnInit{
           }
         );
       }else{
-        console.log("ENTRA AQUI");
+        //("ENTRA AQUI");
         this.snackBar.open("Limite de almacenamiento alcanzado", 'Cerrar', {
           horizontalPosition: this.horizontalPosition,
           verticalPosition: this.verticalPosition,
@@ -237,7 +237,7 @@ export class FileExplorerComponent implements OnInit{
     /*
     this.userService.downloadByUrl(element.url).subscribe(
       data =>{
-        console.log(data);
+        //console.log(data);
         //this.elementRenamed.emit(element);
         this.driveComponent.updateFiles();
         this.snackBar.open(data.message, 'Cerrar', {

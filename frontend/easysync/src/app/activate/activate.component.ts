@@ -20,7 +20,7 @@ export class ActivateComponent implements OnInit {
 
     this.route.queryParams.subscribe(params => {
       this.token = params['token'];
-      console.log(this.token);
+      //console.log(this.token);
 
       this.appComponent.progressBar = true;
       this.auth.activate(this.token).subscribe(

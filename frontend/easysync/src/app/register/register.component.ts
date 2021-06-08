@@ -52,10 +52,10 @@ export class RegisterComponent implements OnInit {
 
   onSubmit():void{
     this.appComponent.progressBar = true;
-    console.log(this.form);
+    //console.log(this.form);
     this.authService.register(this.form).subscribe(
       data => {
-        console.log(data);
+        //console.log(data);
         this.isSuccessful = true;
         this.isSignUpFailed = false;
         //this.router.navigate(['/login']);

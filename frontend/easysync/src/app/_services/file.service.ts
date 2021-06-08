@@ -203,7 +203,7 @@ export class FileService implements IFileService {
     this.mapChild.forEach((value,key)=>{
       let item = this.map.get(key);
       if(item.size){
-        console.log(item.size);
+        //console.log(item.size);
         valueReturn = parseInt(valueReturn+"") + parseInt(item.size);
       }
     });
@@ -228,7 +228,7 @@ export class FileService implements IFileService {
         this.map.set(key,x);
       }
     });
-    console.log(this.map);
-    console.log(this.parentsRoot);
+    //console.log(this.map);
+    //console.log(this.parentsRoot);
   }
 }

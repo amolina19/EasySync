@@ -31,7 +31,7 @@ export class RecoverPasswordComponent implements OnInit {
       this.router.navigate(['/home']);
     }
 
-    console.log(this.errorMessage);
+    //console.log(this.errorMessage);
   }
 
   onSubmitNewPassword(){
@@ -47,7 +47,7 @@ export class RecoverPasswordComponent implements OnInit {
           this.verificationKeyNotMatch = false;
           this.passwordNotMatch = false;
           let dataMap = new Map(Object.entries(data));
-          console.log(dataMap.get('message'));
+          //console.log(dataMap.get('message'));
           this.appComponent.progressBar = false;
           this.recoveredSuccess = true;
           this.successMessage = dataMap.get('message');
