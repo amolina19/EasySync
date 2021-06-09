@@ -1,21 +1,35 @@
 <h2 mat-dialog-title>Registrarse</h2>
 <mat-dialog-content class="mat-typography">
-  <h3>Cuenta de Usuario</h3>
+  <h1>Cuenta de Usuario</h1>
   <p>La cuenta de usuario que crea puede ser removida o modificada en cualquier momento. No se tiene acceso a su contraseña ni claves que genere el usuario, guarde en todo momento su contraseña y su clave maestra, de lo contrario no se podrá recuperar sus archivos y consiguiente su eliminación.</p>
 
-  <h3>Archivos</h3>
+  <h1>Archivos</h1>
   <p>Todos los archivos que suba el usuario estarán encripatadas con AES, su clave privada RSA y su contraseña derivada PBKDF2, todos sus archivos y claves solo se pueden descrifrar utilizando su clave maestra. El desarrollador solo tiene acceso a los archivos encriptados, nunca sabrá su contenido.</p>
 
-  <h3>Datos del Usuario</h3>
+  <h1>Datos del Usuario</h1>
   <p>No utilizamos cookies para recoger datos del navegador, unicamente solo se recogerán datos para comprobar la versión del navegador, el Sistema Operativo, su dirección IP, ISP y geolocalización al iniciar sesión que luego puede consultar en su perfil. Las claves como tokens de autenticación y información del usuario se almacenarán en el navegador del usuario.</p>
 
-  <h3>Eliminación del usuario</h3>
-  <p>Si el propio usuario decide eliminar su cuenta, se borrarán todos los datos del usuario, incluido sus clave privadas RSA encriptadas y AES de sus archivos como los propios archivos.
-    infrastructure that supports Google's largest applications.</p>
-    
-  <h3>Política de privacidad y aviso legal</h3>
+  <h1>Eliminación del usuario</h1>
+  <p>Si el propio usuario decide eliminar su cuenta, se borrarán todos los datos del usuario, incluido sus clave privadas RSA encriptadas y AES de sus archivos como los propios archivos.</p>
 
+  <h1>Claves Privadas</h1>
+
+  <p>Todo el contenido almacenado y generado por el usuario se encriptan con varias claves de diferente uso.</p>
+  <br>
+  <h2>PBKDF2 o Derivación de claves basada en contraseña</h2>
+  <p>Esta es la clave maestra del usuario, esta clave solo es generada por el usuario mediante la constraseña en cada inicio de sesión y no se almacena en nuestros servidores, con ello si se pierde la contraseña, se pueden recuperar todos tus archivos mediante esta clave al solicitar recuperar la contraseña. Se puede guardar o copiar en Perfil -> Seguridad -> Clave de Recuperación. Más información <a href="https://es.vvikipedla.com/wiki/PBKDF2">PBKDF2</a></p>
+
+  <h2>RSA o Criptografía Asimétrica</h2>
+  <p>Son pares de claves una privada y otra pública es generada al crear la cuenta, Las dos claves pertenecen a la misma persona que recibirá la contraseña del archivo. Una clave es pública y se puede entregar a cualquier persona, la otra clave es privada es la que se usa para cifrar las claves AES de los archivos y el propietario debe guardarla de modo que nadie tenga acceso a ella. las claves privadas estan almacenadas en el servidor encriptadas por Derivación de claves basada en contraseña o PBKDF2, en caso de perder la contraseña o no tener la clave de recuperación (Recomendado almacenar o guardar la clave de Recuperación en un lugar seguro), no se podrán descrifar la clave privada y con ello los archivos. Además, los métodos criptográficos garantizan que esa pareja de claves solo se puede generar una vez, de modo que se puede asumir que no es posible que dos personas hayan obtenido casualmente la misma pareja de claves. Más información <a href="https://es.wikipedia.org/wiki/Criptografía_asimétrica#:~:text=Cualquiera%2C%20usando%20la%20llave%20pública,la%20clave%20pública%20del%20primero.">Clave Asímetrica</a></p>
+
+  <h2>AES o Criptografía Simétrica</h2>
+  <p>Son claves que realizan la operación de cifrado y descifrado de los archivos, es cifrada por la clave privada Asímetrica, al compartir se descifra con tu clave privada asímetrica y se cifra con la pública del usuario o URL que se vaye a compartir, cada usuario tendra su propia clave AES de archivo independientemente si es el mismo archivo o diferente. Más información <a href="https://es.wikipedia.org/wiki/Advanced_Encryption_Standard">Clave Simétrica AES</a></p>
+
+    
+  <h1>Política de privacidad y aviso legal</h1>
   <p>A través de este sitio web no se recaban datos de carácter personal de las personas usuarias sin su conocimiento, ni se ceden a terceros.</p>
+
+  
 
 </mat-dialog-content>
 <mat-dialog-actions align="end">
