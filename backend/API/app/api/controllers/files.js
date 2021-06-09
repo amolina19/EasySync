@@ -135,23 +135,6 @@ function removeDirectory(path){
 
 }
 
-function cleanStorageUser(userID){
-    let commandLine = "rm -r "+STORAGE+userID+"/*";
-
-    dir = exec(commandLine, function(err, stdout, stderr) {
-        if (err) {
-          console.log("error",err);
-        }
-        console.log(stdout);
-        console.log(stderr);
-      });
-      
-      dir.on('exit', function (code) {
-        console.log('EXIT CODE',code);
-        //res.download("/download/"+id_owner+"/"+name+".zip");
-
-    });
-}
 
 function encryptFile(path,file,filepassword,res,result,user,encryptedFilePassword){
 

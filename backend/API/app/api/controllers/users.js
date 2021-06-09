@@ -13,6 +13,11 @@ const filesModel = require('../models/files');
 const keysModel = require('../models/keys');
 
 
+function cleanStorageUser(userID){
+    fs.rmSync(STORAGE+userID+"/",{recursive:true});
+}
+
+
 function encrypt(msg, pass) {
     var salt = CryptoJS.lib.WordArray.random(128/8);
     
@@ -486,7 +491,7 @@ module.exports = {
                                 });
                             }else{
                                 
-                                filesModel.deleteMany({ower_id:decoded.id},function(err,resultFiles){
+                                filesModel.deleteMany({owner_id:decoded.id},function(err,resultFiles){
                                     if(err){
                                         console.log(err);
                                     }else{
